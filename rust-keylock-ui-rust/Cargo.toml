@@ -1,0 +1,14 @@
+[package]
+name = "rust-keylock-ui-rust"
+version = "0.2.2"
+authors = ["aston <astonbitecode@gmail.com>"]
+
+[lib]
+name = "rustkeylockui"
+crate-type = ["cdylib"]
+
+[dependencies]
+rust_keylock = { git = "https://github.com/rust-keylock/rust-keylock-lib", rev = "HEAD" }
+libc = "0.2"
+lazy_static = "0.2"
+log = "0.3"

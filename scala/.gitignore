@@ -1,0 +1,6 @@
+/target/
+/.settings/
+/.cache-main
+/.classpath
+/.project
+/src/main/resources/linux-x86-64
