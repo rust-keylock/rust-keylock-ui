@@ -13,7 +13,7 @@ import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.text.Text
 import scalafx.geometry.HPos
 import scalafx.scene.control.TextField
-import scalafx.scene.control.Label
+import org.rustkeylock.components.RklLabel
 import org.rustkeylock.components.RklButton
 import scalafx.scene.image.ImageView
 import javafx.scene.image.Image
@@ -64,7 +64,7 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
     }
     Platform.runLater(pathTextField.end())
 
-    val pathTextMessage = new Label
+    val pathTextMessage = new RklLabel
     val browseButton = new RklButton {
       tooltip = "Browse"
       onAction = handle {
@@ -85,12 +85,12 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
     val passwordField = new PasswordField() {
       promptText = "Use password"
     }
-    val passwordFieldMessage = new Label
+    val passwordFieldMessage = new RklLabel
 
     val numberField = new PasswordField() {
       promptText = "Use favorite number"
     }
-    val numberFieldMessage = new Label
+    val numberFieldMessage = new RklLabel
 
     val okButton = new RklButton {
       tooltip = "Ok"
@@ -109,17 +109,17 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
 
     add(title, 0, 0, 2, 1)
 
-    add(new Label("Path"), 0, 1)
+    add(new RklLabel("Path"), 0, 1)
     add(pathTextField, 0, 2)
     add(browseButton, 1, 2)
     add(pathTextMessage, 0, 3)
 
     if (!export) {
-      add(new Label("Use password"), 0, 4)
+      add(new RklLabel("Use password"), 0, 4)
       add(passwordField, 0, 5)
       add(passwordFieldMessage, 0, 6)
 
-      add(new Label("Use favorite number"), 0, 7)
+      add(new RklLabel("Use favorite number"), 0, 7)
       add(numberField, 0, 8)
       add(numberFieldMessage, 0, 9)
     }
@@ -151,36 +151,30 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
     }
 
     private  def okButtonHandler(): Unit = {
-      pathTextMessage.setText("")
+      pathTextMessage.clear()
       path = pathTextField.getText()
       if(export) {
         if (path.isEmpty()) {
         	logger.debug(s"Exporting to $path")
-          pathTextMessage.setText("Required Field")
-			    pathTextMessage.setTextFill(Color.Red)
+          pathTextMessage.setError("Required Field")
         } else if (new File(path).isDirectory()) {
-          pathTextMessage.setText("Cannot export to a directory")
-			    pathTextMessage.setTextFill(Color.Red)
+          pathTextMessage.setError("Cannot export to a directory")
         } else {
           InterfaceWithRust.INSTANCE.export_import(path, 1, "Dummy", 11)
         }
       } else {
-        passwordFieldMessage.setText("")
-        numberFieldMessage.setText("")
+        passwordFieldMessage.clear()
+        numberFieldMessage.clear()
 
         if (path.isEmpty()) {
         	logger.debug(s"Importing from $path")
-          pathTextMessage.setText("Required Field")
-			    pathTextMessage.setTextFill(Color.Red)
+          pathTextMessage.setError("Required Field")
         } else if (new File(path).isDirectory()) {
-          pathTextMessage.setText("Cannot import from a directory")
-			    pathTextMessage.setTextFill(Color.Red)
+          pathTextMessage.setError("Cannot import from a directory")
         } else if (passwordField.getText.isEmpty()) {
-          passwordFieldMessage.setText("Required Field")
-			    passwordFieldMessage.setTextFill(Color.Red)
+          passwordFieldMessage.setError("Required Field")
         } else if (numberField.getText.isEmpty()) {
-          numberFieldMessage.setText("Required Field")
-			    numberFieldMessage.setTextFill(Color.Red)
+          numberFieldMessage.setError("Required Field")
         } else {
           InterfaceWithRust.INSTANCE.export_import(path, 0, passwordField.getText, Integer.parseInt(numberField.getText))
         }

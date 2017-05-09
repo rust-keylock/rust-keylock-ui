@@ -6,7 +6,7 @@ import org.rustkeylock.japi.ScalaEntry
 import scalafx.geometry.HPos
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
-import scalafx.scene.control.Label
+import org.rustkeylock.components.RklLabel
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control.TextField
@@ -50,21 +50,21 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
       text = anEntry.name
       editable = edit
     }
-    val titleMessage = new Label
+    val titleMessage = new RklLabel
 
     val usernameTextField = new TextField() {
       promptText = "Username"
       text = anEntry.user
       editable = edit
     }
-    val usernameMessage = new Label
+    val usernameMessage = new RklLabel
 
     val passwordTextField = new TextField() {
       promptText = "Password"
       text = anEntry.pass
       editable = edit
     }
-    val passwordMessage = new Label
+    val passwordMessage = new RklLabel
 
     val descriptionTextField = new TextField() {
       promptText = "Description"
@@ -123,19 +123,19 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     add(title, 0, 0, 2, 1)
 
-    add(new Label("Entry title"), 0, 2, 2, 1)
+    add(new RklLabel("Entry title"), 0, 2, 2, 1)
     add(titleTextField, 0, 3, 2, 1)
     add(titleMessage, 0, 4)
 
-    add(new Label("Username"), 0, 5, 2, 1)
+    add(new RklLabel("Username"), 0, 5, 2, 1)
     add(usernameTextField, 0, 6, 2, 1)
     add(usernameMessage, 0, 7)
 
-    add(new Label("Password"), 0, 8, 2, 1)
+    add(new RklLabel("Password"), 0, 8, 2, 1)
     add(passwordTextField, 0, 9, 2, 1)
     add(passwordMessage, 0, 10)
 
-    add(new Label("Description"), 0, 11, 2, 1)
+    add(new RklLabel("Description"), 0, 11, 2, 1)
     add(descriptionTextField, 0, 12, 2, 1)
 
     (edit, delete) match {
@@ -147,16 +147,16 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
         add(saveButton, 1, 13)
       }
       case (false, true) => {
-        add(new Label("Deleting Entry... Are you sure?"), 0, 13)
+        add(new RklLabel("Deleting Entry... Are you sure?"), 0, 13)
         add(areYouSureButton, 1, 13)
       }
       case (_, _) => throw new Exception(s"Cannot handle edit '$edit' and delete '$delete'. Please consider opening a bug to the developers.")
     }
 
     private def handleSave(): Unit = {
-      titleMessage.setText("")
-      usernameMessage.setText("")
-      passwordMessage.setText("")
+      titleMessage.clear()
+      usernameMessage.clear()
+      passwordMessage.clear()
 
       val entry = new ScalaEntry()
       entry.name = titleTextField.getText()
@@ -168,18 +168,15 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
       var errorsExist = false
       if (entry.name.isEmpty()) {
-        titleMessage.setText("Required Field")
-        titleMessage.setTextFill(Color.Red)
+        titleMessage.setError("Required Field")
         errorsExist = true
       }
       if (entry.user.isEmpty()) {
-        usernameMessage.setText("Required Field")
-        usernameMessage.setTextFill(Color.Red)
+        usernameMessage.setError("Required Field")
         errorsExist = true
       }
       if (entry.pass.isEmpty()) {
-        passwordMessage.setText("Required Field")
-        passwordMessage.setTextFill(Color.Red)
+        passwordMessage.setError("Required Field")
         errorsExist = true
       }
       if (!errorsExist) {

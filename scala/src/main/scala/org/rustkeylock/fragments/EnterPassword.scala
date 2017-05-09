@@ -3,7 +3,7 @@ package org.rustkeylock.fragments
 import scalafx.Includes._
 import scalafx.application.Platform
 import scalafx.geometry.Insets
-import scalafx.scene.control.Label
+import org.rustkeylock.components.RklLabel
 import scalafx.scene.control.PasswordField
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.GridPane
@@ -20,6 +20,7 @@ import com.typesafe.scalalogging.Logger
 import scalafx.scene.paint.Color
 import scalafx.collections.ObservableBuffer
 import org.rustkeylock.utils.SharedState
+import org.rustkeylock.components.RklLabel
 
 class EnterPassword extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -28,12 +29,12 @@ class EnterPassword extends Scene {
     promptText = "Password"
   }
   Platform.runLater(password.requestFocus())
-  val passwordMessage = new Label
+  val passwordMessage = new RklLabel
 
   val number = new PasswordField() {
     promptText = "Favorite number"
   }
-  val numberMessage = new Label
+  val numberMessage = new RklLabel
 
   val label = new Text {
     text = "Welcome to rust-keylock"
@@ -59,11 +60,11 @@ class EnterPassword extends Scene {
 
     add(label, 0, 0, 2, 1)
 
-    add(new Label("Please provide your password"), 0, 1)
+    add(new RklLabel("Please provide your password"), 0, 1)
     add(password, 1, 1)
     add(passwordMessage, 1, 2)
 
-    add(new Label("What is your favorite number?"), 0, 3)
+    add(new RklLabel("What is your favorite number?"), 0, 3)
     add(number, 1, 3)
     add(numberMessage, 1, 4)
 
@@ -73,15 +74,13 @@ class EnterPassword extends Scene {
   }
 
   private def buttonHandler(): Unit = {
-    passwordMessage.setText("")
-    numberMessage.setText("")
+    passwordMessage.clear()
+    numberMessage.clear()
 
     if (password.getText().trim().isEmpty()) {
-			passwordMessage.setText("Required Field")
-			passwordMessage.setTextFill(Color.Red)
+			passwordMessage.setError("Required Field")
 		} else if (number.getText().trim().isEmpty()) {
-			numberMessage.setText("Required Field")
-			numberMessage.setTextFill(Color.Red)
+			numberMessage.setError("Required Field")
 		} else {
       try {
         val num = new Integer(number.getText().trim())
@@ -89,11 +88,10 @@ class EnterPassword extends Scene {
         SharedState.setLoggedIn()
       } catch {
         case error: Exception => {
-          val message = "Incorrect number";
-          logger.error(message, error);
-          number.setText("");
-          numberMessage.setText(message);
-          numberMessage.setTextFill(Color.Red)
+          val message = "Incorrect number"
+          logger.error(message, error)
+          number.setText("")
+          numberMessage.setError(message)
         }
       }
 		}

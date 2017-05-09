@@ -12,7 +12,7 @@ import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.text.Text
 import scalafx.geometry.HPos
-import scalafx.scene.control.Label
+import org.rustkeylock.components.RklLabel
 import org.rustkeylock.components.RklButton
 import scalafx.scene.image.ImageView
 import scalafx.scene.image.Image
@@ -73,8 +73,8 @@ class ExitMenu extends Scene {
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(new Label("You will loose unsaved changes."), 0, 1, 2, 1)
-    add(new Label("Are you sure you want to exit?"), 0, 3, 2, 1)
+    add(new RklLabel("You will loose unsaved changes."), 0, 1, 2, 1)
+    add(new RklLabel("Are you sure you want to exit?"), 0, 3, 2, 1)
     add(noButton, 0, 4)
     add(yesButton, 1, 4)
   }

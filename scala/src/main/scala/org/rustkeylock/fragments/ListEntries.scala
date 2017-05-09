@@ -21,7 +21,7 @@ import scalafx.geometry.Insets
 import org.rustkeylock.components.RklButton
 import scalafx.scene.image.ImageView
 import scalafx.scene.image.Image
-import scalafx.scene.control.Label
+import org.rustkeylock.components.RklLabel
 
 class ListEntries(entries: Seq[String]) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -67,7 +67,7 @@ class ListEntries(entries: Seq[String]) extends Scene {
     if (entries.nonEmpty) {
       add(new EntriesList(), 0, 2, 2, 1)
     } else {
-      add(new Label("No entries"), 0, 2, 2, 1)
+      add(new RklLabel("No entries"), 0, 2, 2, 1)
     }
   }
 
