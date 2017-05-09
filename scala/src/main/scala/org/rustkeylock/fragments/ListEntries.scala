@@ -77,8 +77,10 @@ class ListEntries(entries: Seq[String]) extends Scene {
     items = new ObservableBuffer[String] ++ (entries)
     onMouseClicked = handle {
       val pos = selectionModel().getSelectedIndex
-      logger.debug(s"Clicked entry with index $pos in the list of entries")
-      InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_SHOW_ENTRY, pos)
+      if (pos >= 0 && pos < entries.size) {
+        logger.debug(s"Clicked entry with index $pos in the list of entries")
+        InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_SHOW_ENTRY, pos)
+      }
     }
 
   }
