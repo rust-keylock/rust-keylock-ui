@@ -9,7 +9,7 @@ import scalafx.scene.effect.DropShadow
 import scalafx.scene.text.Text
 import scalafx.geometry.Pos
 
-class Empty extends Scene {
+class Empty() extends Scene {
   root = new VBox() {
     style = "-fx-background: white"
     alignment = Pos.Center

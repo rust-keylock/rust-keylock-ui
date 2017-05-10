@@ -20,7 +20,7 @@ class ShowEntryCb(stage: Stage) extends EntryCallback {
 
   class UiThreadRunnable(stage: Stage, anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean, delete: Boolean) extends Runnable {
     override def run(): Unit = {
-      stage.setScene(new ShowEntry(anEntry, entryIndex, edit, delete))
+      stage.setScene(new ShowEntry(anEntry, entryIndex, edit, delete, stage))
     }
   }
 }

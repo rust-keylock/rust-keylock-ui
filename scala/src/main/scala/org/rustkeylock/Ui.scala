@@ -40,7 +40,6 @@ object Ui extends JFXApp {
           ev.consume()
         }
       }
-
     }
   }
 

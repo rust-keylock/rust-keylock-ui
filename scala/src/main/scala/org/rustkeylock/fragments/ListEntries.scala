@@ -22,8 +22,9 @@ import org.rustkeylock.components.RklButton
 import scalafx.scene.image.ImageView
 import scalafx.scene.image.Image
 import org.rustkeylock.components.RklLabel
+import scalafx.stage.Stage
 
-class ListEntries(entries: Seq[String]) extends Scene {
+class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
@@ -40,6 +41,7 @@ class ListEntries(entries: Seq[String]) extends Scene {
   }
 
   private class Center() extends GridPane {
+    padding = Insets(10, 0, 0, 0)
     val title = new Text {
       text = "Passwords"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
@@ -74,6 +76,7 @@ class ListEntries(entries: Seq[String]) extends Scene {
   private class EntriesList() extends ListView[String] {
     val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
+    prefWidth <== stage.width - Navigation.Width
     items = new ObservableBuffer[String] ++ (entries)
     onMouseClicked = handle {
       val pos = selectionModel().getSelectedIndex

@@ -18,8 +18,10 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.image.Image
 import org.rustkeylock.utils.Defs
 import org.rustkeylock.api.InterfaceWithRust
+import scalafx.stage.Stage
+import scalafx.geometry.Pos
 
-class ExitMenu extends Scene {
+class ExitMenu(stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
@@ -27,12 +29,7 @@ class ExitMenu extends Scene {
     // Navigation pane
     left = new Navigation
     // Main pane
-    center = new ScrollPane {
-      fitToHeight = true
-      hbarPolicy = ScrollBarPolicy.AsNeeded
-      vbarPolicy = ScrollBarPolicy.AsNeeded
-      content = new Center
-    }
+    center = new Center()
   }
 
   class Center() extends GridPane {
@@ -40,7 +37,9 @@ class ExitMenu extends Scene {
       text = "Unsaved Data!"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
+
     GridPane.setHalignment(title, HPos.Center)
+
     val yesButton = new RklButton {
       tooltip = "Yes"
       onAction = handle {
@@ -54,6 +53,7 @@ class ExitMenu extends Scene {
       }
     }
     GridPane.setHalignment(yesButton, HPos.Right)
+
     val noButton = new RklButton {
       tooltip = "No"
       onAction = handle {

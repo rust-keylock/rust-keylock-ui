@@ -21,8 +21,9 @@ import scalafx.scene.paint.Color
 import scalafx.collections.ObservableBuffer
 import org.rustkeylock.utils.SharedState
 import org.rustkeylock.components.RklLabel
+import scalafx.stage.Stage
 
-class EnterPassword extends Scene {
+class EnterPassword(stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   val password = new PasswordField() {
@@ -53,6 +54,9 @@ class EnterPassword extends Scene {
   GridPane.setHalignment(image, HPos.Center)
 
   root = new GridPane() {
+//    prefHeight <== stage.height
+//    prefWidth <== stage.width
+
     hgap = 33
     vgap = 10
     padding = Insets(10, 10, 10, 10)
@@ -78,10 +82,10 @@ class EnterPassword extends Scene {
     numberMessage.clear()
 
     if (password.getText().trim().isEmpty()) {
-			passwordMessage.setError("Required Field")
-		} else if (number.getText().trim().isEmpty()) {
-			numberMessage.setError("Required Field")
-		} else {
+      passwordMessage.setError("Required Field")
+    } else if (number.getText().trim().isEmpty()) {
+      numberMessage.setError("Required Field")
+    } else {
       try {
         val num = new Integer(number.getText().trim())
         InterfaceWithRust.INSTANCE.set_password(password.getText().trim(), num)
@@ -94,6 +98,6 @@ class EnterPassword extends Scene {
           numberMessage.setError(message)
         }
       }
-		}
+    }
   }
 }

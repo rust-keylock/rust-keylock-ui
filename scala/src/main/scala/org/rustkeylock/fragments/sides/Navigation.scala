@@ -9,6 +9,7 @@ import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control.Tooltip.stringToTooltip
 import org.rustkeylock.utils.Defs
 import org.rustkeylock.api.InterfaceWithRust
+import scalafx.scene.image.Image
 
 class Navigation extends ScrollPane {
   fitToHeight = true
@@ -16,39 +17,68 @@ class Navigation extends ScrollPane {
   vbarPolicy = ScrollBarPolicy.AsNeeded
   content = new NavigationContent
 }
+object Navigation {
+  private[sides] val imgHeight = 64
+  private[sides] val imgWidth = 64
+  val Width = imgWidth + 24
+}
 
 class NavigationContent extends VBox {
-  spacing = 3
+//  spacing = 3
 
   children = Seq(
     new RklButton {
       tooltip = "Passwords"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_ENTRIES_LIST))
-      graphic = new ImageView("images/circled_list.png")
+      graphic = new ImageView {
+        image = new Image("images/circled_list.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     },
     new RklButton {
       tooltip = "Encrypt and save"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_SAVE))
-      graphic = new ImageView("images/save.png")
+      graphic = new ImageView {
+        image = new Image("images/save.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     },
     new RklButton {
       tooltip = "Change master password"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_CHANGE_PASS))
-      graphic = new ImageView("images/edit.png")
+      graphic = new ImageView {
+        image = new Image("images/edit.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     },
     new RklButton {
       tooltip = "Export to..."
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_EXPORT_ENTRIES))
-      graphic = new ImageView("images/export.png")
+      graphic = new ImageView {
+        image = new Image("images/export.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     },
     new RklButton {
       tooltip = "Import from..."
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_IMPORT_ENTRIES))
-      graphic = new ImageView("images/importimg.png")
+      graphic = new ImageView {
+        image = new Image("images/importimg.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     },
     new RklButton {
       tooltip = "Exit"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_EXIT))
-      graphic = new ImageView("images/close.png")
+      graphic = new ImageView {
+        image = new Image("images/close.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
     })
 }

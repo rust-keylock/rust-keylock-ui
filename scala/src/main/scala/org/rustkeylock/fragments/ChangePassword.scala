@@ -20,8 +20,9 @@ import org.rustkeylock.fragments.sides.Navigation
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import org.rustkeylock.utils.SharedState
+import scalafx.stage.Stage
 
-class ChangePassword extends Scene {
+class ChangePassword(stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
@@ -40,6 +41,8 @@ class ChangePassword extends Scene {
   }
 
   class Center extends GridPane {
+    prefWidth <== stage.width - Navigation.Width
+
     val password1 = new PasswordField() {
       promptText = "Password"
     }
@@ -85,7 +88,7 @@ class ChangePassword extends Scene {
     add(password1, 1, 1)
     add(passwordMessage1, 1, 2)
 
-    add(new RklLabel("Please re-enter your password"), 0, 3)
+    add(new RklLabel("Re-enter your password"), 0, 3)
     add(password2, 1, 3)
     add(passwordMessage2, 1, 4)
 
@@ -93,7 +96,7 @@ class ChangePassword extends Scene {
     add(number1, 1, 5)
     add(numberMessage1, 1, 6)
 
-    add(new RklLabel("Please re-enter your favorite number"), 0, 7)
+    add(new RklLabel("Re-enter your favorite number"), 0, 7)
     add(number2, 1, 7)
     add(numberMessage2, 1, 8)
 

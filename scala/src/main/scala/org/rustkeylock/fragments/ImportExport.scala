@@ -48,6 +48,8 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
   }
 
   class Center() extends GridPane {
+    prefWidth <== stage.width - Navigation.Width
+
     val title = new Text {
       text = if (export) {
         "Where to export?"
@@ -59,6 +61,7 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
     GridPane.setHalignment(title, HPos.Center)
 
     val pathTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Path"
       text = path
     }
@@ -76,18 +79,20 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
       }
       graphic = new ImageView {
         image = new Image("images/open.png")
-        fitHeight = 10
-        fitWidth = 10
+        fitHeight = 33
+        fitWidth = 33
       }
     }
     GridPane.setHalignment(browseButton, HPos.Left)
 
     val passwordField = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Use password"
     }
     val passwordFieldMessage = new RklLabel
 
     val numberField = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Use favorite number"
     }
     val numberFieldMessage = new RklLabel

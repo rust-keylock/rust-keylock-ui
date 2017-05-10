@@ -27,16 +27,16 @@ class ShowMenuCb(stage: Stage) extends RustCallback {
     override def run(): Unit = {
       val newScene = menu match {
         case Defs.MENU_TRY_PASS => {
-          new EnterPassword()
+          new EnterPassword(stage)
         }
         case Defs.MENU_CHANGE_PASS => {
-          new ChangePassword()
+          new ChangePassword(stage)
         }
         case Defs.MENU_MAIN => {
-          new MainMenu()
+          new MainMenu(stage)
         }
         case Defs.MENU_EXIT => {
-          new ExitMenu()
+          new ExitMenu(stage)
         }
         case Defs.MENU_EXPORT_ENTRIES => {
           new ImportExport(true, stage)

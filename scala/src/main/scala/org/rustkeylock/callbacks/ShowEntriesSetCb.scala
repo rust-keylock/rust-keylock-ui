@@ -29,7 +29,7 @@ class ShowEntriesSetCb(stage: Stage) extends EntriesSetCallback {
 
   class UiThreadRunnable(stage: Stage, entries: List[ScalaEntry]) extends Runnable {
     override def run(): Unit = {
-      stage.setScene(new ListEntries(entries.map(_.name)))
+      stage.setScene(new ListEntries(entries.map(_.name), stage))
     }
   }
 }

@@ -21,8 +21,9 @@ import com.typesafe.scalalogging.Logger
 import org.rustkeylock.api.InterfaceWithRust
 import org.rustkeylock.utils.Defs
 import scalafx.scene.paint.Color
+import scalafx.stage.Stage
 
-class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean, delete: Boolean) extends Scene {
+class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean, delete: Boolean, stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
@@ -39,6 +40,8 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
   }
 
   class Center() extends GridPane {
+    val PaddingValue = 10
+
     val title = new Text {
       text = "Password Details"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
@@ -46,30 +49,38 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
     GridPane.setHalignment(title, HPos.Center)
 
     val titleTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Entry Title"
       text = anEntry.name
       editable = edit
+      disable = !edit
     }
     val titleMessage = new RklLabel
 
     val usernameTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Username"
       text = anEntry.user
       editable = edit
+      disable = !edit
     }
     val usernameMessage = new RklLabel
 
     val passwordTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Password"
       text = anEntry.pass
       editable = edit
+      disable = !edit
     }
     val passwordMessage = new RklLabel
 
     val descriptionTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Description"
       text = anEntry.desc
       editable = edit
+      disable = !edit
     }
 
     val editButton = new RklButton {
@@ -118,7 +129,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     hgap = 33
     vgap = 10
-    padding = Insets(10, 10, 10, 10)
+    padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)

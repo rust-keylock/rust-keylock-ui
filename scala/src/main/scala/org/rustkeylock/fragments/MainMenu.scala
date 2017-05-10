@@ -16,8 +16,9 @@ import scalafx.scene.text.Text
 import scalafx.scene.paint.Stops
 import scalafx.geometry.Pos
 import scalafx.scene.image.ImageView
+import scalafx.stage.Stage
 
-class MainMenu extends Scene {
+class MainMenu(stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
