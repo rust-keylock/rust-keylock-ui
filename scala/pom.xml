@@ -13,12 +13,6 @@
 * Extensible
 </description>
 	<url>https://rust-keylock.github.io/</url>
-	<licenses>
-		<license>
-			<name>The MIT License (MIT)</name>
-			<url>https://opensource.org/licenses/MIT</url>
-		</license>
-	</licenses>
 	<developers>
 		<developer>
 			<name>astonbitecode</name>
