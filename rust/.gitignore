@@ -2,3 +2,4 @@
 /.project
 /Cargo.lock
 /rust-keylock-ui-rust.iml
+/.settings/

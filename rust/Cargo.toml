@@ -6,6 +6,7 @@ authors = ["aston <astonbitecode@gmail.com>"]
 [lib]
 name = "rustkeylockui"
 crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
 rust_keylock = { git = "https://github.com/rust-keylock/rust-keylock-lib", rev = "HEAD" }

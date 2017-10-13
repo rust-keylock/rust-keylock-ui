@@ -53,14 +53,18 @@ impl Editor for AndroidImpl {
 
 		match menu {
 			&Menu::Main => (self.show_menu_cb)(super::to_java_string(Menu::Main.get_name())),
-			&Menu::EntriesList => {
+			&Menu::EntriesList(_) => {
 					let scala_entries_set = if safe.get_entries().len() == 0 {
 					ScalaEntriesSet::with_nulls()
 				} else {
 					ScalaEntriesSet::from(safe.get_entries())
 				};
-
-				(self.show_entries_set_cb)(Box::new(scala_entries_set));
+				let filter_ptr = if safe.get_filter().len() == 0 {
+					super::to_java_string("null".to_string())
+				} else {
+					super::to_java_string(safe.get_filter().clone())
+				};
+				(self.show_entries_set_cb)(Box::new(scala_entries_set), filter_ptr);
 			},
 			&Menu::ShowEntry(index) => {
 				let entry = safe.get_entry_decrypted(index);

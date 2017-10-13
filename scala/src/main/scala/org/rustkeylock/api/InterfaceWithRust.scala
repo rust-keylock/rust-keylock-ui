@@ -38,7 +38,7 @@ trait EntryCallback extends Callback {
  * Callback containing a Set of Entries
  */
 trait EntriesSetCallback extends Callback {
-  def apply(entriesSet: ScalaEntriesSet.ByReference): Unit
+  def apply(entriesSet: ScalaEntriesSet.ByReference, filter: String): Unit
 }
 
 trait InterfaceWithRust extends Library {
@@ -72,13 +72,15 @@ trait InterfaceWithRust extends Library {
   def go_to_menu(menuName: String): Unit
 
   /**
-   * Passes a Menu name to Rust and an int argument. Rust instructs the
-   * callback to go to this menu and use the passed argument
+   * Passes a Menu name to Rust and two arguments; an int and a String. Rust instructs the
+   * callback to go to this menu and use the passed arguments.
+   * An argNum of -1 means no argument and an argStr of zero length means no argument.
    *
    * @param menuName
-   * @param arg
+   * @param argNum A String representing an Integer
+   * @param argStr
    */
-  def go_to_menu_plus_arg(menuName: String, arg: Int): Unit
+  def go_to_menu_plus_arg(menuName: String, argNum: String, argStr: String): Unit
 
   /**
    * Adds this JavaEntry to the list of Entries in memory. Note: The entry is

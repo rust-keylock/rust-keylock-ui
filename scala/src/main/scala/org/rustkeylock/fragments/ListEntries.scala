@@ -23,8 +23,11 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.image.Image
 import org.rustkeylock.components.RklLabel
 import scalafx.stage.Stage
+import javafx.event.EventHandler
+import javafx.scene.input.KeyEvent
+import javafx.application.Platform
 
-class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
+class ListEntries(entries: Seq[String], filter: String, stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
@@ -38,6 +41,21 @@ class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
       vbarPolicy = ScrollBarPolicy.AsNeeded
       content = new Center()
     }
+    onKeyPressed = new EventHandler[KeyEvent]() {
+      def handle(event: KeyEvent) {
+        if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
+          val newFilter = filter + event.getText
+          logger.debug(s"Filter changed to '$newFilter'")
+          InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter)
+        } else if (event.getCode.toString() == "BACK_SPACE") {
+          val newFilter = filter.dropRight(1)
+          logger.debug(s"Filter changed to '$newFilter'")
+          InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter)
+        } else {
+          logger.debug(s"Ignoring pressed key of code ${event.getCode}")
+        }
+      }
+    }
   }
 
   private class Center() extends GridPane {
@@ -47,6 +65,14 @@ class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
     GridPane.setHalignment(title, HPos.Center)
+    val subtitle = new Text {
+      text = if (filter.isEmpty()) {
+        "You can start typing in order to filter the list"
+      } else {
+        s"Currently applied filter: $filter"
+      }
+    }
+    GridPane.setHalignment(subtitle, HPos.Center)
 
     val newButton = new RklButton {
       tooltip = "Add New"
@@ -65,11 +91,14 @@ class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(newButton, 1, 1)
+    add(subtitle, 0, 1, 2, 1)
+    add(newButton, 1, 2)
     if (entries.nonEmpty) {
-      add(new EntriesList(), 0, 2, 2, 1)
+      val entriesList = new EntriesList()
+      add(entriesList, 0, 3, 2, 1)
+      entriesList.requestFocus()
     } else {
-      add(new RklLabel("No entries"), 0, 2, 2, 1)
+      add(new RklLabel("No entries"), 0, 3, 2, 1)
     }
   }
 
@@ -82,9 +111,8 @@ class ListEntries(entries: Seq[String], stage: Stage) extends Scene {
       val pos = selectionModel().getSelectedIndex
       if (pos >= 0 && pos < entries.size) {
         logger.debug(s"Clicked entry with index $pos in the list of entries")
-        InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_SHOW_ENTRY, pos)
+        InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_SHOW_ENTRY, pos.toString(), Defs.EMPTY_ARG)
       }
     }
-
   }
 }

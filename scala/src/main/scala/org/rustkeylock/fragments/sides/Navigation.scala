@@ -29,7 +29,7 @@ class NavigationContent extends VBox {
   children = Seq(
     new RklButton {
       tooltip = "Passwords"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_ENTRIES_LIST))
+      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, ""))
       graphic = new ImageView {
         image = new Image("images/circled_list.png")
         fitHeight = Navigation.imgHeight

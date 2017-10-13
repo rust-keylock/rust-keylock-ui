@@ -26,7 +26,7 @@ class ShowMessageCb(stage: Stage) extends RustCallback {
         contentText = message
       }.showAndWait()
       // It doesn't matter which menu we return from the show message screen. The logic of the rust-keylock library only needs something to proceed. 
-			InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_ENTRIES_LIST)
+			InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, "")
     }
   }
 }

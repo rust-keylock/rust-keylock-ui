@@ -85,7 +85,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     val editButton = new RklButton {
       tooltip = "Edit"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_EDIT_ENTRY, entryIndex))
+      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_EDIT_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG))
       graphic = new ImageView {
         image = new Image("images/edit.png")
         fitHeight = 33
@@ -96,7 +96,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     val deleteButton = new RklButton {
       tooltip = "Delete"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_DELETE_ENTRY, entryIndex))
+      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_DELETE_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG))
       graphic = new ImageView {
         image = new Image("images/delete.png")
         fitHeight = 33
