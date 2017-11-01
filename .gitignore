@@ -1,2 +1,3 @@
 /.project
 *.md.html
+build-scripts/local*

@@ -5,6 +5,8 @@ cd $BASEDIR/../
 BASEDIR=`pwd`
 echo Entered Base directory $BASEDIR
 
+cargo install cross
+
 UI_RUST="$BASEDIR/rust"
 UI_RUST_KEYLOCK_LIB_LINUX_x86_64="$UI_RUST/target/x86_64-unknown-linux-gnu/release/librustkeylockui.so"
 UI_RUST_KEYLOCK_LIB_WIN_x86_64="$UI_RUST/target/x86_64-pc-windows-gnu/release/rustkeylockui.dll"
