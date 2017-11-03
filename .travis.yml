@@ -1,25 +1,42 @@
 dist: trusty
-
 language: scala
+
 services: docker
 
 rust:
   - stable
-
 jdk:
   - oraclejdk8
-
 addons:
   apt:
     packages:
       - oracle-java8-installer
 scala:
-   - 2.12.4
+  - 2.12.4
 
 before_install:
-   - curl https://sh.rustup.rs -sSf | sh -s -- -y
-   - source ~/.cargo/env
-   - sh build-scripts/build_rust_for_rust_keylock_ui.sh
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y
+  - source ~/.cargo/env
+  - sh build-scripts/build_rust_for_rust_keylock_ui.sh
 
 script:
-   - mvn -f scala/pom.xml clean install
+  - mvn -f scala/pom.xml clean install
+
+before_deploy:
+  - sh build-scripts/create_artifacts.sh
+
+deploy:
+  provider: releases
+  api_key:
+    secure: qhoTmTKMOs+bGu4sQF2+JsZdIyrmc5pFz4wx/EZNUtpKndBFawJYbeeL5ThLwiaAeugTMBVzaiiyzTY7ZmidPVEstXjqneQ0SFP7kmaL6peZ25bBQYOlrdpRHpXtjWB5MGNpl3iXr5WIafKBe+5jZubSZLi4GVeQQ907p+hBCEXoVjXzvngqqx7DYJD+kd4xAL8OKuFPGA6XVLIdWJ7LP0fyw8N1UvgDryr9qhT9/0NYaNdTjyknrZ8YOqV0CAqrqAVf0RGyQ4ZzAlBOG7p/zPH9NVkZz3l2MXgmf6jR/GRhJZDh97YCGuJTVPGESY5JW0ZNZpTWrod1QCo3r+iTF48YmWgjYkrLfB2bqxt20aqiPYY5QO/KjOm4CqERTlFlx2Coon7s1fMmdrNiavW6CpdevVU+2LfjTNRhKJR6/vMAGUQ0sXasw9PwtNSd7GzvyFIK5PKzSJxOIP5x7UksU6P6+mLmhDc+mddV1S65DyIzulp1UDu5oyI4dNTQK3vA+omeI6CaUAbge6DqEr7oXfXKCbuCXKThl/EoVYN8V1LAOmMkmlXpVl/vykzpwIHDRpd903fVcV2qgxMobfIklzJL6McS9tRe3rzYSZpEik22k0AhzpTirY30ZaK1x7GJA2rwWJLLaxW1QTPeQKzZ0oGwysaZzlTKId5sju0lM6A=
+  file:
+    - scala/target/rust-keylock-ui.tar.gz
+    - scala/target/rust-keylock-ui.zip
+    - scala/target/sha512.txt
+    - scala/target/sha1.txt
+
+  skip_cleanup: true
+
+  on:
+    repo: rust-keylock/rust-keylock-ui
+    tags: true
