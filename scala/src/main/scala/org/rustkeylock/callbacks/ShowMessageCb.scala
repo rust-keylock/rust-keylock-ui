@@ -14,6 +14,7 @@ import org.rustkeylock.japi.ScalaUserOptionsSet
 import scala.collection.JavaConverters.asScalaIterator
 import org.rustkeylock.japi.ScalaUserOption
 import scalafx.scene.control.ButtonType
+import scalafx.scene.layout.Region
 
 class ShowMessageCb(stage: Stage) extends ShowMessageCallback {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -54,12 +55,14 @@ class ShowMessageCb(stage: Stage) extends ShowMessageCallback {
     }
 
     override def run(): Unit = {
-      val selectedButton = new Alert(alertType) {
+      val alert = new Alert(alertType) {
         initOwner(stage)
         title = "rust-keylock"
         contentText = message
         buttonTypes = buttonTypesByOption
-      }.showAndWait()
+      }
+      alert.getDialogPane.setMinHeight(Region.USE_PREF_SIZE)
+      val selectedButton = alert.showAndWait()
 
       selectedButton match {
         case Some(sb) => {
