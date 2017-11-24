@@ -1,11 +1,14 @@
 package org.rustkeylock.api
 
+import org.rustkeylock.callbacks.ShowMessageCb
+import org.rustkeylock.japi.ScalaEntriesSet
+import org.rustkeylock.japi.ScalaEntry
+import org.rustkeylock.japi.ScalaUserOptionsSet
+
+import com.sun.jna.Callback
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.NativeLibrary
-import com.sun.jna.Callback
-import org.rustkeylock.japi.ScalaEntry
-import org.rustkeylock.japi.ScalaEntriesSet
 
 object InterfaceWithRust {
   val JNA_LIBRARY_NAME = "rustkeylockui";
@@ -41,12 +44,19 @@ trait EntriesSetCallback extends Callback {
   def apply(entriesSet: ScalaEntriesSet.ByReference, filter: String): Unit
 }
 
+/**
+ * Callback for showing messages
+ */
+trait ShowMessageCallback extends Callback {
+  def apply(options: ScalaUserOptionsSet.ByReference, message: String, severity: String): Unit
+}
+
 trait InterfaceWithRust extends Library {
 
   def execute(showMenuCb: RustCallback,
     showEntryCb: EntryCallback,
     showEntriesSetCb: EntriesSetCallback,
-    showMessageCb: RustCallback,
+    showMessageCb: ShowMessageCb,
     logCb: LoggingCallback): Unit
 
   /**
@@ -74,7 +84,7 @@ trait InterfaceWithRust extends Library {
   /**
    * Passes a Menu name to Rust and two arguments; an int and a String. Rust instructs the
    * callback to go to this menu and use the passed arguments.
-   * An argNum of -1 means no argument and an argStr of zero length means no argument.
+   * An argNum or argStr that is a String null means that the argument is not used.
    *
    * @param menuName
    * @param argNum A String representing an Integer
@@ -113,4 +123,12 @@ trait InterfaceWithRust extends Library {
    * @param number
    */
   def export_import(path: String, export: Int, password: String, number: Int): Unit
+
+  /**
+   * Provides to Rust a UserOption that was selected
+   * @param label
+   * @param value
+   * @param short_label
+   */
+  def user_option_selected(label: String, value: String, short_label: String): Unit
 }

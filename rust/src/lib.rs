@@ -11,7 +11,7 @@ use std::mem;
 use std::str;
 use std::sync::Mutex;
 use std::sync::mpsc::{self, Sender, Receiver};
-use rust_keylock::{UserSelection, Menu, Entry};
+use rust_keylock::{UserSelection, Menu, Entry, UserOption};
 
 mod ui_editor;
 mod logger;
@@ -20,6 +20,7 @@ type LogCallback = extern "C" fn(*const c_char, *const c_char, *const c_char, i3
 type StringCallback = extern "C" fn(*const c_char);
 type ShowEntryCallback = extern "C" fn(Box<ScalaEntry>, i32, bool, bool);
 type ShowEntriesSetCallback = extern "C" fn(Box<ScalaEntriesSet>, *const c_char);
+type ShowMessageCallback = extern "C" fn(Box<ScalaUserOptionsSet>, *const c_char, *const c_char);
 
 lazy_static! {
     static ref TX: Mutex<Option<Sender<UserSelection>>> = Mutex::new(None);
@@ -63,12 +64,39 @@ impl ScalaEntry {
 }
 
 #[repr(C)]
+pub struct ScalaUserOption {
+    label: *const c_char,
+    value: *const c_char,
+    short_label: *const c_char,
+}
+
+impl ScalaUserOption {
+    fn new(user_option: &UserOption) -> ScalaUserOption {
+        ScalaUserOption {
+            label: to_java_string(user_option.label.clone()),
+            value: to_java_string(user_option.value.to_string()),
+            short_label: to_java_string(user_option.short_label.clone()),
+        }
+    }
+}
+
+impl ScalaUserOption {
+    fn with_nulls() -> ScalaUserOption {
+        ScalaUserOption {
+            label: to_java_string("null".to_string()),
+            value: to_java_string("null".to_string()),
+            short_label: to_java_string("null".to_string()),
+        }
+    }
+}
+
+#[repr(C)]
 pub struct ScalaEntriesSet {
     entries: Box<[ScalaEntry]>,
     number_of_entries: i32,
 }
 
-impl ScalaEntriesSet {
+impl<'a> From<&'a [Entry]> for ScalaEntriesSet {
     fn from(entries: &[Entry]) -> ScalaEntriesSet {
         // Create JavaEntries from Entries
         let scala_entries: Vec<ScalaEntry> = entries.iter()
@@ -84,7 +112,9 @@ impl ScalaEntriesSet {
         };
         scala_entries_set
     }
+}
 
+impl ScalaEntriesSet {
     fn with_nulls() -> ScalaEntriesSet {
         let empty_entry = ScalaEntry::with_nulls();
         let dummy = vec![empty_entry];
@@ -96,11 +126,47 @@ impl ScalaEntriesSet {
     }
 }
 
+#[repr(C)]
+pub struct ScalaUserOptionsSet {
+    options: Box<[ScalaUserOption]>,
+    number_of_options: i32,
+}
+
+impl<'a> From<&'a [UserOption]> for ScalaUserOptionsSet {
+    fn from(user_options: &[UserOption]) -> ScalaUserOptionsSet {
+        // Create JavaEntries from Entries
+        let scala_entries: Vec<ScalaUserOption> = user_options.iter()
+            .clone()
+            .map(|user_option| ScalaUserOption::new(user_option))
+            .collect();
+        // Get the length of the entries
+        let num_entries = scala_entries.len();
+
+        let scala_options_set = ScalaUserOptionsSet {
+            options: scala_entries.into_boxed_slice(),
+            number_of_options: num_entries as i32,
+        };
+        scala_options_set
+    }
+}
+
+impl ScalaUserOptionsSet {
+    fn with_nulls() -> ScalaUserOptionsSet {
+        let empty_entry = ScalaUserOption::with_nulls();
+        let dummy = vec![empty_entry];
+        let scala_entries_set = ScalaUserOptionsSet {
+            options: dummy.into_boxed_slice(),
+            number_of_options: 1,
+        };
+        scala_entries_set
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn execute(show_menu_cb: StringCallback,
                           show_entry_cb: ShowEntryCallback,
                           show_entries_set_cb: ShowEntriesSetCallback,
-                          show_message_cb: StringCallback,
+                          show_message_cb: ShowMessageCallback,
                           log_cb: LogCallback) {
     let (tx, rx): (Sender<UserSelection>, Receiver<UserSelection>) = mpsc::channel();
     // Release the lock before calling the execute.
@@ -154,21 +220,21 @@ pub extern "C" fn go_to_menu_plus_arg(menu_name: *const c_char, arg_num: *const 
     };
     let rust_string_menu_name = to_rust_string(menu_name);
     debug!("go_to_menu_plus_arg '{}'", rust_string_menu_name);
-	let rust_string_arg_num = to_rust_string(arg_num);
-	let rust_string_arg_str = to_rust_string(arg_str);
-	debug!("Arguments: num = '{}' and str = '{}'", rust_string_arg_num, rust_string_arg_str);
+    let rust_string_arg_num = to_rust_string(arg_num);
+    let rust_string_arg_str = to_rust_string(arg_str);
+    debug!("Arguments: num = '{}' and str = '{}'", rust_string_arg_num, rust_string_arg_str);
 
     let num_opt = if rust_string_arg_num == "null" {
-    	None
+        None
     } else {
-    	let num = rust_string_arg_num.parse::<usize>().unwrap();
-    	Some(num)
+        let num = rust_string_arg_num.parse::<usize>().unwrap();
+        Some(num)
     };
 
     let str_opt = if rust_string_arg_str == "null" {
-    	None
+        None
     } else {
-    	Some(rust_string_arg_str)
+        Some(rust_string_arg_str)
     };
 
     let menu = Menu::from(rust_string_menu_name, num_opt, str_opt);
@@ -237,6 +303,18 @@ pub extern "C" fn export_import(path: *const c_char, export: u32, password: *con
     };
     tx.send(user_selection).unwrap();
     debug!("export_import sent UserSelection to the TX");
+}
+
+#[no_mangle]
+pub extern "C" fn user_option_selected(label: *const c_char, value: *const c_char, short_label: *const c_char) {
+    debug!("user_option_selected");
+    let tx = {
+        TX.lock().unwrap().as_ref().unwrap().clone()
+    };
+
+    tx.send(UserSelection::UserOption(UserOption::from((to_rust_string(label), to_rust_string(value), to_rust_string(short_label)))))
+        .unwrap();
+    debug!("user_option_selected sent UserSelection to the TX");
 }
 
 #[no_mangle]
