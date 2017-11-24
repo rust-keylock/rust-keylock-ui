@@ -125,7 +125,6 @@ impl Editor for AndroidImpl {
                                super::to_java_string(message.to_string()),
                                super::to_java_string(severity.to_string()));
         let user_selection = self.rx.recv().unwrap();
-        debug!("--------------Received {:?}", user_selection);
         user_selection
     }
 }
