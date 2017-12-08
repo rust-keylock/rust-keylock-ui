@@ -12,12 +12,14 @@ class LogCb extends LoggingCallback {
 	private val ERROR = "ERROR"
 
   override def apply(level: String, path: String, file: String, line: Int, message: String): Unit = {
-    val prefix = s"rkl NATIVE: $path (line: $line) "
-    level match {
-      case INFO => logger.info(prefix + message)
-      case WARN => logger.warn(prefix + message)
-      case ERROR => logger.error(prefix + message)
-      case _ => logger.debug(prefix + message)
+    if (!path.startsWith("hyper") && !path.startsWith("tokio")) {
+      val prefix = s"rkl NATIVE: $path (line: $line) "
+      level match {
+        case INFO => logger.info(prefix + message)
+        case WARN => logger.warn(prefix + message)
+        case ERROR => logger.error(prefix + message)
+        case _ => logger.debug(prefix + message)
+      }
     }
   }
 }

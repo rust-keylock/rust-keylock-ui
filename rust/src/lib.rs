@@ -11,13 +11,15 @@ use std::mem;
 use std::str;
 use std::sync::Mutex;
 use std::sync::mpsc::{self, Sender, Receiver};
-use rust_keylock::{UserSelection, Menu, Entry, UserOption};
+use rust_keylock::{UserSelection, Menu, Entry, UserOption, RklConfiguration};
+use rust_keylock::nextcloud::NextcloudConfiguration;
 
 mod ui_editor;
 mod logger;
 
 type LogCallback = extern "C" fn(*const c_char, *const c_char, *const c_char, i32, *const c_char);
 type StringCallback = extern "C" fn(*const c_char);
+type StringListCallback = extern "C" fn(Box<StringList>);
 type ShowEntryCallback = extern "C" fn(Box<ScalaEntry>, i32, bool, bool);
 type ShowEntriesSetCallback = extern "C" fn(Box<ScalaEntriesSet>, *const c_char);
 type ShowMessageCallback = extern "C" fn(Box<ScalaUserOptionsSet>, *const c_char, *const c_char);
@@ -162,11 +164,35 @@ impl ScalaUserOptionsSet {
     }
 }
 
+#[repr(C)]
+pub struct StringList {
+    strings: Box<[*const c_char]>,
+    number_of_strings: i32,
+}
+
+impl From<Vec<String>> for StringList {
+    fn from(strings: Vec<String>) -> StringList {
+        // Get the length of the entries
+        let num_entries = strings.len();
+        // Create JavaEntries from Entries
+        let java_strings: Vec<_> = strings.into_iter()
+            .map(|string| to_java_string(string.clone()))
+            .collect();
+
+        let string_list = StringList {
+            strings: java_strings.into_boxed_slice(),
+            number_of_strings: num_entries as i32,
+        };
+        string_list
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn execute(show_menu_cb: StringCallback,
                           show_entry_cb: ShowEntryCallback,
                           show_entries_set_cb: ShowEntriesSetCallback,
                           show_message_cb: ShowMessageCallback,
+                          edit_configuration_cb: StringListCallback,
                           log_cb: LogCallback) {
     let (tx, rx): (Sender<UserSelection>, Receiver<UserSelection>) = mpsc::channel();
     // Release the lock before calling the execute.
@@ -175,7 +201,7 @@ pub extern "C" fn execute(show_menu_cb: StringCallback,
         let mut tx_opt = TX.lock().unwrap();
         *tx_opt = Some(tx);
     }
-    let editor = ui_editor::new(show_menu_cb, show_entry_cb, show_entries_set_cb, show_message_cb, log_cb, rx);
+    let editor = ui_editor::new(show_menu_cb, show_entry_cb, show_entries_set_cb, show_message_cb, edit_configuration_cb, log_cb, rx);
     debug!("TX Mutex initialized. Executing native rust_keylock!");
     rust_keylock::execute(&editor)
 }
@@ -315,6 +341,27 @@ pub extern "C" fn user_option_selected(label: *const c_char, value: *const c_cha
     tx.send(UserSelection::UserOption(UserOption::from((to_rust_string(label), to_rust_string(value), to_rust_string(short_label)))))
         .unwrap();
     debug!("user_option_selected sent UserSelection to the TX");
+}
+
+#[no_mangle]
+pub extern "C" fn set_configuration(string_list: &StringList) {
+    debug!("set_configuration with {} elements", string_list.strings.len());
+    let tx = {
+        TX.lock().unwrap().as_ref().unwrap().clone()
+    };
+
+    let ncc = if string_list.strings.len() == 4 {
+        NextcloudConfiguration::new(to_rust_string(string_list.strings[0]),
+                                    to_rust_string(string_list.strings[1]),
+                                    to_rust_string(string_list.strings[2]),
+                                    to_rust_string(string_list.strings[3]))
+    } else {
+        NextcloudConfiguration::new("Wrong Java Data".to_string().to_string(), "Wrong Java Data".to_string(), "Wrong Java Data".to_string(), "Wrong Java Data".to_string())
+    };
+
+    let conf = UserSelection::UpdateConfiguration(RklConfiguration::from(ncc.unwrap()));
+    tx.send(conf).unwrap();
+    debug!("set_configuration sent UserSelection to the TX");
 }
 
 #[no_mangle]

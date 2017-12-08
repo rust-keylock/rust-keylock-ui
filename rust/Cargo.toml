@@ -1,6 +1,6 @@
 [package]
 name = "rust-keylock-ui-rust"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["aston <astonbitecode@gmail.com>"]
 
 [lib]
@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [dependencies]
-rust_keylock = { git = "https://github.com/rust-keylock/rust-keylock-lib", rev = "HEAD" }
+rust_keylock = { path = "../../rust-keylock-lib" }
 libc = "0.2"
 lazy_static = "0.2"
 log = "0.3"
