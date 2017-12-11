@@ -92,7 +92,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
         fitWidth = 40
       }
     }
-    GridPane.setHalignment(okButton, HPos.Right)
+    GridPane.setHalignment(okButton, HPos.Left)
     val cancelButton = new RklButton {
       tooltip = "Cancel"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_MAIN))
@@ -102,7 +102,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
         fitWidth = 33
       }
     }
-    GridPane.setHalignment(cancelButton, HPos.Left)
+    GridPane.setHalignment(cancelButton, HPos.Right)
 
     hgap = 33
     vgap = 7
@@ -110,7 +110,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(subtitleNextcloud, 0, 2, 2, 1)
+    add(subtitleNextcloud, 0, 2)
 
     add(new RklLabel("Server URL"), 0, 3, 2, 1)
     add(urlTextField, 0, 4, 2, 1)
@@ -128,8 +128,8 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     add(derCertLocationTextField, 0, 13, 2, 1)
     add(derCertLocationMessage, 0, 14)
 
-    add(okButton, 0, 18)
-    add(cancelButton, 1, 18)
+    add(okButton, 0, 18, 1, 1)
+    add(cancelButton, 1, 18, 1, 1)
 
     private def handleOk(): Unit = {
       urlMessage.clear()
