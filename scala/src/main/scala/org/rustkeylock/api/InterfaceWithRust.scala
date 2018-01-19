@@ -9,6 +9,7 @@ import com.sun.jna.Callback
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.NativeLibrary
+import org.rustkeylock.japi.StringList
 
 object InterfaceWithRust {
   val JNA_LIBRARY_NAME = "rustkeylockui";
@@ -28,6 +29,13 @@ trait LoggingCallback extends Callback {
  */
 trait RustCallback extends Callback {
   def apply(aString: String): Unit
+}
+
+/**
+ * Callback with a List of Strings
+ */
+trait StringListCallback extends Callback {
+  def apply(stringList: StringList.ByReference): Unit
 }
 
 /**
@@ -57,6 +65,7 @@ trait InterfaceWithRust extends Library {
     showEntryCb: EntryCallback,
     showEntriesSetCb: EntriesSetCallback,
     showMessageCb: ShowMessageCb,
+    editConfigurationCb: StringListCallback,
     logCb: LoggingCallback): Unit
 
   /**
@@ -131,4 +140,14 @@ trait InterfaceWithRust extends Library {
    * @param short_label
    */
   def user_option_selected(label: String, value: String, short_label: String): Unit
+
+  /**
+   * Sets the configuration values
+   * @param stringList A list that contains elements in the order:
+   * - Nextcloud server URL
+   * - Nextcloud user
+   * - Nextcloud password
+   * - Nextcloud DER certificate file location
+   */
+  def set_configuration(stringList: StringList)
 }

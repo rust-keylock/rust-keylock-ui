@@ -8,8 +8,8 @@ import com.typesafe.scalalogging.Logger
 class LogCb extends LoggingCallback {
   private val logger = Logger(LoggerFactory.getLogger(this.getClass))
   private val INFO = "INFO"
-	private val WARN = "WARN"
-	private val ERROR = "ERROR"
+  private val WARN = "WARN"
+  private val ERROR = "ERROR"
 
   override def apply(level: String, path: String, file: String, line: Int, message: String): Unit = {
     val prefix = s"rkl NATIVE: $path (line: $line) "

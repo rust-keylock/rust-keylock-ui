@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
 import scalafx.stage.Stage
 import scalafx.application.Platform
+import org.rustkeylock.callbacks.EditConfigurationCb
 
 object NativeInitializer {
   def init(stage: Stage): Unit = {
@@ -33,6 +34,7 @@ class NativeInitializer(stage: Stage) extends Runnable {
         new ShowEntryCb(stage),
         new ShowEntriesSetCb(stage),
         new ShowMessageCb(stage),
+        new EditConfigurationCb(stage),
         new LogCb())
     } match {
       case Failure(error) => {

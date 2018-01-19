@@ -73,6 +73,15 @@ class NavigationContent extends VBox {
       }
     },
     new RklButton {
+      tooltip = "Edit Configuration..."
+      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_SHOW_CONFIGURATION))
+      graphic = new ImageView {
+        image = new Image("images/settings.png")
+        fitHeight = Navigation.imgHeight
+        fitWidth = Navigation.imgWidth
+      }
+    },
+    new RklButton {
       tooltip = "Exit"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_EXIT))
       graphic = new ImageView {
