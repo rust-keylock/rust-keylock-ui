@@ -351,12 +351,19 @@ pub extern "C" fn set_configuration(string_list: &StringList) {
     };
 
     let ncc = if string_list.strings.len() == 4 {
+        let b = match to_rust_string(string_list.strings[3]).as_ref() {
+            "true" => true,
+            _ => false,
+        };
         NextcloudConfiguration::new(to_rust_string(string_list.strings[0]),
                                     to_rust_string(string_list.strings[1]),
                                     to_rust_string(string_list.strings[2]),
-                                    to_rust_string(string_list.strings[3]))
+                                    b)
     } else {
-        NextcloudConfiguration::new("Wrong Java Data".to_string().to_string(), "Wrong Java Data".to_string(), "Wrong Java Data".to_string(), "Wrong Java Data".to_string())
+        NextcloudConfiguration::new("Wrong Java Data".to_string().to_string(),
+                                    "Wrong Java Data".to_string(),
+                                    "Wrong Java Data".to_string(),
+                                    false)
     };
 
     let conf = UserSelection::UpdateConfiguration(ncc.unwrap());

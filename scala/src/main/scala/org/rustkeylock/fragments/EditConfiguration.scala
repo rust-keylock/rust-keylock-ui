@@ -25,6 +25,7 @@ import scalafx.scene.layout.BorderPane
 import scalafx.scene.layout.GridPane
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
+import scalafx.scene.control.CheckBox
 
 class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -76,10 +77,9 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     }
     val passwordMessage = new RklLabel
 
-    val derCertLocationTextField = new TextField() {
+    val selfSignedCertCheckBox = new CheckBox("Use a self-signed certificate") {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
-      promptText = "Self-signed certificate DER location"
-      text = strings(3)
+      selected = strings(3).toBoolean
     }
     val derCertLocationMessage = new RklLabel
 
@@ -124,8 +124,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     add(passwordTextField, 0, 10, 2, 1)
     add(passwordMessage, 0, 11)
 
-    add(new RklLabel("Self-signed certificate DER location"), 0, 12, 2, 1)
-    add(derCertLocationTextField, 0, 13, 2, 1)
+    add(selfSignedCertCheckBox, 0, 12, 2, 2)
     add(derCertLocationMessage, 0, 14)
 
     add(okButton, 0, 18, 1, 1)
@@ -134,7 +133,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     private def handleOk(): Unit = {
       urlMessage.clear()
 
-      val strArr = Array(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, derCertLocationTextField.getText)
+      val strArr = Array(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected().toString())
 
       logger.debug(s"Applying Configuration with Strings: ${strArr.mkString(",")}")
 

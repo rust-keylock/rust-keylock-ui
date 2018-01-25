@@ -94,7 +94,7 @@ impl Editor for AndroidImpl {
                 let conf_strings = vec![configuration.nextcloud.server_url.clone(),
                                         configuration.nextcloud.username.clone(),
                                         configuration.nextcloud.decrypted_password().unwrap(),
-                                        configuration.nextcloud.self_signed_der_certificate_location.clone()];
+                                        configuration.nextcloud.use_self_signed_certificate.to_string()];
                 (self.edit_configuration_cb)(Box::new(StringList::from(conf_strings)))
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
