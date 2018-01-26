@@ -1,3 +1,4 @@
 /.project
 *.md.html
 build-scripts/local*
+/tools/
