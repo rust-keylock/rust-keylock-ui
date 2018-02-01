@@ -26,6 +26,7 @@ import scalafx.scene.layout.GridPane
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 import scalafx.scene.control.CheckBox
+import scalafx.scene.control.PasswordField
 
 class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -70,7 +71,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     }
     val usernameMessage = new RklLabel
 
-    val passwordTextField = new TextField() {
+    val passwordTextField = new PasswordField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Password"
       text = strings(2)
@@ -93,6 +94,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
       }
     }
     GridPane.setHalignment(okButton, HPos.Left)
+
     val cancelButton = new RklButton {
       tooltip = "Cancel"
       onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_MAIN))
@@ -104,6 +106,17 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     }
     GridPane.setHalignment(cancelButton, HPos.Right)
 
+    val syncButton = new RklButton {
+      tooltip = "Synchronize now"
+      onAction = handle(handleSynchronize)
+      graphic = new ImageView {
+        image = new Image("images/synchronize.png")
+        fitHeight = 22
+        fitWidth = 22
+      }
+    }
+    GridPane.setHalignment(okButton, HPos.Left)
+
     hgap = 33
     vgap = 7
     padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
@@ -111,6 +124,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
 
     add(title, 0, 0, 2, 1)
     add(subtitleNextcloud, 0, 2)
+    add(syncButton, 1, 2)
 
     add(new RklLabel("Server URL"), 0, 3, 2, 1)
     add(urlTextField, 0, 4, 2, 1)
@@ -138,18 +152,6 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
       logger.debug(s"Applying Configuration with Strings: ${strArr.mkString(",")}")
 
       var errorsExist = false
-      if (strArr(0).isEmpty()) {
-        urlMessage.setError("Required Field")
-        errorsExist = true
-      }
-      if (strArr(1).isEmpty()) {
-        usernameMessage.setError("Required Field")
-        errorsExist = true
-      }
-      if (strArr(2).isEmpty()) {
-        passwordMessage.setError("Required Field")
-        errorsExist = true
-      }
 
       if (!errorsExist) {
         val strings = new StringList.ByReference()
@@ -157,6 +159,10 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
         strings.numberOfstrings = strArr.size
         InterfaceWithRust.INSTANCE.set_configuration(strings);
       }
+    }
+
+    private def handleSynchronize(): Unit = {
+      InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_SYNCHRONIZE)
     }
   }
 }
