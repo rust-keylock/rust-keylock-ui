@@ -27,6 +27,8 @@ import scalafx.scene.text.Text
 import scalafx.stage.Stage
 import scalafx.scene.control.CheckBox
 import scalafx.scene.control.PasswordField
+import org.rustkeylock.fragments.common.PleaseWait
+import scalafx.application.Platform
 
 class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
@@ -163,6 +165,13 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
 
     private def handleSynchronize(): Unit = {
       InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_SYNCHRONIZE)
+      Platform.runLater(new PleaseWaitRunnable)
+    }
+
+    class PleaseWaitRunnable() extends Runnable {
+      override def run(): Unit = {
+        stage.setScene(new PleaseWait)
+      }
     }
   }
 }
