@@ -6,6 +6,14 @@ ___rust-keylock-ui___ is the [Editor](https://rust-keylock.github.io/rust-keyloc
 
 Instructions can be found [here](https://rust-keylock.github.io/download/rkl/).
 
+## FAQ
+
+On the Project [website](https://rust-keylock.github.io/faq/rkl/).
+
+## Wiki
+
+On the Project [website](https://rust-keylock.github.io/wiki/).
+
 ## Screenshots
 
 ![rkl1](gh-images/rkl1.png)
