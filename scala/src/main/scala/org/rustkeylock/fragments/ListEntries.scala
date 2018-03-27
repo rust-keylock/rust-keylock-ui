@@ -1,39 +1,33 @@
 package org.rustkeylock.fragments
 
-import org.rustkeylock.api.InterfaceWithRust
+import javafx.event.EventHandler
+import javafx.scene.input.KeyEvent
+
+import com.typesafe.scalalogging.Logger
+import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
+import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 
-import com.typesafe.scalalogging.Logger
-
 import scalafx.Includes.handle
 import scalafx.collections.ObservableBuffer
+import scalafx.geometry.{HPos, Insets}
 import scalafx.scene.Scene
-import scalafx.scene.control.ListView
-import scalafx.scene.control.ScrollPane
+import scalafx.scene.control.{ListView, ScrollPane}
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.layout.BorderPane
-import scalafx.scene.layout.GridPane
-import scalafx.geometry.HPos
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
-import scalafx.geometry.Insets
-import org.rustkeylock.components.RklButton
-import scalafx.scene.image.ImageView
-import scalafx.scene.image.Image
-import org.rustkeylock.components.RklLabel
 import scalafx.stage.Stage
-import javafx.event.EventHandler
-import javafx.scene.input.KeyEvent
-import javafx.application.Platform
 
-class ListEntries(entries: Seq[String], filter: String, stage: Stage) extends Scene {
+class ListEntries(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -46,11 +40,11 @@ class ListEntries(entries: Seq[String], filter: String, stage: Stage) extends Sc
         if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
           val newFilter = filter + event.getText
           logger.debug(s"Filter changed to '$newFilter'")
-          InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter)
+          callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter))
         } else if (event.getCode.toString() == "BACK_SPACE") {
           val newFilter = filter.dropRight(1)
           logger.debug(s"Filter changed to '$newFilter'")
-          InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter)
+          callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter))
         } else {
           logger.debug(s"Ignoring pressed key of code ${event.getCode}")
         }
@@ -78,7 +72,7 @@ class ListEntries(entries: Seq[String], filter: String, stage: Stage) extends Sc
       tooltip = "Add New"
       onAction = handle {
         logger.debug("The User Adds a new entry")
-        InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_NEW_ENTRY)
+        callback(GuiResponse.GoToMenu(Defs.MENU_NEW_ENTRY))
       }
       graphic = new ImageView {
         image = new Image("images/newimage.png")
@@ -111,8 +105,9 @@ class ListEntries(entries: Seq[String], filter: String, stage: Stage) extends Sc
       val pos = selectionModel().getSelectedIndex
       if (pos >= 0 && pos < entries.size) {
         logger.debug(s"Clicked entry with index $pos in the list of entries")
-        InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_SHOW_ENTRY, pos.toString(), Defs.EMPTY_ARG)
+        callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_SHOW_ENTRY, pos.toString(), Defs.EMPTY_ARG))
       }
     }
   }
+
 }

@@ -1,42 +1,35 @@
 package org.rustkeylock.fragments
 
-import org.rustkeylock.api.InterfaceWithRust
-import org.rustkeylock.components.RklButton
-import org.rustkeylock.components.RklLabel
+import javafx.scene.image.Image
+
+import com.typesafe.scalalogging.Logger
+import org.rustkeylock.components.{RklButton, RklLabel}
+import org.rustkeylock.fragments.common.PleaseWait
 import org.rustkeylock.fragments.sides.Navigation
-import org.rustkeylock.japi.StringList
+import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 
-import com.sun.jna.StringArray
-import com.typesafe.scalalogging.Logger
-
-import javafx.scene.image.Image
-import scalafx.Includes.handle
-import scalafx.Includes.jfxImage2sfx
-import scalafx.geometry.HPos
-import scalafx.geometry.Insets
+import scala.collection.JavaConverters._
+import scala.collection.mutable.ListBuffer
+import scalafx.Includes.{handle, jfxImage2sfx}
+import scalafx.application.Platform
+import scalafx.geometry.{HPos, Insets}
 import scalafx.scene.Scene
-import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.TextField
+import scalafx.scene.control.{CheckBox, PasswordField, ScrollPane, TextField}
 import scalafx.scene.image.ImageView
-import scalafx.scene.layout.BorderPane
-import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
-import scalafx.scene.control.CheckBox
-import scalafx.scene.control.PasswordField
-import org.rustkeylock.fragments.common.PleaseWait
-import scalafx.application.Platform
 
-class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
+class EditConfiguration(strings: List[String], stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -99,7 +92,7 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
 
     val cancelButton = new RklButton {
       tooltip = "Cancel"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_MAIN))
+      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_MAIN)))
       graphic = new ImageView {
         image = new Image("images/close.png")
         fitHeight = 33
@@ -149,29 +142,24 @@ class EditConfiguration(strings: List[String], stage: Stage) extends Scene {
     private def handleOk(): Unit = {
       urlMessage.clear()
 
-      val strArr = Array(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected().toString())
+      val strings = ListBuffer(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected().toString())
 
-      logger.debug(s"Applying Configuration with Strings: ${strArr.mkString(",")}")
+      logger.debug(s"Applying Configuration with Strings: ${strings.mkString(",")}")
 
-      var errorsExist = false
-
-      if (!errorsExist) {
-        val strings = new StringList.ByReference()
-        strings.strings = new StringArray(strArr)
-        strings.numberOfstrings = strArr.size
-        InterfaceWithRust.INSTANCE.set_configuration(strings);
-      }
+      callback(GuiResponse.SetConfiguration(bufferAsJavaList(strings)))
     }
 
     private def handleSynchronize(): Unit = {
-      InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_SYNCHRONIZE)
+      callback(GuiResponse.GoToMenu(Defs.MENU_SYNCHRONIZE))
       Platform.runLater(new PleaseWaitRunnable)
     }
 
     class PleaseWaitRunnable() extends Runnable {
       override def run(): Unit = {
-        stage.setScene(new PleaseWait)
+        stage.setScene(new PleaseWait(callback))
       }
     }
+
   }
+
 }

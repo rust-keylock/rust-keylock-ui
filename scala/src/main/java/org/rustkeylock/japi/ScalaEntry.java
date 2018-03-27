@@ -1,41 +1,40 @@
 package org.rustkeylock.japi;
 
-import static java.util.Arrays.asList;
+public class ScalaEntry {
+    public String name;
+    public String user;
+    public String pass;
+    public String desc;
 
-import java.util.List;
+    public String getName() {
+        return name;
+    }
 
-import com.sun.jna.Structure;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-public class ScalaEntry extends Structure {
-	public static class ByReference extends ScalaEntry implements Structure.ByReference {
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public static class ByValue extends ScalaEntry implements Structure.ByValue {
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	public String name;
-	public String user;
-	public String pass;
-	public String desc;
+    public String getPass() {
+        return pass;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
 
-	public String getUser() {
-		return user;
-	}
+    public String getDesc() {
+        return desc;
+    }
 
-	public String getPass() {
-		return pass;
-	}
-
-	public String getDesc() {
-		return desc;
-	}
-
-	@Override
-	protected List<String> getFieldOrder() {
-		return asList("name", "user", "pass", "desc");
-	}
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 }

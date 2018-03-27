@@ -3,13 +3,18 @@ name = "rust-keylock-ui-rust"
 version = "0.4.0"
 authors = ["aston <astonbitecode@gmail.com>"]
 
-[lib]
-name = "rustkeylockui"
-crate-type = ["cdylib"]
-path = "src/lib.rs"
+[[bin]]
+name = "rust-keylock-ui"
+path = "src/main.rs"
 
 [dependencies]
 rust_keylock = "0.4"
-libc = "0.2"
 lazy_static = "0.2"
 log = "0.3"
+j4rs = "0.1"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+
+[build-dependencies]
+fs_extra = "1.1.0"

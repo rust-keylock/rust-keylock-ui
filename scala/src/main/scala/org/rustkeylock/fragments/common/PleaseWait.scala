@@ -12,12 +12,12 @@ import org.rustkeylock.fragments.sides.Navigation
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 
-class PleaseWait() extends Scene {
+class PleaseWait(callback: Object => Unit) extends Scene {
   
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true

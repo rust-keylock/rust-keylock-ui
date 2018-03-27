@@ -1,37 +1,29 @@
 package org.rustkeylock.callbacks
 
-import org.rustkeylock.api.RustCallback
-import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
+import org.rustkeylock.japi.ScalaUserOption
+import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.utils.Defs
+import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConverters.asScalaIterator
 import scalafx.application.Platform
 import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.Alert
-import org.rustkeylock.utils.Defs
-import org.rustkeylock.api.InterfaceWithRust
-import scalafx.stage.Stage
-import org.rustkeylock.api.ShowMessageCallback
-import org.rustkeylock.japi.ScalaUserOptionsSet
-import scala.collection.JavaConverters.asScalaIterator
-import org.rustkeylock.japi.ScalaUserOption
-import scalafx.scene.control.ButtonType
+import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.scene.layout.Region
+import scalafx.stage.Stage
 
-class ShowMessageCb(stage: Stage) extends ShowMessageCallback {
+class ShowMessageCb(stage: Stage) extends NativeCallbackSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
-  def apply(options: ScalaUserOptionsSet.ByReference, message: String, severity: String): Unit = {
-    val opts = if (options.numberOfOptions == 1 && options.getOptions().get(0).label.equals(Defs.EMPTY_ARG)
-      && options.getOptions().get(0).shortLabel.equals(Defs.EMPTY_ARG)
-      && options.getOptions().get(0).value.equals(Defs.EMPTY_ARG)) {
-      Nil
-    } else {
-      asScalaIterator(options.getOptions().iterator()).toList
-    }
+  def apply(options: java.util.List[ScalaUserOption], message: String, severity: String): Unit = {
+    val opts = asScalaIterator(options.iterator()).toList
+
     logger.debug(s"Callback for showing message $message of severity $severity and options ${
-      opts.map { opt =>
-        {
-          s"label: ${opt.label}, value: ${opt.value}, short label: ${opt.shortLabel}"
-        }
+      opts.map { opt => {
+        s"label: ${opt.label}, value: ${opt.value}, short label: ${opt.short_label}"
+      }
       }.mkString(";")
     }")
     Platform.runLater(new UiThreadRunnable(message, severity, opts))
@@ -48,10 +40,9 @@ class ShowMessageCb(stage: Stage) extends ShowMessageCallback {
       }
     }
 
-    val buttonTypesByOption = options.map { option =>
-      {
-        new ButtonType(option.label)
-      }
+    val buttonTypesByOption = options.map { option => {
+      new ButtonType(option.label)
+    }
     }
 
     override def run(): Unit = {
@@ -68,15 +59,18 @@ class ShowMessageCb(stage: Stage) extends ShowMessageCallback {
         case Some(sb) => {
           val selectedUserOption = options.find(_.label == sb.getText)
           selectedUserOption match {
-            case Some(uo) => InterfaceWithRust.INSTANCE.user_option_selected(uo.label, uo.value, uo.shortLabel)
+            case Some(uo) => {
+              doCallback(GuiResponse.UserOptionSelected(uo))
+            }
             case None => {
               logger.error(s"Button ${sb.getText} does not exist in the User Options offered! How did it got here?? Please consider opening a bug to the developers.")
-              InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_MAIN, Defs.EMPTY_ARG, "")
+              doCallback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_MAIN, Defs.EMPTY_ARG, ""))
             }
           }
         }
-        case None => InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_MAIN, Defs.EMPTY_ARG, "")
+        case None => doCallback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_MAIN, Defs.EMPTY_ARG, ""))
       }
     }
   }
+
 }

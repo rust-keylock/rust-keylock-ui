@@ -5,31 +5,37 @@ import scalafx.scene.Scene
 import scalafx.scene.layout.GridPane
 import scalafx.geometry.HPos
 import org.slf4j.LoggerFactory
+
 import scalafx.application.Platform
 import com.typesafe.scalalogging.Logger
+
 import scalafx.scene.control.PasswordField
 import org.rustkeylock.components.RklLabel
+
 import scalafx.scene.text.Text
 import org.rustkeylock.components.RklButton
+
 import scalafx.scene.image.ImageView
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
-import org.rustkeylock.api.InterfaceWithRust
 import scalafx.scene.layout.BorderPane
 import org.rustkeylock.fragments.sides.Navigation
+import org.rustkeylock.japi.stubs.GuiResponse
+
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import org.rustkeylock.utils.SharedState
+
 import scalafx.stage.Stage
 
-class ChangePassword(stage: Stage) extends Scene {
+class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     if (SharedState.isLoggedIn) {
       // Navigation pane
-      left = new Navigation
+      left = new Navigation(callback)
     }
     // Main pane
     center = new ScrollPane {
@@ -121,7 +127,7 @@ class ChangePassword(stage: Stage) extends Scene {
           number1.clear()
         } else {
           logger.info("Password and number changed")
-          InterfaceWithRust.INSTANCE.set_password(password1.getText().trim(), number1.getText().trim().toInt)
+          callback(GuiResponse.ChangePassword(password1.getText().trim(), number1.getText().trim().toInt))
           SharedState.setLoggedIn()
         }
       }

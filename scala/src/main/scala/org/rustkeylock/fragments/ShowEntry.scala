@@ -1,35 +1,37 @@
 package org.rustkeylock.fragments
 
-import scalafx.Includes._
+import javafx.scene.image.Image
+
+import com.typesafe.scalalogging.Logger
+import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.ScalaEntry
-import scalafx.geometry.HPos
-import scalafx.geometry.Insets
-import scalafx.scene.Scene
-import org.rustkeylock.components.RklLabel
-import scalafx.scene.control.ScrollPane
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.TextField
-import scalafx.scene.layout.BorderPane
-import scalafx.scene.layout.GridPane
-import scalafx.scene.text.Text
-import org.rustkeylock.components.RklButton
-import scalafx.scene.image.ImageView
-import javafx.scene.image.Image
-import org.slf4j.LoggerFactory
-import com.typesafe.scalalogging.Logger
-import org.rustkeylock.api.InterfaceWithRust
+import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
-import scalafx.scene.paint.Color
+import org.slf4j.LoggerFactory
+
+import scalafx.Includes._
+import scalafx.geometry.{HPos, Insets}
+import scalafx.scene.Scene
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.control.{ScrollPane, TextField}
+import scalafx.scene.image.ImageView
+import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean, delete: Boolean, stage: Stage) extends Scene {
+class ShowEntry(anEntry: ScalaEntry,
+                entryIndex: Int,
+                edit: Boolean,
+                delete: Boolean,
+                stage: Stage,
+                callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -85,7 +87,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     val editButton = new RklButton {
       tooltip = "Edit"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_EDIT_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG))
+      onAction = handle(callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_EDIT_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG)))
       graphic = new ImageView {
         image = new Image("images/edit.png")
         fitHeight = 33
@@ -96,7 +98,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     val deleteButton = new RklButton {
       tooltip = "Delete"
-      onAction = handle(InterfaceWithRust.INSTANCE.go_to_menu_plus_arg(Defs.MENU_DELETE_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG))
+      onAction = handle(callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_DELETE_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG)))
       graphic = new ImageView {
         image = new Image("images/delete.png")
         fitHeight = 33
@@ -118,7 +120,7 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
 
     val areYouSureButton = new RklButton {
       tooltip = "Yes I am sure, delete it!"
-      onAction = handle(InterfaceWithRust.INSTANCE.delete_entry(entryIndex))
+      onAction = handle(callback(GuiResponse.DeleteEntry(entryIndex)))
       graphic = new ImageView {
         image = new Image("images/caution.png")
         fitHeight = 33
@@ -192,11 +194,12 @@ class ShowEntry(anEntry: ScalaEntry.ByReference, entryIndex: Int, edit: Boolean,
       }
       if (!errorsExist) {
         if (entryIndex >= 0) {
-          InterfaceWithRust.INSTANCE.replace_entry(entry, entryIndex);
+          callback(GuiResponse.ReplaceEntry(entry, entryIndex))
         } else {
-          InterfaceWithRust.INSTANCE.add_entry(entry);
+          callback(GuiResponse.AddEntry(entry))
         }
       }
     }
   }
+
 }

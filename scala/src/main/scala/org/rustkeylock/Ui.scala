@@ -1,24 +1,19 @@
 package org.rustkeylock
 
+import com.typesafe.scalalogging.Logger
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
 import org.rustkeylock.fragments.Empty
-import org.rustkeylock.init.NativeInitializer
+import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 
-import com.typesafe.scalalogging.Logger
-
-import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
+import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.image.Image
-import scalafx.event.EventType
-import scalafx.event.EventHandler
-import scalafx.stage.WindowEvent
-import scalafx.event.ActionEvent
-import org.rustkeylock.utils.Defs
-import org.rustkeylock.api.InterfaceWithRust
-import scalafx.application.Platform
 
 object Ui extends JFXApp {
-  val Banner = """
+  val Banner =
+    """
                 _        _              _            _    
  _ __ _   _ ___| |_     | | _____ _   _| | ___   ___| | __
 | '__| | | / __| __|____| |/ / _ \ | | | |/ _ \ / __| |/ /
@@ -33,18 +28,20 @@ object Ui extends JFXApp {
   stage = new PrimaryStage {
     title = "rust-keylock"
     scene = new Empty()
-    onCloseRequest = {
-      new javafx.event.EventHandler[javafx.stage.WindowEvent] {
-        def handle(ev: javafx.stage.WindowEvent): Unit = {
-          InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_EXIT)
-          ev.consume()
-        }
-      }
-    }
   }
 
   stage.getIcons.add(new Image("images/rkl-small.png"))
   Platform.implicitExit_=(false)
-  
-  NativeInitializer.init(stage)
+
+  def initOnCloseRequest(callback: Object => Unit): Unit = {
+    stage.setOnCloseRequest(new OnCloseHandler(callback))
+  }
+
+}
+
+class OnCloseHandler(callback: Object => Unit) extends javafx.event.EventHandler[javafx.stage.WindowEvent] {
+  override def handle(ev: javafx.stage.WindowEvent): Unit = {
+    callback(GuiResponse.GoToMenu(Defs.MENU_EXIT))
+    ev.consume()
+  }
 }

@@ -4,10 +4,12 @@ import scalafx.Includes._
 import scalafx.scene.Scene
 import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
+
 import scalafx.scene.layout.GridPane
 import scalafx.geometry.Insets
 import scalafx.scene.layout.BorderPane
 import org.rustkeylock.fragments.sides.Navigation
+
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.text.Text
@@ -15,8 +17,10 @@ import scalafx.geometry.HPos
 import scalafx.scene.control.TextField
 import org.rustkeylock.components.RklLabel
 import org.rustkeylock.components.RklButton
+
 import scalafx.scene.image.ImageView
 import javafx.scene.image.Image
+
 import scalafx.stage.FileChooser
 import scalafx.stage.Stage
 import scalafx.scene.control.PasswordField
@@ -24,11 +28,13 @@ import scalafx.application.Platform
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.io.File
+
+import org.rustkeylock.japi.stubs.GuiResponse
+
 import scalafx.stage.DirectoryChooser
 import scalafx.scene.paint.Color
-import org.rustkeylock.api.InterfaceWithRust
 
-class ImportExport(export: Boolean, stage: Stage) extends Scene {
+class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
   val homePath = System.getProperty("user.home")
   val proposedFilename = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + "_rust_keylock"
@@ -37,7 +43,7 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -165,7 +171,7 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
         } else if (new File(path).isDirectory()) {
           pathTextMessage.setError("Cannot export to a directory")
         } else {
-          InterfaceWithRust.INSTANCE.export_import(path, 1, "Dummy", 11)
+          callback(GuiResponse.ExportImport(path, 1, "Dummy", 11))
         }
       } else {
         passwordFieldMessage.clear()
@@ -181,7 +187,7 @@ class ImportExport(export: Boolean, stage: Stage) extends Scene {
         } else if (numberField.getText.isEmpty()) {
           numberFieldMessage.setError("Required Field")
         } else {
-          InterfaceWithRust.INSTANCE.export_import(path, 0, passwordField.getText, Integer.parseInt(numberField.getText))
+          callback(GuiResponse.ExportImport(path, 0, passwordField.getText, Integer.parseInt(numberField.getText)))
         }
       }
     }

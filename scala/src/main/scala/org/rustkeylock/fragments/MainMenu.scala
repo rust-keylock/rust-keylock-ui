@@ -18,13 +18,13 @@ import scalafx.geometry.Pos
 import scalafx.scene.image.ImageView
 import scalafx.stage.Stage
 
-class MainMenu(stage: Stage) extends Scene {
+class MainMenu(stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true

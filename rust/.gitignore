@@ -1,5 +1,6 @@
 /target/
 /.project
 /Cargo.lock
-/rust-keylock-ui-rust.iml
+/*.iml
 /.settings/
+/scalaassets/

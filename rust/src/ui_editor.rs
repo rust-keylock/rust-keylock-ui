@@ -1,45 +1,70 @@
-use rust_keylock::{Editor, UserSelection, Menu, Safe, UserOption, MessageSeverity, RklConfiguration};
-use super::{StringCallback, StringListCallback, ShowEntryCallback, ShowEntriesSetCallback, LogCallback, logger, ScalaEntriesSet,
-            ScalaEntry, ShowMessageCallback, ScalaUserOptionsSet, StringList};
+use j4rs::{Instance, InvocationArg, Jvm};
+use rust_keylock::{Editor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
 use std::sync::mpsc::Receiver;
+use super::logger;
 
 pub struct AndroidImpl {
-    show_menu_cb: StringCallback,
-    show_entry_cb: ShowEntryCallback,
-    show_entries_set_cb: ShowEntriesSetCallback,
-    show_message_cb: ShowMessageCallback,
-    edit_configuration_cb: StringListCallback,
+    jvm: Jvm,
+    show_menu: Instance,
+    show_entries: Instance,
+    show_entry: Instance,
+    edit_configuration: Instance,
+    show_message: Instance,
     rx: Receiver<UserSelection>,
 }
 
-pub fn new(show_menu_cb: StringCallback,
-           show_entry_cb: ShowEntryCallback,
-           show_entries_set_cb: ShowEntriesSetCallback,
-           show_message_cb: ShowMessageCallback,
-           edit_configuration_cb: StringListCallback,
-           log_cb: LogCallback,
-           rx: Receiver<UserSelection>)
-           -> AndroidImpl {
-
-    // Initialize the Android logger
-    logger::init(log_cb);
+pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
+    // Start the Ui
+    let launcher = jvm.invoke_static(
+        "org.rustkeylock.japi.Launcher",
+        "start",
+        &Vec::new())
+        .unwrap();
+    // Do the initialization tasks and set the On close event handler
+    let _ = jvm.invoke_async(
+        &launcher,
+        "initHandler",
+        &vec![],
+        super::callbacks::ui_callback);
+    let fx_stage = jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap();
+    // Create the Java classes that navigate the UI
+    let show_menu = jvm.create_instance(
+        "org.rustkeylock.callbacks.ShowMenuCb",
+        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+    let show_entries = jvm.create_instance(
+        "org.rustkeylock.callbacks.ShowEntriesSetCb",
+        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+    let show_entry = jvm.create_instance(
+        "org.rustkeylock.callbacks.ShowEntryCb",
+        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+    let edit_configuration = jvm.create_instance(
+        "org.rustkeylock.callbacks.EditConfigurationCb",
+        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+    let show_message = jvm.create_instance(
+        "org.rustkeylock.callbacks.ShowMessageCb",
+        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
     // Return the Editor
     AndroidImpl {
-        show_menu_cb: show_menu_cb,
-        show_entry_cb: show_entry_cb,
-        show_entries_set_cb: show_entries_set_cb,
-        show_message_cb: show_message_cb,
-        edit_configuration_cb: edit_configuration_cb,
+        jvm: jvm,
+        show_menu: show_menu,
+        show_entries: show_entries,
+        show_entry: show_entry,
+        edit_configuration: edit_configuration,
+        show_message: show_message,
         rx: rx,
     }
 }
 
 impl Editor for AndroidImpl {
     fn show_password_enter(&self) -> UserSelection {
-        debug!("Opening the password fragment");
+        println!("Opening the password fragment");
         let try_pass_menu_name = Menu::TryPass.get_name();
-        (self.show_menu_cb)(super::to_java_string(try_pass_menu_name));
-        debug!("Waiting for password...");
+        let _ = self.jvm.invoke_async(
+            &self.show_menu,
+            "apply",
+            &vec![InvocationArg::from(try_pass_menu_name)],
+            super::callbacks::ui_callback);
+        println!("Waiting for password...");
         let user_selection = self.rx.recv().unwrap();
         user_selection
     }
@@ -47,7 +72,11 @@ impl Editor for AndroidImpl {
     fn show_change_password(&self) -> UserSelection {
         debug!("Opening the change password fragment");
         let change_pass_menu_name = Menu::ChangePass.get_name();
-        (self.show_menu_cb)(super::to_java_string(change_pass_menu_name));
+        let _ = self.jvm.invoke_async(
+            &self.show_menu,
+            "apply",
+            &vec![InvocationArg::from(change_pass_menu_name)],
+            super::callbacks::ui_callback);
         debug!("Waiting for password...");
         let user_selection = self.rx.recv().unwrap();
         user_selection
@@ -57,45 +86,112 @@ impl Editor for AndroidImpl {
         debug!("Opening menu '{:?}' with entries size {}", menu, safe.get_entries().len());
 
         match menu {
-            &Menu::Main => (self.show_menu_cb)(super::to_java_string(Menu::Main.get_name())),
+            &Menu::Main => {
+                let _ = self.jvm.invoke_async(
+                    &self.show_menu,
+                    "apply",
+                    &vec![InvocationArg::from(Menu::Main.get_name())],
+                    super::callbacks::ui_callback);
+            }
             &Menu::EntriesList(_) => {
-                let scala_entries_set = if safe.get_entries().len() == 0 {
-                    ScalaEntriesSet::with_nulls()
+                let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
+                    .map(|entry| ScalaEntry::new(entry))
+                    .collect();
+                let filter = if safe.get_filter().len() == 0 {
+                    "null".to_string()
                 } else {
-                    ScalaEntriesSet::from(safe.get_entries())
+                    safe.get_filter().clone()
                 };
-                let filter_ptr = if safe.get_filter().len() == 0 {
-                    super::to_java_string("null".to_string())
-                } else {
-                    super::to_java_string(safe.get_filter().clone())
-                };
-                (self.show_entries_set_cb)(Box::new(scala_entries_set), filter_ptr);
+                let _ = self.jvm.invoke_async(
+                    &self.show_entries,
+                    "apply",
+                    &vec![
+                        InvocationArg::from((
+                            scala_entries.as_slice(),
+                            "org.rustkeylock.japi.ScalaEntry",
+                            &self.jvm)),
+                        InvocationArg::from(filter)],
+                    super::callbacks::ui_callback);
             }
             &Menu::ShowEntry(index) => {
                 let entry = safe.get_entry_decrypted(index);
-                (self.show_entry_cb)(Box::new(ScalaEntry::new(&entry)), index as i32, false, false);
+                let _ = self.jvm.invoke_async(
+                    &self.show_entry,
+                    "apply",
+                    &vec![
+                        InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(false),
+                        InvocationArg::from(false)
+                    ],
+                    super::callbacks::ui_callback);
             }
             &Menu::DeleteEntry(index) => {
-                let ref entry = safe.get_entry(index);
-                (self.show_entry_cb)(Box::new(ScalaEntry::new(&entry)), index as i32, false, true);
+                let entry = ScalaEntry::new(safe.get_entry(index));
+
+                let _ = self.jvm.invoke_async(
+                    &self.show_entry,
+                    "apply",
+                    &vec![
+                        InvocationArg::new(&entry, "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(false),
+                        InvocationArg::from(true)
+                    ],
+                    super::callbacks::ui_callback);
             }
             &Menu::NewEntry => {
                 let empty_entry = ScalaEntry::empty();
                 // In order to denote that this is a new entry, put -1 as index
-                (self.show_entry_cb)(Box::new(empty_entry), -1, true, false);
+                let _ = self.jvm.invoke_async(
+                    &self.show_entry,
+                    "apply",
+                    &vec![
+                        InvocationArg::new(&empty_entry, "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(-1),
+                        InvocationArg::from(true),
+                        InvocationArg::from(false)
+                    ],
+                    super::callbacks::ui_callback);
             }
             &Menu::EditEntry(index) => {
                 let ref selected_entry = safe.get_entry_decrypted(index);
-                (self.show_entry_cb)(Box::new(ScalaEntry::new(selected_entry)), index as i32, true, false);
+                let _ = self.jvm.invoke_async(
+                    &self.show_entry,
+                    "apply",
+                    &vec![
+                        InvocationArg::new(&ScalaEntry::new(&selected_entry), "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(true),
+                        InvocationArg::from(false)
+                    ],
+                    super::callbacks::ui_callback);
             }
-            &Menu::ExportEntries => (self.show_menu_cb)(super::to_java_string(Menu::ExportEntries.get_name())),
-            &Menu::ImportEntries => (self.show_menu_cb)(super::to_java_string(Menu::ImportEntries.get_name())),
+            &Menu::ExportEntries => {
+                let _ = self.jvm.invoke_async(
+                    &self.show_menu,
+                    "apply",
+                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())],
+                    super::callbacks::ui_callback);
+            }
+            &Menu::ImportEntries => {
+                let _ = self.jvm.invoke_async(
+                    &self.show_menu,
+                    "apply",
+                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())],
+                    super::callbacks::ui_callback);
+            }
             &Menu::ShowConfiguration => {
-                let conf_strings = vec![configuration.nextcloud.server_url.clone(),
-                                        configuration.nextcloud.username.clone(),
-                                        configuration.nextcloud.decrypted_password().unwrap(),
-                                        configuration.nextcloud.use_self_signed_certificate.to_string()];
-                (self.edit_configuration_cb)(Box::new(StringList::from(conf_strings)))
+                let conf_strings = vec![
+                    configuration.nextcloud.server_url.clone(),
+                    configuration.nextcloud.username.clone(),
+                    configuration.nextcloud.decrypted_password().unwrap(),
+                    configuration.nextcloud.use_self_signed_certificate.to_string()];
+                let _ = self.jvm.invoke_async(
+                    &self.edit_configuration,
+                    "apply",
+                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))],
+                    super::callbacks::ui_callback);
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
@@ -115,8 +211,11 @@ impl Editor for AndroidImpl {
     fn exit(&self, contents_changed: bool) -> UserSelection {
         debug!("Exiting rust-keylock...");
         if contents_changed {
-            let menu_name = Menu::Exit.get_name();
-            (self.show_menu_cb)(super::to_java_string(menu_name));
+            let _ = self.jvm.invoke_async(
+                &self.show_menu,
+                "apply",
+                &vec![InvocationArg::from(Menu::Exit.get_name())],
+                super::callbacks::ui_callback);
             let user_selection = self.rx.recv().unwrap();
             user_selection
         } else {
@@ -126,15 +225,67 @@ impl Editor for AndroidImpl {
 
     fn show_message(&self, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> UserSelection {
         debug!("Showing Message '{}'", message);
-        let scala_options_set = if options.len() == 0 {
-            ScalaUserOptionsSet::with_nulls()
-        } else {
-            ScalaUserOptionsSet::from(&options[..])
-        };
-        (self.show_message_cb)(Box::new(scala_options_set),
-                               super::to_java_string(message.to_string()),
-                               super::to_java_string(severity.to_string()));
+        let scala_user_options: Vec<ScalaUserOption> = options.iter()
+            .clone()
+            .map(|user_option| ScalaUserOption::new(user_option))
+            .collect();
+        let _ = self.jvm.invoke_async(
+            &self.show_message,
+            "apply",
+            &vec![
+                InvocationArg::from((
+                    scala_user_options.as_slice(),
+                    "org.rustkeylock.japi.ScalaUserOption",
+                    &self.jvm)),
+                InvocationArg::from(message),
+                InvocationArg::from(severity.to_string())],
+            super::callbacks::ui_callback);
         let user_selection = self.rx.recv().unwrap();
         user_selection
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ScalaEntry {
+    pub name: String,
+    pub user: String,
+    pub pass: String,
+    pub desc: String,
+}
+
+impl ScalaEntry {
+    fn new(entry: &Entry) -> ScalaEntry {
+        ScalaEntry {
+            name: entry.name.clone(),
+            user: entry.user.clone(),
+            pass: entry.pass.clone(),
+            desc: entry.desc.clone(),
+        }
+    }
+
+    fn empty() -> ScalaEntry {
+        ScalaEntry {
+            name: "".to_string(),
+            user: "".to_string(),
+            pass: "".to_string(),
+            desc: "".to_string(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ScalaUserOption {
+    pub label: String,
+    pub value: String,
+    pub short_label: String,
+}
+
+impl ScalaUserOption {
+    fn new(user_option: &UserOption) -> ScalaUserOption {
+        ScalaUserOption {
+            label: user_option.label.clone(),
+            value: user_option.value.to_string(),
+            short_label: user_option.short_label.clone(),
+        }
     }
 }

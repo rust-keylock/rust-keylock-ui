@@ -1,29 +1,22 @@
 package org.rustkeylock.fragments
 
+import com.typesafe.scalalogging.Logger
+import org.rustkeylock.components.{RklButton, RklLabel}
+import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.utils.SharedState
+import org.slf4j.LoggerFactory
+
 import scalafx.Includes._
 import scalafx.application.Platform
-import scalafx.geometry.Insets
-import org.rustkeylock.components.RklLabel
+import scalafx.geometry.{HPos, Insets}
+import scalafx.scene.Scene
 import scalafx.scene.control.PasswordField
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.GridPane
-import scalafx.scene.Scene
-import scalafx.scene.layout.VBox
-import scalafx.geometry.Pos
 import scalafx.scene.text.Text
-import scalafx.scene.control.Separator
-import org.rustkeylock.components.RklButton
-import scalafx.geometry.HPos
-import org.rustkeylock.api.InterfaceWithRust
-import org.slf4j.LoggerFactory
-import com.typesafe.scalalogging.Logger
-import scalafx.scene.paint.Color
-import scalafx.collections.ObservableBuffer
-import org.rustkeylock.utils.SharedState
-import org.rustkeylock.components.RklLabel
 import scalafx.stage.Stage
 
-class EnterPassword(stage: Stage) extends Scene {
+class EnterPassword(stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   val password = new PasswordField() {
@@ -54,8 +47,8 @@ class EnterPassword(stage: Stage) extends Scene {
   GridPane.setHalignment(image, HPos.Center)
 
   root = new GridPane() {
-//    prefHeight <== stage.height
-//    prefWidth <== stage.width
+    //    prefHeight <== stage.height
+    //    prefWidth <== stage.width
 
     hgap = 33
     vgap = 10
@@ -88,7 +81,7 @@ class EnterPassword(stage: Stage) extends Scene {
     } else {
       try {
         val num = new Integer(number.getText().trim())
-        InterfaceWithRust.INSTANCE.set_password(password.getText().trim(), num)
+        callback(GuiResponse.ChangePassword(password.getText().trim(), num))
         SharedState.setLoggedIn()
       } catch {
         case error: Exception => {

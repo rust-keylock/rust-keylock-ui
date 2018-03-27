@@ -1,21 +1,15 @@
 package org.rustkeylock.callbacks
 
-import org.rustkeylock.api.RustCallback
-import org.rustkeylock.fragments.EnterPassword
+import com.typesafe.scalalogging.Logger
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
+import org.rustkeylock.fragments._
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 
-import com.typesafe.scalalogging.Logger
-
 import scalafx.application.Platform
 import scalafx.stage.Stage
-import org.rustkeylock.fragments.Empty
-import org.rustkeylock.fragments.MainMenu
-import org.rustkeylock.fragments.ImportExport
-import org.rustkeylock.fragments.ExitMenu
-import org.rustkeylock.fragments.ChangePassword
 
-class ShowMenuCb(stage: Stage) extends RustCallback {
+class ShowMenuCb(stage: Stage) extends NativeCallbackSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(menu: String): Unit = {
@@ -27,22 +21,22 @@ class ShowMenuCb(stage: Stage) extends RustCallback {
     override def run(): Unit = {
       val newScene = menu match {
         case Defs.MENU_TRY_PASS => {
-          new EnterPassword(stage)
+          new EnterPassword(stage, doCallback)
         }
         case Defs.MENU_CHANGE_PASS => {
-          new ChangePassword(stage)
+          new ChangePassword(stage, doCallback)
         }
         case Defs.MENU_MAIN => {
-          new MainMenu(stage)
+          new MainMenu(stage, doCallback)
         }
         case Defs.MENU_EXIT => {
-          new ExitMenu(stage)
+          new ExitMenu(stage, doCallback)
         }
         case Defs.MENU_EXPORT_ENTRIES => {
-          new ImportExport(true, stage)
+          new ImportExport(true, stage, doCallback)
         }
         case Defs.MENU_IMPORT_ENTRIES => {
-          new ImportExport(false, stage)
+          new ImportExport(false, stage, doCallback)
         }
         case other => throw new RuntimeException(s"Cannot Show Menu with name '$menu' and no arguments")
       }
@@ -51,4 +45,5 @@ class ShowMenuCb(stage: Stage) extends RustCallback {
 
     }
   }
+
 }

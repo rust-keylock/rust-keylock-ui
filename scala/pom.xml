@@ -20,7 +20,7 @@
 	</developers>
 
 	<properties>
-		<scala.version>2.12.2</scala.version>
+		<scala.version>2.12.4</scala.version>
 		<scala.stm.version>0.8</scala.stm.version>
 		<specs2.version>3.8.9</specs2.version>
 		<maven.surefire.version>2.19.1</maven.surefire.version>
@@ -34,21 +34,13 @@
 		<javafx.maven.version>8.6.0</javafx.maven.version>
 		<maven.compiler.plugin.version>2.0.2</maven.compiler.plugin.version>
 	</properties>
-	<repositories>
-		<repository>
-			<id>scala-tools.org</id>
-			<name>Scala-Tools Maven2 Repository</name>
-			<url>http://scala-tools.org/repo-releases</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>scala-tools.org</id>
-			<name>Scala-Tools Maven2 Repository</name>
-			<url>http://scala-tools.org/repo-releases</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
+		<dependency>
+			<groupId>io.github.astonbitecode</groupId>
+			<artifactId>j4rs</artifactId>
+			<version>0.1.1</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
@@ -73,11 +65,6 @@
 			<groupId>com.typesafe.scala-logging</groupId>
 			<artifactId>scala-logging_2.12</artifactId>
 			<version>${scala.logging.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>${jna.version}</version>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
@@ -196,6 +183,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<configuration>
 					<outputDirectory>${project.build.directory}/lib</outputDirectory>
+					<includeScope>compile</includeScope>
 				</configuration>
 				<executions>
 					<execution>
@@ -230,7 +218,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It 
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It
 					has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>

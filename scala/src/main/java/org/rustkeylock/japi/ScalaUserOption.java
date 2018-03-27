@@ -1,36 +1,31 @@
 package org.rustkeylock.japi;
 
-import static java.util.Arrays.asList;
+public class ScalaUserOption {
+    public String label;
+    public String value;
+    public String short_label;
 
-import java.util.List;
+    public String getLabel() {
+        return label;
+    }
 
-import com.sun.jna.Structure;
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-public class ScalaUserOption extends Structure {
-	public static class ByReference extends ScalaUserOption implements Structure.ByReference {
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public static class ByValue extends ScalaUserOption implements Structure.ByValue {
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public String label;
-	public String value;
-	public String shortLabel;
+    public String getShort_label() {
+        return short_label;
+    }
 
-	public String getLabel() {
-		return label;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public String getShortLabel() {
-		return shortLabel;
-	}
-
-	@Override
-	protected List<String> getFieldOrder() {
-		return asList("label", "value", "shortLabel");
-	}
+    public void setShort_label(String short_label) {
+        this.short_label = short_label;
+    }
 }

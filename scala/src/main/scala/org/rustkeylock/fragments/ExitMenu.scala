@@ -1,33 +1,27 @@
 package org.rustkeylock.fragments
 
-import scalafx.Includes._
-import scalafx.scene.Scene
-import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
-import scalafx.scene.layout.GridPane
-import scalafx.geometry.Insets
-import scalafx.scene.layout.BorderPane
+import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
-import scalafx.scene.control.ScrollPane
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.text.Text
-import scalafx.geometry.HPos
-import org.rustkeylock.components.RklLabel
-import org.rustkeylock.components.RklButton
-import scalafx.scene.image.ImageView
-import scalafx.scene.image.Image
+import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
-import org.rustkeylock.api.InterfaceWithRust
-import scalafx.stage.Stage
-import scalafx.geometry.Pos
+import org.slf4j.LoggerFactory
 
-class ExitMenu(stage: Stage) extends Scene {
+import scalafx.Includes._
+import scalafx.geometry.{HPos, Insets}
+import scalafx.scene.Scene
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.text.Text
+import scalafx.stage.Stage
+
+class ExitMenu(stage: Stage, callback: Object => Unit) extends Scene {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation
+    left = new Navigation(callback)
     // Main pane
     center = new Center()
   }
@@ -44,7 +38,7 @@ class ExitMenu(stage: Stage) extends Scene {
       tooltip = "Yes"
       onAction = handle {
         logger.debug("The User selected to force Exit with unsaved data")
-        InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_FORCE_EXIT)
+        callback(GuiResponse.GoToMenu(Defs.MENU_FORCE_EXIT))
       }
       graphic = new ImageView {
         image = new Image("images/yes.png")
@@ -58,7 +52,7 @@ class ExitMenu(stage: Stage) extends Scene {
       tooltip = "No"
       onAction = handle {
         logger.debug("The User selected not to exit because of unsaved data")
-        InterfaceWithRust.INSTANCE.go_to_menu(Defs.MENU_MAIN)
+        callback(GuiResponse.GoToMenu(Defs.MENU_MAIN))
       }
       graphic = new ImageView {
         image = new Image("images/no.png")
