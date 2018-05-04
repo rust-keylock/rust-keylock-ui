@@ -3,8 +3,7 @@ extern crate fs_extra;
 use std::{env, fs};
 use std::error::Error;
 use std::fmt;
-use std::fs::{File, OpenOptions};
-use std::io::prelude::*;
+use std::fs::File;
 use std::path::{Path, PathBuf};
 
 fn main() {
@@ -13,7 +12,7 @@ fn main() {
     // Copy the needed jar files if they are available
     // (that is, if the build is done with the full source-code - not in crates.io)
     copy_jars_from_scala();
-    let exec_dir = copy_jars_to_exec_directory(&out_dir);
+    let _ = copy_jars_to_exec_directory(&out_dir);
 }
 
 // Copies the jars from the `java` directory to the source directory of rust.

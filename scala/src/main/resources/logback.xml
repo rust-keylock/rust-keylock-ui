@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>${HOME}/.rust-keylock/logs/rust-keylock.log</file>
+		<file>${HOME}/.rust-keylock/logs/rust-keylock-scala.log</file>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
 				[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger{36}] - %msg%n

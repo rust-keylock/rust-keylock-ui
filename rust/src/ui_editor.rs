@@ -1,7 +1,6 @@
 use j4rs::{Instance, InvocationArg, Jvm};
 use rust_keylock::{Editor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
 use std::sync::mpsc::Receiver;
-use super::logger;
 
 pub struct AndroidImpl {
     jvm: Jvm,
@@ -57,14 +56,14 @@ pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
 
 impl Editor for AndroidImpl {
     fn show_password_enter(&self) -> UserSelection {
-        println!("Opening the password fragment");
+        debug!("Opening the password fragment");
         let try_pass_menu_name = Menu::TryPass.get_name();
         let _ = self.jvm.invoke_async(
             &self.show_menu,
             "apply",
             &vec![InvocationArg::from(try_pass_menu_name)],
             super::callbacks::ui_callback);
-        println!("Waiting for password...");
+        debug!("Waiting for password...");
         let user_selection = self.rx.recv().unwrap();
         user_selection
     }

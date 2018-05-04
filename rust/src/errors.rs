@@ -1,5 +1,7 @@
+use log4rs;
+use std::{fmt, result, io};
 use std::error::Error;
-use std::{fmt, result};
+use log;
 
 pub type Result<T> = result::Result<T, RklUiError>;
 
@@ -17,5 +19,23 @@ impl fmt::Display for RklUiError {
 impl Error for RklUiError {
     fn description(&self) -> &str {
         self.description.as_str()
+    }
+}
+
+impl From<log4rs::config::Errors> for RklUiError {
+    fn from(err: log4rs::config::Errors) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
+    }
+}
+
+impl From<log::SetLoggerError> for RklUiError {
+    fn from(err: log::SetLoggerError) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
+    }
+}
+
+impl From<io::Error> for RklUiError {
+    fn from(err: io::Error) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
     }
 }

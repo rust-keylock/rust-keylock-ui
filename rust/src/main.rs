@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate log;
+extern crate log4rs;
 #[macro_use]
 extern crate lazy_static;
 extern crate rust_keylock;
@@ -24,6 +25,8 @@ lazy_static! {
 }
 
 fn main() {
+    logger::init().expect("Could not initialize logging");
+
     let mut default_classpath_entry = std::env::current_exe().unwrap();
     default_classpath_entry.pop();
     default_classpath_entry.push("scalaassets");
@@ -45,8 +48,7 @@ fn main() {
         *tx_opt = Some(tx);
     }
 
-    logger::init();
     let editor = ui_editor::new(jvm, rx);
-    println!("TX Mutex initialized. Executing native rust_keylock!");
+    info!("TX Mutex initialized. Executing native rust_keylock!");
     rust_keylock::execute(&editor)
 }
