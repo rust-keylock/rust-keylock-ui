@@ -26,6 +26,6 @@ pub fn init() -> ::errors::Result<()> {
             .build("tokio_reactor", LevelFilter::Error))
         .build(Root::builder().appender("filelogger").build(LevelFilter::Debug))?;
 
-    let _handle = log4rs::init_config(config).unwrap();
+    let _handle = log4rs::init_config(config)?;
     Ok(())
 }
