@@ -14,18 +14,22 @@ pub struct AndroidImpl {
 
 pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
     // Start the Ui
+    debug!("Calling org.rustkeylock.japi.Launcher.start");
     let launcher = jvm.invoke_static(
         "org.rustkeylock.japi.Launcher",
         "start",
         &Vec::new())
         .unwrap();
+    debug!("Calling asynchronously org.rustkeylock.japi.Launcher.initHandler");
     // Do the initialization tasks and set the On close event handler
     let _ = jvm.invoke_async(
         &launcher,
         "initHandler",
         &vec![],
         super::callbacks::ui_callback);
+    debug!("Calling org.rustkeylock.japi.Launcher.getStage");
     let fx_stage = jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap();
+    debug!("Stage retrieved. Proceeding...");
     // Create the Java classes that navigate the UI
     let show_menu = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMenuCb",
