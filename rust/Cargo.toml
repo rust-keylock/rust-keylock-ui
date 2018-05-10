@@ -10,7 +10,7 @@ path = "src/main.rs"
 [dependencies]
 rust_keylock = "0.4"
 lazy_static = "0.2"
-j4rs = "0.1"
+j4rs = {git = "https://github.com/astonbitecode/j4rs.git"}
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
