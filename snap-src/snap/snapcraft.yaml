@@ -1,0 +1,64 @@
+name: rust-keylock-ui
+version: '0.4.0'
+summary: A password manager written (mostly) in Rust
+description: |
+ rust-keylock is a password manager and its goals are to be:
+    - Secure
+    - Simple to use
+    - Portable
+    - Extensible
+ The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
+ rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX (via ScalaFX).
+
+grade: stable
+confinement: strict
+icon: snap/gui/rkl.png
+
+parts:
+  rust-keylock-ui-scala:
+    plugin: maven
+    source: https://github.com/rust-keylock/rust-keylock-ui.git
+    source-commit: 84691ecb240c81ddd58a6e098d6092f7030fccd5
+    override-build: |
+      export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+      mvn -f ./scala clean install
+    build-packages:
+      - openjdk-8-jdk
+      - openjfx
+    stage-packages:
+      - openjdk-8-jdk
+      - openjfx
+    organize:
+      ../build/scala/target/desktop-ui-0.4.0.jar: bin/scalaassets/desktop-ui-0.4.0.jar
+      ../build/scala/target/lib/: bin/scalaassets/lib/
+
+  rust-keylock-ui-rust:
+    source: https://github.com/rust-keylock/rust-keylock-ui.git
+    source-subdir: rust/
+    source-commit: 84691ecb240c81ddd58a6e098d6092f7030fccd5
+    after:
+      - rust-keylock-ui-scala
+    plugin: rust
+    build-packages:
+      - openssl
+      - libssl-dev
+    stage-packages:
+      - openssl
+      - libssl1.0.0
+    organize:
+      ../build/rust/target/release/jassets: bin/jassets
+      ../build/rust/target/release/deps/libj4rs-*.so: bin/deps/
+  env:
+    plugin: nil
+    after:
+      - rust-keylock-ui-rust
+      - desktop-glib-only
+apps:
+  rust-keylock-ui:
+    command: desktop-launch $SNAP/bin/rust-keylock-ui
+    plugs:
+      - x11
+      - opengl
+      - network
+    environment:
+      LD_LIBRARY_PATH: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server:$SNAP/usr/local/lib:$LD_LIBRARY_PATH

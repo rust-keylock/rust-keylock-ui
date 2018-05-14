@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=rust-keylock-ui
+Comment=A password manager that attempts to be Secure, Simple to use, Portable and Extensible
+Keywords=password;manager;rust;keylock;
+Exec=rust-keylock-ui
+Icon=${SNAP}/meta/gui/icon.png
+Terminal=false
+Type=Application
+StartupNotify=true
