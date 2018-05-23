@@ -40,6 +40,7 @@ class EnterPassword(stage: Stage, callback: Object => Unit) extends Scene {
     tooltip = "Decrypt"
     onAction = handle(buttonHandler)
     graphic = new ImageView("images/arrow_right.png")
+    defaultButton = true
   }
   GridPane.setHalignment(button, HPos.Right)
 

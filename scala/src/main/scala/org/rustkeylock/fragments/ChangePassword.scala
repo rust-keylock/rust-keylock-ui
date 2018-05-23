@@ -79,6 +79,7 @@ class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
       onAction = handle(buttonHandler)
       graphic = new ImageView("images/arrow_right.png")
       stylesheets = new ObservableBuffer[String]()
+      defaultButton = true
     }
 
     GridPane.setHalignment(applyButton, HPos.Right)
