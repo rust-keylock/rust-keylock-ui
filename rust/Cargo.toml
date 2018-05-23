@@ -1,6 +1,6 @@
 [package]
 name = "rust-keylock-ui-rust"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["aston <astonbitecode@gmail.com>"]
 
 [[bin]]
@@ -8,7 +8,7 @@ name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = "0.4"
+rust_keylock = {path = "../../rust-keylock-lib"}
 lazy_static = "0.2"
 j4rs = {git = "https://github.com/astonbitecode/j4rs.git", rev = "dc4a95f48a96fd0ba3fe0c0addb24ed9ab598ff2"}
 serde = "1.0"
