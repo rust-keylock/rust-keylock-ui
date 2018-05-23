@@ -47,9 +47,6 @@ class EnterPassword(stage: Stage, callback: Object => Unit) extends Scene {
   GridPane.setHalignment(image, HPos.Center)
 
   root = new GridPane() {
-    //    prefHeight <== stage.height
-    //    prefWidth <== stage.width
-
     hgap = 33
     vgap = 10
     padding = Insets(10, 10, 10, 10)

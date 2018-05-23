@@ -126,11 +126,21 @@ class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
           numberMessage1.setError("This Field cannot be empty")
           number1.clear()
         } else {
-          logger.info("Password and number changed")
-          callback(GuiResponse.ChangePassword(password1.getText().trim(), number1.getText().trim().toInt))
-          SharedState.setLoggedIn()
+          try {
+            logger.info("Password and number changed")
+            callback(GuiResponse.ChangePassword(password1.getText().trim(), number1.getText().trim().toInt))
+            SharedState.setLoggedIn()
+          } catch {
+            case error: Exception => {
+              val message = "Incorrect number"
+              logger.error(message, error)
+              number1.setText("")
+              numberMessage1.setError(message)
+            }
+          }
         }
       }
     }
   }
+
 }
