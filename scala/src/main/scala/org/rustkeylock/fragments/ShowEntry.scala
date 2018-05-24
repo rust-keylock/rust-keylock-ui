@@ -1,7 +1,6 @@
 package org.rustkeylock.fragments
 
 import javafx.scene.image.Image
-
 import com.typesafe.scalalogging.Logger
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
@@ -9,12 +8,11 @@ import org.rustkeylock.japi.ScalaEntry
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
 import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.{ScrollPane, TextField}
+import scalafx.scene.control.{ScrollPane, TextArea, TextField}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
@@ -73,11 +71,10 @@ class ShowEntry(anEntry: ScalaEntry,
       promptText = "Password"
       text = anEntry.pass
       editable = edit
-      disable = !edit
     }
     val passwordMessage = new RklLabel
 
-    val descriptionTextField = new TextField() {
+    val descriptionTextArea = new TextArea() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Description"
       text = anEntry.desc
@@ -149,7 +146,7 @@ class ShowEntry(anEntry: ScalaEntry,
     add(passwordMessage, 0, 10)
 
     add(new RklLabel("Description"), 0, 11, 2, 1)
-    add(descriptionTextField, 0, 12, 2, 1)
+    add(descriptionTextArea, 0, 12, 2, 1)
 
     (edit, delete) match {
       case (false, false) => {
@@ -175,7 +172,7 @@ class ShowEntry(anEntry: ScalaEntry,
       entry.name = titleTextField.getText()
       entry.user = usernameTextField.getText()
       entry.pass = passwordTextField.getText()
-      entry.desc = descriptionTextField.getText()
+      entry.desc = descriptionTextArea.getText()
 
       logger.debug(s"Saving entry ${entry.name}")
 
