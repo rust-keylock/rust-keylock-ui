@@ -104,16 +104,16 @@ class ShowEntry(anEntry: ScalaEntry,
     }
     GridPane.setHalignment(deleteButton, HPos.Right)
 
-    val saveButton = new RklButton {
-      tooltip = "Save"
-      onAction = handle(handleSave)
+    val okButton = new RklButton {
+      tooltip = "Ok"
+      onAction = handle(handleOk)
       graphic = new ImageView {
-        image = new Image("images/save.png")
+        image = new Image("images/tick.png")
         fitHeight = 33
         fitWidth = 33
       }
     }
-    GridPane.setHalignment(saveButton, HPos.Right)
+    GridPane.setHalignment(okButton, HPos.Right)
 
     val areYouSureButton = new RklButton {
       tooltip = "Yes I am sure, delete it!"
@@ -154,7 +154,7 @@ class ShowEntry(anEntry: ScalaEntry,
         add(deleteButton, 1, 13)
       }
       case (true, false) => {
-        add(saveButton, 1, 13)
+        add(okButton, 1, 13)
       }
       case (false, true) => {
         add(new RklLabel("Deleting Entry... Are you sure?"), 0, 13)
@@ -163,7 +163,7 @@ class ShowEntry(anEntry: ScalaEntry,
       case (_, _) => throw new Exception(s"Cannot handle edit '$edit' and delete '$delete'. Please consider opening a bug to the developers.")
     }
 
-    private def handleSave(): Unit = {
+    private def handleOk(): Unit = {
       titleMessage.clear()
       usernameMessage.clear()
       passwordMessage.clear()
