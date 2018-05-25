@@ -18,7 +18,7 @@ fn main() {
 // Copies the jars from the `java` directory to the source directory of rust.
 fn copy_jars_from_scala() {
     // If the java directory exists, copy the generated jars in the `jassets` directory
-    if File::open("../scala/target/desktop-ui-0.4.0.jar").is_ok() {
+    if File::open("../scala/target/desktop-ui-0.4.1.jar").is_ok() {
         let home = env::var("CARGO_MANIFEST_DIR").unwrap();
         let jassets_path_buf = Path::new(&home).join("scalaassets");
         let jassets_path = jassets_path_buf.to_str().unwrap().to_owned();
@@ -28,7 +28,7 @@ fn copy_jars_from_scala() {
         let _ = fs::create_dir_all(jassets_path_buf.clone())
             .map_err(|error| panic!("Cannot create dir '{:?}': {:?}", jassets_path_buf, error));
 
-        let jar_source_path = "../scala/target/desktop-ui-0.4.0.jar";
+        let jar_source_path = "../scala/target/desktop-ui-0.4.1.jar";
         let lib_source_path = "../scala/target/lib";
         let ref options = fs_extra::dir::CopyOptions::new();
         let _ = fs_extra::copy_items(vec![lib_source_path, jar_source_path].as_ref(), jassets_path, options);
