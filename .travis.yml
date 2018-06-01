@@ -1,25 +1,30 @@
 dist: trusty
 language: scala
-
 services: docker
-
 rust:
-  - stable
+- stable
 jdk:
-  - oraclejdk8
+- oraclejdk8
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+    - oracle-java8-installer
 scala:
-  - 2.12.4
-
+- 2.12.4
 before_install:
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - source ~/.cargo/env
-
+- curl https://sh.rustup.rs -sSf | sh -s -- -y
+- source ~/.cargo/env
 script:
-  - mvn -f scala/pom.xml clean install
-
+- mvn -f scala/pom.xml clean install
 after_success:
-  - sh build-scripts/build_rust_for_rust_keylock_ui.sh
+- openssl aes-256-cbc -K $encrypted_325b49141a28_key -iv $encrypted_325b49141a28_iv
+  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d
+- sh build-scripts/build_rust_for_rust_keylock_ui.sh
+sudo: required
+deploy:
+  'on':
+    branch: master
+  provider: script
+  script: docker run -v $(pwd):$(pwd) -t snapcore/snapcraft sh -c "apt update -qq
+    && cd $(pwd) && snapcraft && snapcraft push *.snap --release edge"
+  skip_cleanup: true
