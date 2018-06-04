@@ -8,9 +8,9 @@ name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib.git"}
+rust_keylock = "0.5"
 lazy_static = "0.2"
-j4rs = {git = "https://github.com/astonbitecode/j4rs.git", rev = "dc4a95f48a96fd0ba3fe0c0addb24ed9ab598ff2"}
+j4rs = "0.1"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
