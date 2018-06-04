@@ -2,3 +2,7 @@
 *.md.html
 build-scripts/local*
 /tools/
+/parts/
+/prime/
+/stage/
+*.snap
