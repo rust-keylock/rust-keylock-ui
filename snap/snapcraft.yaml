@@ -18,7 +18,7 @@ parts:
   rust-keylock-ui-scala:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-#    source-commit: 84691ecb240c81ddd58a6e098d6092f7030fccd5
+    source-tag: v0.5.0
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
@@ -35,7 +35,7 @@ parts:
   rust-keylock-ui-rust:
     source: https://github.com/rust-keylock/rust-keylock-ui.git
     source-subdir: rust/
-#    source-commit: 84691ecb240c81ddd58a6e098d6092f7030fccd5
+    source-tag: v0.5.0
     after:
       - rust-keylock-ui-scala
     plugin: rust
