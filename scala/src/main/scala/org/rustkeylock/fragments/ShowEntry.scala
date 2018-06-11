@@ -57,6 +57,14 @@ class ShowEntry(anEntry: ScalaEntry,
     }
     val titleMessage = new RklLabel
 
+    val urlTextField = new TextField() {
+      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
+      promptText = "URL"
+      text = anEntry.url
+      editable = edit
+      disable = !edit
+    }
+
     val usernameTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Username"
@@ -137,16 +145,19 @@ class ShowEntry(anEntry: ScalaEntry,
     add(titleTextField, 0, 3, 2, 1)
     add(titleMessage, 0, 4)
 
-    add(new RklLabel("Username"), 0, 5, 2, 1)
-    add(usernameTextField, 0, 6, 2, 1)
-    add(usernameMessage, 0, 7)
+    add(new RklLabel("URL"), 0, 5, 2, 1)
+    add(urlTextField, 0, 6, 2, 1)
 
-    add(new RklLabel("Password"), 0, 8, 2, 1)
-    add(passwordTextField, 0, 9, 2, 1)
-    add(passwordMessage, 0, 10)
+    add(new RklLabel("Username"), 0, 8, 2, 1)
+    add(usernameTextField, 0, 9, 2, 1)
+    add(usernameMessage, 0, 10)
 
-    add(new RklLabel("Description"), 0, 11, 2, 1)
-    add(descriptionTextArea, 0, 12, 2, 1)
+    add(new RklLabel("Password"), 0, 11, 2, 1)
+    add(passwordTextField, 0, 12, 2, 1)
+    add(passwordMessage, 0, 13)
+
+    add(new RklLabel("Description"), 0, 14, 2, 1)
+    add(descriptionTextArea, 0, 15, 2, 1)
 
     (edit, delete) match {
       case (false, false) => {
@@ -170,6 +181,7 @@ class ShowEntry(anEntry: ScalaEntry,
 
       val entry = new ScalaEntry()
       entry.name = titleTextField.getText()
+      entry.url = urlTextField.getText()
       entry.user = usernameTextField.getText()
       entry.pass = passwordTextField.getText()
       entry.desc = descriptionTextArea.getText()

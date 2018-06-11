@@ -51,6 +51,7 @@ pub fn ui_callback(jvm: Jvm, inst: Instance) {
                     GuiResponse::AddEntry { entry } => {
                         debug!("add_entry");
                         let entry = Entry::new(entry.name,
+                                               entry.url,
                                                entry.user,
                                                entry.pass,
                                                entry.desc);
@@ -62,6 +63,7 @@ pub fn ui_callback(jvm: Jvm, inst: Instance) {
                     GuiResponse::ReplaceEntry { entry, index } => {
                         debug!("replace_entry");
                         let entry = Entry::new(entry.name,
+                                               entry.url,
                                                entry.user,
                                                entry.pass,
                                                entry.desc);

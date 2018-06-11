@@ -2,6 +2,7 @@ package org.rustkeylock.japi;
 
 public class ScalaEntry {
     public String name;
+    public String url;
     public String user;
     public String pass;
     public String desc;
@@ -12,6 +13,14 @@ public class ScalaEntry {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getUser() {

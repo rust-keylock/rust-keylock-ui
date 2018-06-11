@@ -251,6 +251,7 @@ impl Editor for AndroidImpl {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ScalaEntry {
     pub name: String,
+    pub url: String,
     pub user: String,
     pub pass: String,
     pub desc: String,
@@ -260,6 +261,7 @@ impl ScalaEntry {
     fn new(entry: &Entry) -> ScalaEntry {
         ScalaEntry {
             name: entry.name.clone(),
+            url: entry.url.clone(),
             user: entry.user.clone(),
             pass: entry.pass.clone(),
             desc: entry.desc.clone(),
@@ -269,6 +271,7 @@ impl ScalaEntry {
     fn empty() -> ScalaEntry {
         ScalaEntry {
             name: "".to_string(),
+            url: "".to_string(),
             user: "".to_string(),
             pass: "".to_string(),
             desc: "".to_string(),

@@ -18,7 +18,7 @@ parts:
   rust-keylock-ui-scala:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-    source-tag: v0.5.0
+#    source-tag: v0.5.0
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
@@ -29,13 +29,13 @@ parts:
       - openjdk-8-jdk
       - openjfx
     organize:
-      ../build/scala/target/desktop-ui-0.5.0.jar: bin/scalaassets/desktop-ui-0.5.0.jar
+      ../build/scala/target/desktop-ui-0.6.0.jar: bin/scalaassets/desktop-ui-0.6.0.jar
       ../build/scala/target/lib/: bin/scalaassets/lib/
 
   rust-keylock-ui-rust:
     source: https://github.com/rust-keylock/rust-keylock-ui.git
     source-subdir: rust/
-    source-tag: v0.5.0
+#    source-tag: v0.5.0
     after:
       - rust-keylock-ui-scala
     plugin: rust
