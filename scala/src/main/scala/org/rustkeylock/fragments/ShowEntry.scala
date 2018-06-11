@@ -1,5 +1,7 @@
 package org.rustkeylock.fragments
 
+import java.net.{MalformedURLException, URL}
+
 import javafx.scene.image.Image
 import com.typesafe.scalalogging.Logger
 import org.rustkeylock.components.{RklButton, RklLabel}
@@ -17,6 +19,8 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
+
+import scala.util.{Failure, Try}
 
 class ShowEntry(anEntry: ScalaEntry,
                 entryIndex: Int,
@@ -59,11 +63,12 @@ class ShowEntry(anEntry: ScalaEntry,
 
     val urlTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
-      promptText = "URL"
+      promptText = "https://example.com"
       text = anEntry.url
       editable = edit
       disable = !edit
     }
+    val urlMessage = new RklLabel
 
     val usernameTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
@@ -147,6 +152,7 @@ class ShowEntry(anEntry: ScalaEntry,
 
     add(new RklLabel("URL"), 0, 5, 2, 1)
     add(urlTextField, 0, 6, 2, 1)
+    add(urlMessage, 0, 7)
 
     add(new RklLabel("Username"), 0, 8, 2, 1)
     add(usernameTextField, 0, 9, 2, 1)
@@ -161,15 +167,15 @@ class ShowEntry(anEntry: ScalaEntry,
 
     (edit, delete) match {
       case (false, false) => {
-        add(editButton, 0, 13)
-        add(deleteButton, 1, 13)
+        add(editButton, 0, 16)
+        add(deleteButton, 1, 16)
       }
       case (true, false) => {
-        add(okButton, 1, 13)
+        add(okButton, 1, 16)
       }
       case (false, true) => {
-        add(new RklLabel("Deleting Entry... Are you sure?"), 0, 13)
-        add(areYouSureButton, 1, 13)
+        add(new RklLabel("Deleting Entry... Are you sure?"), 0, 16)
+        add(areYouSureButton, 1, 16)
       }
       case (_, _) => throw new Exception(s"Cannot handle edit '$edit' and delete '$delete'. Please consider opening a bug to the developers.")
     }
@@ -200,6 +206,17 @@ class ShowEntry(anEntry: ScalaEntry,
       if (entry.pass.isEmpty()) {
         passwordMessage.setError("Required Field")
         errorsExist = true
+      }
+      if (entry.url.nonEmpty) {
+        Try(new URL((entry.url))) match {
+          case Failure(error) => if (error.getClass == classOf[MalformedURLException]) {
+            urlMessage.setError("Wrong URL. Eg: https://my.com")
+            errorsExist = true
+          }
+          case _: Any => {
+            // ignore
+          }
+        }
       }
       if (!errorsExist) {
         if (entryIndex >= 0) {
