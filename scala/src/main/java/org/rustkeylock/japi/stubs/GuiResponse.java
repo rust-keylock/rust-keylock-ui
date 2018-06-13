@@ -100,4 +100,12 @@ public class GuiResponse {
         map.put("ExportImport", inner);
         return map;
     }
+
+    public static Map<String, Object> Copy(String data) {
+        Map<String, Object> inner = new HashMap<>();
+        inner.put("data", data);
+        Map<String, Object> map = new HashMap<>();
+        map.put("Copy", inner);
+        return map;
+    }
 }

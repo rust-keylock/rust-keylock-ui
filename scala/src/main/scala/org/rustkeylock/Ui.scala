@@ -16,12 +16,10 @@
 package org.rustkeylock
 
 import com.typesafe.scalalogging.Logger
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
 import org.rustkeylock.fragments.Empty
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.image.Image
@@ -29,12 +27,12 @@ import scalafx.scene.image.Image
 object Ui extends JFXApp {
   val Banner =
     """
-                _        _              _            _    
+                _        _              _            _
  _ __ _   _ ___| |_     | | _____ _   _| | ___   ___| | __
 | '__| | | / __| __|____| |/ / _ \ | | | |/ _ \ / __| |/ /
-| |  | |_| \__ \ ||_____|   <  __/ |_| | | (_) | (__|   < 
+| |  | |_| \__ \ ||_____|   <  __/ |_| | | (_) | (__|   <
 |_|   \__,_|___/\__|    |_|\_\___|\__, |_|\___/ \___|_|\_\
-                                  |___/                   
+                                  |___/
 
 """
   val logger = Logger(LoggerFactory.getLogger(this.getClass))

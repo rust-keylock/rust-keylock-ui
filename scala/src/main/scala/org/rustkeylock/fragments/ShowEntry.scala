@@ -23,15 +23,15 @@ import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.ScalaEntry
 import org.rustkeylock.japi.stubs.GuiResponse
-import org.rustkeylock.utils.Defs
+import org.rustkeylock.utils.{Defs, Utils}
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
-import scalafx.scene.Scene
+import scalafx.scene.{Node, Scene}
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.{ScrollPane, TextArea, TextField}
+import scalafx.scene.control._
 import scalafx.scene.image.ImageView
-import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.layout.{BorderPane, FlowPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
@@ -94,11 +94,20 @@ class ShowEntry(anEntry: ScalaEntry,
     }
     val usernameMessage = new RklLabel
 
-    val passwordTextField = new TextField() {
-      prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
-      promptText = "Password"
-      text = anEntry.pass
-      editable = edit
+    val passwordTextField = if (edit) {
+      new TextField() {
+        prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
+        promptText = "Password"
+        text = anEntry.pass
+        editable = edit
+      }
+    } else {
+      new PasswordField() {
+          prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
+          promptText = "Password"
+          text = anEntry.pass
+          editable = edit
+      }
     }
     val passwordMessage = new RklLabel
 
@@ -154,7 +163,34 @@ class ShowEntry(anEntry: ScalaEntry,
     }
     GridPane.setHalignment(areYouSureButton, HPos.Right)
 
-    hgap = 33
+    val copyUrlButton = new RklButton {
+      tooltip = "Click to copy URL"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.url)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
+    GridPane.setHalignment(copyUrlButton, HPos.Left)
+
+    val copyUsernameButton = new RklButton {
+      tooltip = "Click to copy Username"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.user)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
+    GridPane.setHalignment(copyUsernameButton, HPos.Left)
+
+    val copyPasswordButton = new RklButton {
+      tooltip = "Click to copy Password"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.pass)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
+    GridPane.setHalignment(copyPasswordButton, HPos.Left)
+
+    hgap = 3
     vgap = 10
     padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
     style = "-fx-background: white"
@@ -165,15 +201,15 @@ class ShowEntry(anEntry: ScalaEntry,
     add(titleTextField, 0, 3, 2, 1)
     add(titleMessage, 0, 4)
 
-    add(new RklLabel("URL"), 0, 5, 2, 1)
+    add(Utils.flowPaneOf(List(new RklLabel("URL"), copyUrlButton)), 0, 5, 2, 1)
     add(urlTextField, 0, 6, 2, 1)
     add(urlMessage, 0, 7)
 
-    add(new RklLabel("Username"), 0, 8, 2, 1)
+    add(Utils.flowPaneOf(List(new RklLabel("Username"), copyUsernameButton)), 0, 8, 2, 1)
     add(usernameTextField, 0, 9, 2, 1)
     add(usernameMessage, 0, 10)
 
-    add(new RklLabel("Password"), 0, 11, 2, 1)
+    add(Utils.flowPaneOf(List(new RklLabel("Password"), copyPasswordButton)), 0, 11, 2, 1)
     add(passwordTextField, 0, 12, 2, 1)
     add(passwordMessage, 0, 13)
 

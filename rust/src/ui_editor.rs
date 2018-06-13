@@ -211,6 +211,9 @@ impl Editor for AndroidImpl {
                     &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))],
                     super::callbacks::ui_callback);
             }
+            &Menu::Current => {
+                // Do not act
+            }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
 

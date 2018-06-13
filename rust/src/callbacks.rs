@@ -141,6 +141,11 @@ pub fn ui_callback(jvm: Jvm, inst: Instance) {
                         tx.send(user_selection).unwrap();
                         debug!("export_import sent UserSelection to the TX");
                     }
+                    GuiResponse::Copy { data } => {
+                        debug!("copy");
+                        tx.send(UserSelection::AddToClipboard(data)).unwrap();
+                        debug!("copy sent UserSelection to the TX");
+                    }
                 }
             } else {
                 error!("Error while creating Rust representation of a Java Instance: {:?}", res.err());
@@ -163,4 +168,5 @@ enum GuiResponse {
     SetConfiguration { strings: Vec<String> },
     UserOptionSelected { user_option: ScalaUserOption },
     ExportImport { path: String, mode: usize, password: String, number: usize },
+    Copy { data: String },
 }
