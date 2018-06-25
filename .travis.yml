@@ -22,7 +22,8 @@ after_success:
 - sh build-scripts/build_rust_for_rust_keylock_ui.sh
 sudo: required
 deploy:
-  'on':
+  on:
+    repo: rust-keylock/rust-keylock-android
     branch: master
   provider: script
   script: docker run -e SNAP_ARCH='amd64' -v $(pwd):$(pwd) -t snapcore/snapcraft sh -c "apt update -qq
