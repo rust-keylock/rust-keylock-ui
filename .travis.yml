@@ -22,10 +22,12 @@ after_success:
 - sh build-scripts/build_rust_for_rust_keylock_ui.sh
 sudo: required
 deploy:
-  on:
-    repo: rust-keylock/rust-keylock-ui
+  'on':
     branch: master
   provider: script
-  script: docker run -e SNAP_ARCH='amd64' -v $(pwd):$(pwd) -t snapcore/snapcraft sh -c "apt update -qq
+  script: docker run -v $(pwd):$(pwd) -t snapcore/snapcraft sh -c "apt update -qq
     && cd $(pwd) && snapcraft && snapcraft push *.snap --release edge"
+  skip_cleanup: true
+napcraft push *.snap --release
+    edge"
   skip_cleanup: true
