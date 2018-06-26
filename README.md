@@ -16,10 +16,10 @@ On the Project [website](https://rust-keylock.github.io/wiki/).
 
 ## Screenshots
 
-![rkl1](gh-images/rkl1.png)
+![rkl1](gh-images/rkl11.png)
 
-![rkl2](gh-images/rkl2.png)
+![rkl2](gh-images/rkl12.png)
 
-![rkl3](gh-images/rkl3.png)
+![rkl3](gh-images/rkl13.png)
 
-![rkl4](gh-images/rkl4.png)
+![rkl4](gh-images/rkl14.png)
