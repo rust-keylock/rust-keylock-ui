@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 
+extern crate dirs;
+extern crate j4rs;
 #[macro_use]
 extern crate log;
 extern crate log4rs;
 extern crate rust_keylock;
 extern crate serde;
-extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
-extern crate j4rs;
+extern crate serde_json;
 
 use j4rs::ClasspathEntry;
 

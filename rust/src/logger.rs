@@ -1,3 +1,4 @@
+use dirs;
 // Copyright 2017 astonbitecode
 // This file is part of rust-keylock password manager.
 //
@@ -15,13 +16,13 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 use log4rs;
 use log4rs::append::file::FileAppender;
-use log4rs::config::{Appender, Config, Root, Logger};
+use log4rs::config::{Appender, Config, Logger, Root};
 use log4rs::encode::pattern::PatternEncoder;
 use log::LevelFilter;
 use std::env;
 
 pub fn init() -> ::errors::Result<()> {
-    let mut logdir = env::home_dir().unwrap_or(env::current_dir()?);
+    let mut logdir = dirs::home_dir().unwrap_or(env::current_dir()?);
     logdir.push(".rust-keylock/logs/rust-keylock.log");
 
     let filelogger = FileAppender::builder()
