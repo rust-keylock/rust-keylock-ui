@@ -16,15 +16,14 @@
 package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
 import org.rustkeylock.fragments._
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
 import scalafx.application.Platform
 import scalafx.stage.Stage
 
-class ShowMenuCb(stage: Stage) extends NativeCallbackSupport {
+class ShowMenuCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(menu: String): Unit = {

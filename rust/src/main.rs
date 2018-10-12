@@ -17,8 +17,6 @@
 #[macro_use]
 extern crate log;
 extern crate log4rs;
-#[macro_use]
-extern crate lazy_static;
 extern crate rust_keylock;
 extern crate serde;
 extern crate serde_json;
@@ -27,21 +25,14 @@ extern crate serde_derive;
 extern crate j4rs;
 
 use j4rs::ClasspathEntry;
-use std::sync::Mutex;
-use std::sync::mpsc::{self, Sender, Receiver};
-use rust_keylock::UserSelection;
 
 mod ui_editor;
 mod logger;
 mod callbacks;
 mod errors;
 
-lazy_static! {
-    static ref TX: Mutex<Option<Sender<UserSelection>>> = Mutex::new(None);
-}
-
 fn main() {
-    logger::init().expect("Could not initialize logging");
+    logger::init().expect("Could not initialize logging ");
 
     let mut default_classpath_entry = std::env::current_exe().unwrap();
     default_classpath_entry.pop();
@@ -56,17 +47,8 @@ fn main() {
                                 Vec::new());
 
     let jvm = jvm_res.unwrap();
-
-    let (tx, rx): (Sender<UserSelection>, Receiver<UserSelection>) = mpsc::channel();
-    // Release the lock before calling the execute.
-    // Execute will not return for the whole lifetime of the app, so the lock would be for ever acquired if was not explicitly released using the brackets.
-    {
-        let mut tx_opt = TX.lock().unwrap();
-        *tx_opt = Some(tx);
-    }
-
     debug!("Initializing the editor");
-    let editor = ui_editor::new(jvm, rx);
+    let editor = ui_editor::new(jvm);
     info!("TX Mutex initialized. Executing native rust_keylock!");
     rust_keylock::execute(&editor)
 }

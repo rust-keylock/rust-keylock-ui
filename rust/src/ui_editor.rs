@@ -13,21 +13,60 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
-use j4rs::{Instance, InvocationArg, Jvm};
+use std::sync::Mutex;
+use j4rs::{Instance, InstanceReceiver, InvocationArg, Jvm};
 use rust_keylock::{Editor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
-use std::sync::mpsc::Receiver;
 
-pub struct AndroidImpl {
+pub struct DesktopImpl {
     jvm: Jvm,
+    handler_instance_receiver: InstanceReceiver,
     show_menu: Instance,
     show_entries: Instance,
     show_entry: Instance,
     edit_configuration: Instance,
     show_message: Instance,
-    rx: Receiver<UserSelection>,
+    previous_menu: Mutex<Option<Menu>>,
 }
 
-pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
+impl DesktopImpl {
+    fn update_internal_state(&self, menu: &UserSelection) {
+        match menu {
+            &UserSelection::GoTo(ref menu) => { self.update_menu(menu.clone()) }
+            _ => {
+                // ignore
+            }
+        }
+    }
+
+    fn update_menu(&self, menu: Menu) {
+        match self.previous_menu.lock() {
+            Ok(mut previous_menu_mut) => {
+                *previous_menu_mut = Some(menu);
+            }
+            Err(error) => {
+                self.show_message(format!("Warning! Could not update the internal state. Reason: {:?}", error).as_ref(),
+                                  vec![UserOption::ok()],
+                                  MessageSeverity::Warn);
+            }
+        };
+    }
+
+    fn previous_menu(&self) -> Option<Menu> {
+        match self.previous_menu.lock() {
+            Ok(previous_menu_mut) => {
+                previous_menu_mut.clone()
+            }
+            Err(error) => {
+                self.show_message(format!("Warning! Could not update the internal state. Reason: {:?}", error).as_ref(),
+                                  vec![UserOption::ok()],
+                                  MessageSeverity::Warn);
+                Some(Menu::Main)
+            }
+        }
+    }
+}
+
+pub fn new(jvm: Jvm) -> DesktopImpl {
     // Start the Ui
     debug!("Calling org.rustkeylock.japi.Launcher.start");
     let launcher = jvm.invoke_static(
@@ -37,11 +76,10 @@ pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
         .unwrap();
     debug!("Calling asynchronously org.rustkeylock.japi.Launcher.initHandler");
     // Do the initialization tasks and set the On close event handler
-    let _ = jvm.invoke_async(
+    let handler_instance_receiver = jvm.invoke_to_channel(
         &launcher,
         "initHandler",
-        &vec![],
-        super::callbacks::ui_callback);
+        &vec![]).expect("Could not initialize the Launcher handler");
     debug!("Calling org.rustkeylock.japi.Launcher.getStage");
     let fx_stage = jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap();
     debug!("Stage retrieved. Proceeding...");
@@ -60,56 +98,52 @@ pub fn new(jvm: Jvm, rx: Receiver<UserSelection>) -> AndroidImpl {
         &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
     let show_message = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMessageCb",
-        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+        &vec![InvocationArg::from(jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap())]).unwrap();
     // Return the Editor
-    AndroidImpl {
+    DesktopImpl {
         jvm: jvm,
+        handler_instance_receiver,
         show_menu: show_menu,
         show_entries: show_entries,
         show_entry: show_entry,
         edit_configuration: edit_configuration,
         show_message: show_message,
-        rx: rx,
+        previous_menu: Mutex::new(None),
     }
 }
 
-impl Editor for AndroidImpl {
+impl Editor for DesktopImpl {
     fn show_password_enter(&self) -> UserSelection {
         debug!("Opening the password fragment");
         let try_pass_menu_name = Menu::TryPass.get_name();
-        let _ = self.jvm.invoke_async(
+        let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &vec![InvocationArg::from(try_pass_menu_name)],
-            super::callbacks::ui_callback);
+            &vec![InvocationArg::from(try_pass_menu_name)]);
         debug!("Waiting for password...");
-        let user_selection = self.rx.recv().unwrap();
-        user_selection
+        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
     }
 
     fn show_change_password(&self) -> UserSelection {
         debug!("Opening the change password fragment");
         let change_pass_menu_name = Menu::ChangePass.get_name();
-        let _ = self.jvm.invoke_async(
+        let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &vec![InvocationArg::from(change_pass_menu_name)],
-            super::callbacks::ui_callback);
+            &vec![InvocationArg::from(change_pass_menu_name)]);
         debug!("Waiting for password...");
-        let user_selection = self.rx.recv().unwrap();
-        user_selection
+        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
     }
 
     fn show_menu(&self, menu: &Menu, safe: &Safe, configuration: &RklConfiguration) -> UserSelection {
         debug!("Opening menu '{:?}' with entries size {}", menu, safe.get_entries().len());
 
-        match menu {
+        let instance_receiver_res_opt = match menu {
             &Menu::Main => {
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::Main.get_name())],
-                    super::callbacks::ui_callback);
+                    &vec![InvocationArg::from(Menu::Main.get_name())]))
             }
             &Menu::EntriesList(_) => {
                 let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
@@ -120,7 +154,7 @@ impl Editor for AndroidImpl {
                 } else {
                     safe.get_filter().clone()
                 };
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_entries,
                     "apply",
                     &vec![
@@ -128,12 +162,11 @@ impl Editor for AndroidImpl {
                             scala_entries.as_slice(),
                             "org.rustkeylock.japi.ScalaEntry",
                             &self.jvm)),
-                        InvocationArg::from(filter)],
-                    super::callbacks::ui_callback);
+                        InvocationArg::from(filter)]))
             }
             &Menu::ShowEntry(index) => {
                 let entry = safe.get_entry_decrypted(index);
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -141,13 +174,12 @@ impl Editor for AndroidImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
                         InvocationArg::from(false)
-                    ],
-                    super::callbacks::ui_callback);
+                    ]))
             }
             &Menu::DeleteEntry(index) => {
                 let entry = ScalaEntry::new(safe.get_entry(index));
 
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -155,13 +187,12 @@ impl Editor for AndroidImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
                         InvocationArg::from(true)
-                    ],
-                    super::callbacks::ui_callback);
+                    ]))
             }
             &Menu::NewEntry => {
                 let empty_entry = ScalaEntry::empty();
                 // In order to denote that this is a new entry, put -1 as index
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -169,12 +200,11 @@ impl Editor for AndroidImpl {
                         InvocationArg::from(-1),
                         InvocationArg::from(true),
                         InvocationArg::from(false)
-                    ],
-                    super::callbacks::ui_callback);
+                    ]))
             }
             &Menu::EditEntry(index) => {
                 let ref selected_entry = safe.get_entry_decrypted(index);
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -182,22 +212,19 @@ impl Editor for AndroidImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(true),
                         InvocationArg::from(false)
-                    ],
-                    super::callbacks::ui_callback);
+                    ]))
             }
             &Menu::ExportEntries => {
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())],
-                    super::callbacks::ui_callback);
+                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())]))
             }
             &Menu::ImportEntries => {
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())],
-                    super::callbacks::ui_callback);
+                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())]))
             }
             &Menu::ShowConfiguration => {
                 let conf_strings = vec![
@@ -205,40 +232,37 @@ impl Editor for AndroidImpl {
                     configuration.nextcloud.username.clone(),
                     configuration.nextcloud.decrypted_password().unwrap(),
                     configuration.nextcloud.use_self_signed_certificate.to_string()];
-                let _ = self.jvm.invoke_async(
+                Some(self.jvm.invoke_to_channel(
                     &self.edit_configuration,
                     "apply",
-                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))],
-                    super::callbacks::ui_callback);
+                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))]))
             }
             &Menu::Current => {
                 // Do not act
+                None
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
 
-        debug!("Waiting for User Input from {:?}", menu);
-        let usin = match self.rx.recv() {
-            Ok(u) => u,
-            Err(error) => {
-                error!("Error while receiving User Input: {:?}", error);
-                UserSelection::GoTo(Menu::Main)
-            }
-        };
-        debug!("Proceeding after receiving User Input from {:?}", menu);
-        usin
+        if let Some(instance_receiver_res) = instance_receiver_res_opt {
+            let selected = super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver_res);
+            self.update_internal_state(&selected);
+
+            selected
+        } else {
+            self.show_menu(&self.previous_menu().unwrap_or(Menu::Main), safe, configuration)
+        }
     }
 
     fn exit(&self, contents_changed: bool) -> UserSelection {
         debug!("Exiting rust-keylock...");
         if contents_changed {
-            let _ = self.jvm.invoke_async(
+            let instance_receiver = self.jvm.invoke_to_channel(
                 &self.show_menu,
                 "apply",
-                &vec![InvocationArg::from(Menu::Exit.get_name())],
-                super::callbacks::ui_callback);
-            let user_selection = self.rx.recv().unwrap();
-            user_selection
+                &vec![InvocationArg::from(Menu::Exit.get_name())]);
+
+            super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
         } else {
             UserSelection::GoTo(Menu::ForceExit)
         }
@@ -250,7 +274,7 @@ impl Editor for AndroidImpl {
             .clone()
             .map(|user_option| ScalaUserOption::new(user_option))
             .collect();
-        let _ = self.jvm.invoke_async(
+        let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_message,
             "apply",
             &vec![
@@ -259,10 +283,9 @@ impl Editor for AndroidImpl {
                     "org.rustkeylock.japi.ScalaUserOption",
                     &self.jvm)),
                 InvocationArg::from(message),
-                InvocationArg::from(severity.to_string())],
-            super::callbacks::ui_callback);
-        let user_selection = self.rx.recv().unwrap();
-        user_selection
+                InvocationArg::from(severity.to_string())]);
+
+        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
     }
 }
 

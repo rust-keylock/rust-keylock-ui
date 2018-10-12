@@ -16,7 +16,6 @@
 package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
 import org.slf4j.LoggerFactory
 
 class LogCb {

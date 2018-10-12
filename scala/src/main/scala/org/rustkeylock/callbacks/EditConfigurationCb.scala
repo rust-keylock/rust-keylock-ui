@@ -16,15 +16,15 @@
 package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
 import org.rustkeylock.fragments.EditConfiguration
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters.asScalaIterator
 import scalafx.application.Platform
 import scalafx.stage.Stage
 
-class EditConfigurationCb(stage: Stage) extends NativeCallbackSupport {
+import scala.collection.JavaConverters.asScalaIterator
+
+class EditConfigurationCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(strings: java.util.List[String]): Unit = {

@@ -17,13 +17,13 @@ package org.rustkeylock.japi;
 
 import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport;
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
 import org.rustkeylock.Ui;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.utils.Defs;
 import scalafx.stage.Stage;
 
-public class Launcher extends NativeCallbackSupport implements EventHandler<WindowEvent> {
+public class Launcher extends NativeCallbackToRustChannelSupport implements EventHandler<WindowEvent> {
     public static Launcher start() {
         new Thread(() -> Ui.main(new String[]{})).start();
         return new Launcher();

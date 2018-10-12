@@ -16,20 +16,20 @@
 package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackSupport
+import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
 import org.rustkeylock.japi.ScalaUserOption
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters.asScalaIterator
 import scalafx.application.Platform
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.scene.layout.Region
 import scalafx.stage.Stage
 
-class ShowMessageCb(stage: Stage) extends NativeCallbackSupport {
+import scala.collection.JavaConverters.asScalaIterator
+
+class ShowMessageCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(options: java.util.List[ScalaUserOption], message: String, severity: String): Unit = {
