@@ -33,7 +33,7 @@ mod callbacks;
 mod errors;
 
 fn main() {
-    logger::init().expect("Could not initialize logging ");
+    logger::init().expect("Could not initialize logging");
 
     let mut default_classpath_entry = std::env::current_exe().unwrap();
     default_classpath_entry.pop();
