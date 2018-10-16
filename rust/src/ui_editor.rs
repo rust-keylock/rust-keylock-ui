@@ -86,16 +86,16 @@ pub fn new(jvm: Jvm) -> DesktopImpl {
     // Create the Java classes that navigate the UI
     let show_menu = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMenuCb",
-        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entries = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowEntriesSetCb",
-        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entry = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowEntryCb",
-        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let edit_configuration = jvm.create_instance(
         "org.rustkeylock.callbacks.EditConfigurationCb",
-        &vec![InvocationArg::from(fx_stage.clone())]).unwrap();
+        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_message = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMessageCb",
         &vec![InvocationArg::from(jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap())]).unwrap();
