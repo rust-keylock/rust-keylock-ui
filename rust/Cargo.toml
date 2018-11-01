@@ -2,13 +2,14 @@
 name = "rust-keylock-ui-rust"
 version = "0.6.0"
 authors = ["aston <astonbitecode@gmail.com>"]
+edition = "2015"
 
 [[bin]]
 name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = "0.6"
+rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib"}
 j4rs = {git = "https://github.com/astonbitecode/j4rs"}
 serde = "1.0"
 serde_json = "1.0"

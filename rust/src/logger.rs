@@ -21,7 +21,7 @@ use log4rs::encode::pattern::PatternEncoder;
 use log::LevelFilter;
 use std::env;
 
-pub fn init() -> ::errors::Result<()> {
+pub fn init() -> crate::errors::Result<()> {
     let mut logdir = dirs::home_dir().unwrap_or(env::current_dir()?);
     logdir.push(".rust-keylock/logs/rust-keylock.log");
 

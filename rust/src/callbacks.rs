@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
-use ::ui_editor::{ScalaEntry, ScalaUserOption};
+use crate::ui_editor::{ScalaEntry, ScalaUserOption};
 use j4rs::{errors, Instance, InstanceReceiver, Jvm};
 use rust_keylock::{Entry, Menu, UserOption, UserSelection};
 use rust_keylock::nextcloud::NextcloudConfiguration;
@@ -23,7 +23,7 @@ use std::sync::mpsc::TryRecvError;
 pub fn handle_instance_receiver_result(jvm: &Jvm, handler_instance_receiver: &InstanceReceiver, instance_receiver_res: errors::Result<InstanceReceiver>) -> UserSelection {
     match instance_receiver_res {
         Ok(instance_receiver) => {
-            let mut user_selection;
+            let user_selection;
 
             // select macro is a nightly feature and is going to be deprecated. Use polling until a better solution is found.
             // https://github.com/rust-lang/rust/issues/27800
