@@ -39,7 +39,7 @@ parts:
     after:
       - rust-keylock-ui-scala
     plugin: rust
-    rust-revision: 1.26.2
+#    rust-revision: 1.26.2
     build-packages:
       - openssl
       - libssl-dev
