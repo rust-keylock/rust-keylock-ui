@@ -16,8 +16,8 @@
 package org.rustkeylock.fragments
 
 import javafx.scene.image.Image
-
 import com.typesafe.scalalogging.Logger
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.common.PleaseWait
 import org.rustkeylock.fragments.sides.Navigation
@@ -38,13 +38,20 @@ import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class EditConfiguration(strings: List[String], stage: Stage, callback: Object => Unit) extends Scene {
+object EditConfiguration {
+  def apply(strings: List[String], stage: Stage, callback: Object => Unit): EditConfiguration = {
+    new EditConfiguration(strings, stage, callback)
+  }
+}
+
+case class EditConfiguration private(strings: List[String], stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -57,46 +64,46 @@ class EditConfiguration(strings: List[String], stage: Stage, callback: Object =>
   class Center() extends GridPane {
     val PaddingValue = 10
 
-    val title = new Text {
+    private val title = new Text {
       text = "Configuration"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
     GridPane.setHalignment(title, HPos.Center)
-    val subtitleNextcloud = new Text {
+    private val subtitleNextcloud = new Text {
       text = "Nextcloud"
       style = "-fx-font-size: 10pt;-fx-font-weight: bold;"
     }
 
-    val urlTextField = new TextField() {
+    private val urlTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Server URL"
-      text = strings(0)
+      text = strings.head
     }
     val urlMessage = new RklLabel
 
-    val usernameTextField = new TextField() {
+    private val usernameTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Username"
       text = strings(1)
     }
     val usernameMessage = new RklLabel
 
-    val passwordTextField = new PasswordField() {
+    private val passwordTextField = new PasswordField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Password"
       text = strings(2)
     }
     val passwordMessage = new RklLabel
 
-    val selfSignedCertCheckBox = new CheckBox("Use a self-signed certificate") {
+    private val selfSignedCertCheckBox = new CheckBox("Use a self-signed certificate") {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       selected = strings(3).toBoolean
     }
     val derCertLocationMessage = new RklLabel
 
-    val okButton = new RklButton {
+    private val okButton = new RklButton {
       tooltip = "Ok"
-      onAction = handle(handleOk)
+      onAction = handle(handleOk())
       graphic = new ImageView {
         image = new Image("images/ok.png")
         fitHeight = 40
@@ -105,7 +112,7 @@ class EditConfiguration(strings: List[String], stage: Stage, callback: Object =>
     }
     GridPane.setHalignment(okButton, HPos.Left)
 
-    val cancelButton = new RklButton {
+    private val cancelButton = new RklButton {
       tooltip = "Cancel"
       onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_MAIN)))
       graphic = new ImageView {
@@ -116,9 +123,9 @@ class EditConfiguration(strings: List[String], stage: Stage, callback: Object =>
     }
     GridPane.setHalignment(cancelButton, HPos.Right)
 
-    val syncButton = new RklButton {
+    private val syncButton = new RklButton {
       tooltip = "Synchronize now"
-      onAction = handle(handleSynchronize)
+      onAction = handle(handleSynchronize())
       graphic = new ImageView {
         image = new Image("images/synchronize.png")
         fitHeight = 22
@@ -157,7 +164,7 @@ class EditConfiguration(strings: List[String], stage: Stage, callback: Object =>
     private def handleOk(): Unit = {
       urlMessage.clear()
 
-      val strings = ListBuffer(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected().toString())
+      val strings = ListBuffer(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected.toString)
 
       logger.debug(s"Applying Configuration with Strings: ${strings.mkString(",")}")
 
@@ -171,7 +178,7 @@ class EditConfiguration(strings: List[String], stage: Stage, callback: Object =>
 
     class PleaseWaitRunnable() extends Runnable {
       override def run(): Unit = {
-        stage.setScene(new PleaseWait(callback))
+        stage.setScene(PleaseWait(callback))
       }
     }
 

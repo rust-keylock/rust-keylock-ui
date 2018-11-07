@@ -13,57 +13,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
-use std::sync::Mutex;
-use j4rs::{Instance, InstanceReceiver, InvocationArg, Jvm};
-use rust_keylock::{Editor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
+
+use std::sync::mpsc::{self, Receiver};
+use j4rs::{Instance, InvocationArg, Jvm};
+use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
 
 pub struct DesktopImpl {
     jvm: Jvm,
-    handler_instance_receiver: InstanceReceiver,
+    launcher: Instance,
     show_menu: Instance,
     show_entries: Instance,
     show_entry: Instance,
     edit_configuration: Instance,
     show_message: Instance,
-    previous_menu: Mutex<Option<Menu>>,
-}
-
-impl DesktopImpl {
-    fn update_internal_state(&self, menu: &UserSelection) {
-        match menu {
-            &UserSelection::GoTo(ref menu) => { self.update_menu(menu.clone()) }
-            _ => {
-                // ignore
-            }
-        }
-    }
-
-    fn update_menu(&self, menu: Menu) {
-        match self.previous_menu.lock() {
-            Ok(mut previous_menu_mut) => {
-                *previous_menu_mut = Some(menu);
-            }
-            Err(error) => {
-                self.show_message(format!("Warning! Could not update the internal state. Reason: {:?}", error).as_ref(),
-                                  vec![UserOption::ok()],
-                                  MessageSeverity::Warn);
-            }
-        };
-    }
-
-    fn previous_menu(&self) -> Option<Menu> {
-        match self.previous_menu.lock() {
-            Ok(previous_menu_mut) => {
-                previous_menu_mut.clone()
-            }
-            Err(error) => {
-                self.show_message(format!("Warning! Could not update the internal state. Reason: {:?}", error).as_ref(),
-                                  vec![UserOption::ok()],
-                                  MessageSeverity::Warn);
-                Some(Menu::Main)
-            }
-        }
-    }
 }
 
 pub fn new(jvm: Jvm) -> DesktopImpl {
@@ -74,12 +36,6 @@ pub fn new(jvm: Jvm) -> DesktopImpl {
         "start",
         &Vec::new())
         .unwrap();
-    debug!("Calling asynchronously org.rustkeylock.japi.Launcher.initHandler");
-    // Do the initialization tasks and set the On close event handler
-    let handler_instance_receiver = jvm.invoke_to_channel(
-        &launcher,
-        "initHandler",
-        &vec![]).expect("Could not initialize the Launcher handler");
     debug!("Calling org.rustkeylock.japi.Launcher.getStage");
     let fx_stage = jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap();
     debug!("Stage retrieved. Proceeding...");
@@ -102,18 +58,17 @@ pub fn new(jvm: Jvm) -> DesktopImpl {
     // Return the Editor
     DesktopImpl {
         jvm: jvm,
-        handler_instance_receiver,
+        launcher: launcher,
         show_menu: show_menu,
         show_entries: show_entries,
         show_entry: show_entry,
         edit_configuration: edit_configuration,
         show_message: show_message,
-        previous_menu: Mutex::new(None),
     }
 }
 
-impl Editor for DesktopImpl {
-    fn show_password_enter(&self) -> UserSelection {
+impl AsyncEditor for DesktopImpl {
+    fn show_password_enter(&self) -> Receiver<UserSelection> {
         debug!("Opening the password fragment");
         let try_pass_menu_name = Menu::TryPass.get_name();
         let instance_receiver = self.jvm.invoke_to_channel(
@@ -121,10 +76,10 @@ impl Editor for DesktopImpl {
             "apply",
             &vec![InvocationArg::from(try_pass_menu_name)]);
         debug!("Waiting for password...");
-        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
 
-    fn show_change_password(&self) -> UserSelection {
+    fn show_change_password(&self) -> Receiver<UserSelection> {
         debug!("Opening the change password fragment");
         let change_pass_menu_name = Menu::ChangePass.get_name();
         let instance_receiver = self.jvm.invoke_to_channel(
@@ -132,18 +87,18 @@ impl Editor for DesktopImpl {
             "apply",
             &vec![InvocationArg::from(change_pass_menu_name)]);
         debug!("Waiting for password...");
-        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
 
-    fn show_menu(&self, menu: &Menu, safe: &Safe, configuration: &RklConfiguration) -> UserSelection {
+    fn show_menu(&self, menu: &Menu, safe: &Safe, configuration: &RklConfiguration) -> Receiver<UserSelection> {
         debug!("Opening menu '{:?}' with entries size {}", menu, safe.get_entries().len());
 
-        let instance_receiver_res_opt = match menu {
+        let instance_receiver_res = match menu {
             &Menu::Main => {
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::Main.get_name())]))
+                    &vec![InvocationArg::from(Menu::Main.get_name())])
             }
             &Menu::EntriesList(_) => {
                 let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
@@ -154,7 +109,7 @@ impl Editor for DesktopImpl {
                 } else {
                     safe.get_filter().clone()
                 };
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_entries,
                     "apply",
                     &vec![
@@ -162,11 +117,11 @@ impl Editor for DesktopImpl {
                             scala_entries.as_slice(),
                             "org.rustkeylock.japi.ScalaEntry",
                             &self.jvm)),
-                        InvocationArg::from(filter)]))
+                        InvocationArg::from(filter)])
             }
             &Menu::ShowEntry(index) => {
                 let entry = safe.get_entry_decrypted(index);
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -174,12 +129,12 @@ impl Editor for DesktopImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
                         InvocationArg::from(false)
-                    ]))
+                    ])
             }
             &Menu::DeleteEntry(index) => {
                 let entry = ScalaEntry::new(safe.get_entry(index));
 
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -187,12 +142,12 @@ impl Editor for DesktopImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
                         InvocationArg::from(true)
-                    ]))
+                    ])
             }
             &Menu::NewEntry => {
                 let empty_entry = ScalaEntry::empty();
                 // In order to denote that this is a new entry, put -1 as index
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -200,11 +155,11 @@ impl Editor for DesktopImpl {
                         InvocationArg::from(-1),
                         InvocationArg::from(true),
                         InvocationArg::from(false)
-                    ]))
+                    ])
             }
             &Menu::EditEntry(index) => {
                 let ref selected_entry = safe.get_entry_decrypted(index);
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
                     &vec![
@@ -212,19 +167,19 @@ impl Editor for DesktopImpl {
                         InvocationArg::from(index as i32),
                         InvocationArg::from(true),
                         InvocationArg::from(false)
-                    ]))
+                    ])
             }
             &Menu::ExportEntries => {
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())]))
+                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())])
             }
             &Menu::ImportEntries => {
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())]))
+                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())])
             }
             &Menu::ShowConfiguration => {
                 let conf_strings = vec![
@@ -232,43 +187,40 @@ impl Editor for DesktopImpl {
                     configuration.nextcloud.username.clone(),
                     configuration.nextcloud.decrypted_password().unwrap(),
                     configuration.nextcloud.use_self_signed_certificate.to_string()];
-                Some(self.jvm.invoke_to_channel(
+                self.jvm.invoke_to_channel(
                     &self.edit_configuration,
                     "apply",
-                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))]))
+                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))])
             }
             &Menu::Current => {
-                // Do not act
-                None
+                self.jvm.invoke_to_channel(
+                    &self.show_menu,
+                    "apply",
+                    &vec![InvocationArg::from(Menu::Current.get_name())])
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
 
-        if let Some(instance_receiver_res) = instance_receiver_res_opt {
-            let selected = super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver_res);
-            self.update_internal_state(&selected);
-
-            selected
-        } else {
-            self.show_menu(&self.previous_menu().unwrap_or(Menu::Main), safe, configuration)
-        }
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
     }
 
-    fn exit(&self, contents_changed: bool) -> UserSelection {
-        debug!("Exiting rust-keylock...");
+    fn exit(&self, contents_changed: bool) -> Receiver<UserSelection> {
+        debug!("Exiting rust-keylock ui...");
         if contents_changed {
             let instance_receiver = self.jvm.invoke_to_channel(
                 &self.show_menu,
                 "apply",
                 &vec![InvocationArg::from(Menu::Exit.get_name())]);
 
-            super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
+            super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
         } else {
-            UserSelection::GoTo(Menu::ForceExit)
+            let (tx, rx) = mpsc::channel();
+            let _ = tx.send(UserSelection::GoTo(Menu::ForceExit));
+            rx
         }
     }
 
-    fn show_message(&self, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> UserSelection {
+    fn show_message(&self, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> Receiver<UserSelection> {
         debug!("Showing Message '{}'", message);
         let scala_user_options: Vec<ScalaUserOption> = options.iter()
             .clone()
@@ -285,7 +237,7 @@ impl Editor for DesktopImpl {
                 InvocationArg::from(message),
                 InvocationArg::from(severity.to_string())]);
 
-        super::callbacks::handle_instance_receiver_result(&self.jvm, &self.handler_instance_receiver, instance_receiver)
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
 }
 

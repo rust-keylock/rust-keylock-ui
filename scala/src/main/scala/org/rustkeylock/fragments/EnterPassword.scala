@@ -16,11 +16,11 @@
 package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.SharedState
 import org.slf4j.LoggerFactory
-
 import scalafx.Includes._
 import scalafx.application.Platform
 import scalafx.geometry.{HPos, Insets}
@@ -31,29 +31,36 @@ import scalafx.scene.layout.GridPane
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class EnterPassword(stage: Stage, callback: Object => Unit) extends Scene {
-  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+object EnterPassword {
+  def apply(stage: Stage, callback: Object => Unit): EnterPassword = {
+    new EnterPassword(stage, callback)
+  }
+}
 
-  val password = new PasswordField() {
+case class EnterPassword private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
+  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
+
+  private val password = new PasswordField() {
     promptText = "Password"
   }
   Platform.runLater(password.requestFocus())
   val passwordMessage = new RklLabel
 
-  val number = new PasswordField() {
+  private val number = new PasswordField() {
     promptText = "Favorite number"
   }
   val numberMessage = new RklLabel
 
-  val label = new Text {
+  private val label = new Text {
     text = "Welcome to rust-keylock"
     style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
   }
   GridPane.setHalignment(label, HPos.Center)
 
-  val button = new RklButton {
+  private val button = new RklButton {
     tooltip = "Decrypt"
-    onAction = handle(buttonHandler)
+    onAction = handle(buttonHandler())
     graphic = new ImageView("images/arrow_right.png")
     defaultButton = true
   }

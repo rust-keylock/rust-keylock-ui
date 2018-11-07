@@ -16,12 +16,12 @@
 package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
 import scalafx.scene.Scene
@@ -30,26 +30,33 @@ import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class ExitMenu(stage: Stage, callback: Object => Unit) extends Scene {
+object ExitMenu {
+  def apply(stage: Stage, callback: Object => Unit): ExitMenu = {
+    new ExitMenu(stage, callback)
+  }
+}
+
+case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new Center()
   }
 
   class Center() extends GridPane {
-    val title = new Text {
+    private val title = new Text {
       text = "Unsaved Data!"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
 
     GridPane.setHalignment(title, HPos.Center)
 
-    val yesButton = new RklButton {
+    private val yesButton = new RklButton {
       tooltip = "Yes"
       onAction = handle {
         logger.debug("The User selected to force Exit with unsaved data")
@@ -63,7 +70,7 @@ class ExitMenu(stage: Stage, callback: Object => Unit) extends Scene {
     }
     GridPane.setHalignment(yesButton, HPos.Right)
 
-    val noButton = new RklButton {
+    private val noButton = new RklButton {
       tooltip = "No"
       onAction = handle {
         logger.debug("The User selected not to exit because of unsaved data")

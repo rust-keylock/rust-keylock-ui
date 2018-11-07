@@ -15,50 +15,46 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
-import scalafx.Includes._
-import scalafx.scene.Scene
-import org.slf4j.LoggerFactory
-import com.typesafe.scalalogging.Logger
-
-import scalafx.scene.layout.GridPane
-import scalafx.geometry.Insets
-import scalafx.scene.layout.BorderPane
-import org.rustkeylock.fragments.sides.Navigation
-
-import scalafx.scene.control.ScrollPane
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.text.Text
-import scalafx.geometry.HPos
-import scalafx.scene.control.TextField
-import org.rustkeylock.components.RklLabel
-import org.rustkeylock.components.RklButton
-
-import scalafx.scene.image.ImageView
-import javafx.scene.image.Image
-
-import scalafx.stage.FileChooser
-import scalafx.stage.Stage
-import scalafx.scene.control.PasswordField
-import scalafx.application.Platform
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.io.File
 
+import com.typesafe.scalalogging.Logger
+import javafx.scene.image.Image
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
+import org.rustkeylock.components.{RklButton, RklLabel}
+import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
+import org.slf4j.LoggerFactory
+import scalafx.Includes._
+import scalafx.application.Platform
+import scalafx.geometry.{HPos, Insets}
+import scalafx.scene.Scene
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.control.{PasswordField, ScrollPane, TextField}
+import scalafx.scene.image.ImageView
+import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.text.Text
+import scalafx.stage.{DirectoryChooser, FileChooser, Stage}
 
-import scalafx.stage.DirectoryChooser
-import scalafx.scene.paint.Color
+object ImportExport {
+  def apply(export: Boolean, stage: Stage, callback: Object => Unit): ImportExport = {
+    new ImportExport(export, stage, callback)
+  }
+}
 
-class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) extends Scene {
+case class ImportExport private(export: Boolean, stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
-  val homePath = System.getProperty("user.home")
-  val proposedFilename = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + "_rust_keylock"
-  var path = homePath + File.separator + proposedFilename
+  private val homePath = System.getProperty("user.home")
+  private val proposedFilename = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + "_rust_keylock"
+  private var path = homePath + File.separator + proposedFilename
+
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -71,7 +67,7 @@ class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) exte
   class Center() extends GridPane {
     prefWidth <== stage.width - Navigation.Width
 
-    val title = new Text {
+    private val title = new Text {
       text = if (export) {
         "Where to export?"
       } else {
@@ -81,7 +77,7 @@ class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) exte
     }
     GridPane.setHalignment(title, HPos.Center)
 
-    val pathTextField = new TextField() {
+    private val pathTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Path"
       text = path
@@ -89,7 +85,7 @@ class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) exte
     Platform.runLater(pathTextField.end())
 
     val pathTextMessage = new RklLabel
-    val browseButton = new RklButton {
+    private val browseButton = new RklButton {
       tooltip = "Browse"
       onAction = handle {
         if (export) {
@@ -106,21 +102,21 @@ class ImportExport(export: Boolean, stage: Stage, callback: Object => Unit) exte
     }
     GridPane.setHalignment(browseButton, HPos.Left)
 
-    val passwordField = new PasswordField() {
+    private val passwordField = new PasswordField() {
       prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Use password"
     }
     val passwordFieldMessage = new RklLabel
 
-    val numberField = new PasswordField() {
+    private val numberField = new PasswordField() {
       prefWidth <== stage.width - Navigation.Width - 70
       promptText = "Use favorite number"
     }
     val numberFieldMessage = new RklLabel
 
-    val okButton = new RklButton {
+    private val okButton = new RklButton {
       tooltip = "Ok"
-      onAction = handle(okButtonHandler)
+      onAction = handle(okButtonHandler())
       graphic = new ImageView {
         image = new Image("images/tick.png")
         fitHeight = 50

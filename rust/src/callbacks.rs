@@ -13,24 +13,42 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
+
 use crate::ui_editor::{ScalaEntry, ScalaUserOption};
 use j4rs::{errors, Instance, InstanceReceiver, Jvm};
 use rust_keylock::{Entry, Menu, UserOption, UserSelection};
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use std::{thread, time};
-use std::sync::mpsc::TryRecvError;
+use std::sync::mpsc::{self, Receiver, TryRecvError};
 
-pub fn handle_instance_receiver_result(jvm: &Jvm, handler_instance_receiver: &InstanceReceiver, instance_receiver_res: errors::Result<InstanceReceiver>) -> UserSelection {
+pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors::Result<InstanceReceiver>, launcher: &Instance) -> Receiver<UserSelection> {
+    let (tx, rx) = mpsc::channel();
+    let handler_instance_receiver = jvm.invoke_to_channel(
+        &launcher,
+        "initHandler",
+        &vec![]).expect("Could not register the Launcher callback");
+
+    let _ = thread::spawn(move || {
+        let jvm = Jvm::attach_thread().unwrap();
+        let sel = retrieve_user_selection(&jvm, &handler_instance_receiver, instance_receiver_res);
+        let _ = tx.send(sel);
+    });
+
+    rx
+}
+
+fn retrieve_user_selection(jvm: &Jvm, handler_instance_receiver: &InstanceReceiver, instance_receiver_res: errors::Result<InstanceReceiver>) -> UserSelection {
     match instance_receiver_res {
         Ok(instance_receiver) => {
             let user_selection;
 
-            // select macro is a nightly feature and is going to be deprecated. Use polling until a better solution is found.
+            // The select macro is a nightly feature and is going to be deprecated. Use polling until a better solution is found.
             // https://github.com/rust-lang/rust/issues/27800
             loop {
-                let park_millis = time::Duration::from_millis(100);
+                let park_millis = time::Duration::from_millis(10);
 
                 match (instance_receiver.rx().try_recv(), handler_instance_receiver.rx().try_recv()) {
+                    // Match the handler instance receiver first, as it sends messages for exiting
                     (_, Ok(instance)) => {
                         user_selection = handle_instance(jvm, instance);
                         break;
@@ -49,11 +67,10 @@ pub fn handle_instance_receiver_result(jvm: &Jvm, handler_instance_receiver: &In
                         user_selection = UserSelection::GoTo(Menu::Main);
                         break;
                     }
-                    (Err(TryRecvError::Empty), Err(TryRecvError::Empty)) => {
-                        // keep looping
-                        thread::park_timeout(park_millis);
-                    }
+                    (Err(TryRecvError::Empty), Err(TryRecvError::Empty)) => { /* keep looping */ }
                 }
+
+                thread::park_timeout(park_millis);
             }
 
             user_selection

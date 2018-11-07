@@ -17,13 +17,15 @@ package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
 import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
+import org.rustkeylock.callbacks.state.SceneState
+import org.rustkeylock.components.RklStage
 import org.rustkeylock.fragments._
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.application.Platform
 import scalafx.stage.Stage
 
-class ShowMenuCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
+class ShowMenuCb(stage: RklStage) extends NativeCallbackToRustChannelSupport {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(menu: String): Unit = {
@@ -31,26 +33,29 @@ class ShowMenuCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
     Platform.runLater(new UiThreadRunnable(stage, menu))
   }
 
-  class UiThreadRunnable(stage: Stage, menu: String) extends Runnable {
+  class UiThreadRunnable(stage: RklStage, menu: String) extends Runnable {
     override def run(): Unit = {
       val newScene = menu match {
         case Defs.MENU_TRY_PASS => {
-          new EnterPassword(stage, doCallback)
+          EnterPassword(stage.fxStage(), doCallback)
         }
         case Defs.MENU_CHANGE_PASS => {
-          new ChangePassword(stage, doCallback)
+          ChangePassword(stage.fxStage(), doCallback)
         }
         case Defs.MENU_MAIN => {
-          new MainMenu(stage, doCallback)
+          MainMenu(stage.fxStage(), doCallback)
         }
         case Defs.MENU_EXIT => {
-          new ExitMenu(stage, doCallback)
+          ExitMenu(stage.fxStage(), doCallback)
         }
         case Defs.MENU_EXPORT_ENTRIES => {
-          new ImportExport(true, stage, doCallback)
+          ImportExport(true, stage.fxStage(), doCallback)
         }
         case Defs.MENU_IMPORT_ENTRIES => {
-          new ImportExport(false, stage, doCallback)
+          ImportExport(false, stage.fxStage(), doCallback)
+        }
+        case Defs.MENU_CURRENT => {
+          SceneState.getWithUpdatedCallback(doCallback)
         }
         case other => throw new RuntimeException(s"Cannot Show Menu with name '$menu' and no arguments")
       }

@@ -15,31 +15,34 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
-import scalafx.Includes._
-import scalafx.scene.Scene
-import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
-import scalafx.scene.layout.GridPane
-import scalafx.geometry.Insets
-import scalafx.scene.layout.BorderPane
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.fragments.sides.Navigation
+import org.slf4j.LoggerFactory
+import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
-import scalafx.scene.layout.VBox
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.ListView
-import scalafx.scene.text.Text
-import scalafx.scene.paint.Stops
-import scalafx.geometry.Pos
 import scalafx.scene.image.ImageView
+import scalafx.scene.layout.{BorderPane, VBox}
+import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class MainMenu(stage: Stage, callback: Object => Unit) extends Scene {
+object MainMenu {
+  def apply(stage: Stage, callback: Object => Unit): MainMenu = {
+    new MainMenu(stage, callback)
+  }
+}
+
+case class MainMenu private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true

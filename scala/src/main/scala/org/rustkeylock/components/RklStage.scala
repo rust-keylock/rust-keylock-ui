@@ -13,24 +13,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
-package org.rustkeylock.utils
+package org.rustkeylock.components
 
-object Defs {
-  val MENU_TRY_PASS = "TryPass"
-  val MENU_CHANGE_PASS = "ChangePass"
-  val MENU_MAIN = "Main"
-  val MENU_ENTRIES_LIST = "EntriesList"
-  val MENU_SHOW_ENTRY = "ShowEntry"
-  val MENU_SAVE = "Save"
-  val MENU_EXIT = "Exit"
-  val MENU_FORCE_EXIT = "ForceExit"
-  val MENU_EDIT_ENTRY = "EditEntry"
-  val MENU_DELETE_ENTRY = "DeleteEntry"
-  val MENU_NEW_ENTRY = "NewEntry"
-  val MENU_EXPORT_ENTRIES = "ExportEntries"
-  val MENU_IMPORT_ENTRIES = "ImportEntries"
-  val MENU_SHOW_CONFIGURATION = "ShowConfiguration"
-  val MENU_SYNCHRONIZE = "Synchronize"
-  val MENU_CURRENT = "Current"
-  val EMPTY_ARG = "null"
+import org.rustkeylock.callbacks.state.SceneState
+import scalafx.scene.Scene
+import scalafx.stage.Stage
+
+class RklStage(stage: Stage) {
+  def setScene(scene: Scene): Unit = {
+    stage.setScene(scene)
+    SceneState.set(scene)
+  }
+
+  def fxStage(): Stage = stage
 }

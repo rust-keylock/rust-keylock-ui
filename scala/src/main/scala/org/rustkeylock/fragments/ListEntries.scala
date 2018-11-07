@@ -15,34 +15,41 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
+import com.typesafe.scalalogging.Logger
 import javafx.event.EventHandler
 import javafx.scene.input.KeyEvent
-
-import com.typesafe.scalalogging.Logger
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
 import scalafx.Includes.handle
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{HPos, Insets}
 import scalafx.scene.Scene
-import scalafx.scene.control.{ListView, ScrollPane}
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.control.{ListView, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class ListEntries(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit) extends Scene {
+object ListEntries {
+  def apply(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit): ListEntries = {
+    new ListEntries(entries, filter, stage, callback)
+  }
+}
+
+case class ListEntries private(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true

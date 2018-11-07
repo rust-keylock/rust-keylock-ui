@@ -17,16 +17,16 @@ package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
 import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
+import org.rustkeylock.components.RklStage
 import org.rustkeylock.fragments.ListEntries
 import org.rustkeylock.japi.ScalaEntry
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.application.Platform
-import scalafx.stage.Stage
 
 import scala.collection.JavaConverters.asScalaIterator
 
-class ShowEntriesSetCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
+class ShowEntriesSetCb(stage: RklStage) extends NativeCallbackToRustChannelSupport {
   private val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(entriesSet: java.util.List[ScalaEntry], filter: String): Unit = {
@@ -35,14 +35,14 @@ class ShowEntriesSetCb(stage: Stage) extends NativeCallbackToRustChannelSupport 
     Platform.runLater(new UiThreadRunnable(stage, entries, filter))
   }
 
-  class UiThreadRunnable(stage: Stage, entries: List[ScalaEntry], filter: String) extends Runnable {
+  class UiThreadRunnable(stage: RklStage, entries: List[ScalaEntry], filter: String) extends Runnable {
     override def run(): Unit = {
       val processedFilter = if (filter == Defs.EMPTY_ARG) {
         ""
       } else {
         filter
       }
-      stage.setScene(new ListEntries(entries.map(_.name), processedFilter, stage, doCallback))
+      stage.setScene(ListEntries(entries.map(_.name), processedFilter, stage.fxStage(), doCallback))
     }
   }
 

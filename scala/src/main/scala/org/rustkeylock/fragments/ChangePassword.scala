@@ -15,42 +15,40 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
-import scalafx.Includes._
-import scalafx.scene.Scene
-import scalafx.scene.layout.GridPane
-import scalafx.geometry.HPos
-import org.slf4j.LoggerFactory
-
-import scalafx.application.Platform
 import com.typesafe.scalalogging.Logger
-
-import scalafx.scene.control.PasswordField
-import org.rustkeylock.components.RklLabel
-
-import scalafx.scene.text.Text
-import org.rustkeylock.components.RklButton
-
-import scalafx.scene.image.ImageView
-import scalafx.collections.ObservableBuffer
-import scalafx.geometry.Insets
-import scalafx.scene.layout.BorderPane
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
+import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
-
-import scalafx.scene.control.ScrollPane
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import org.rustkeylock.utils.SharedState
-
+import org.slf4j.LoggerFactory
+import scalafx.Includes._
+import scalafx.application.Platform
+import scalafx.collections.ObservableBuffer
+import scalafx.geometry.{HPos, Insets}
+import scalafx.scene.Scene
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.control.{PasswordField, ScrollPane}
+import scalafx.scene.image.ImageView
+import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
+object ChangePassword {
+  def apply(stage: Stage, callback: Object => Unit): ChangePassword = {
+    new ChangePassword(stage, callback)
+  }
+}
+
+case class ChangePassword private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
-    if (SharedState.isLoggedIn) {
+    if (SharedState.isLoggedIn()) {
       // Navigation pane
-      left = new Navigation(callback)
+      left = Navigation(callback)
     }
     // Main pane
     center = new ScrollPane {
@@ -64,34 +62,34 @@ class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
   class Center extends GridPane {
     prefWidth <== stage.width - Navigation.Width
 
-    val password1 = new PasswordField() {
+    private val password1 = new PasswordField() {
       promptText = "Password"
     }
     Platform.runLater(password1.requestFocus())
     val passwordMessage1 = new RklLabel
-    val password2 = new PasswordField() {
+    private val password2 = new PasswordField() {
       promptText = " Re-enter password"
     }
     val passwordMessage2 = new RklLabel
 
-    val number1 = new PasswordField() {
+    private val number1 = new PasswordField() {
       promptText = "Favorite number"
     }
     val numberMessage1 = new RklLabel
-    val number2 = new PasswordField() {
+    private val number2 = new PasswordField() {
       promptText = "Re-enter favorite number"
     }
     val numberMessage2 = new RklLabel
 
-    val label = new Text {
+    private val label = new Text {
       text = "Master password setup"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
     GridPane.setHalignment(label, HPos.Center)
 
-    val applyButton = new RklButton {
+    private val applyButton = new RklButton {
       tooltip = "Apply"
-      onAction = handle(buttonHandler)
+      onAction = handle(buttonHandler())
       graphic = new ImageView("images/arrow_right.png")
       stylesheets = new ObservableBuffer[String]()
       defaultButton = true
@@ -135,10 +133,10 @@ class ChangePassword(stage: Stage, callback: Object => Unit) extends Scene {
       } else if (number1.getText() != number2.getText()) {
         numberMessage2.setError("The provided favorite numbers did not match")
       } else {
-        if (password1.getText().trim().isEmpty()) {
+        if (password1.getText().trim().isEmpty) {
           passwordMessage1.setError("This Field cannot be empty")
           password1.clear()
-        } else if (number1.getText().trim().isEmpty()) {
+        } else if (number1.getText().trim().isEmpty) {
           numberMessage1.setError("This Field cannot be empty")
           number1.clear()
         } else {

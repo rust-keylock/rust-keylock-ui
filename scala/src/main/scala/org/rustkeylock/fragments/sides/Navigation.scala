@@ -15,33 +15,39 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments.sides
 
-import scalafx.scene.layout.VBox
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.RklButton
-
+import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.utils.Defs
 import scalafx.Includes._
-import scalafx.scene.image.ImageView
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control.Tooltip.stringToTooltip
-import org.rustkeylock.utils.Defs
-import org.rustkeylock.japi.stubs.GuiResponse
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.VBox
 
-import scalafx.scene.image.Image
+object Navigation {
+  private[sides] val imgHeight = 64
+  private[sides] val imgWidth = 64
+  val Width: Int = imgWidth + 24
 
-class Navigation(callback: Object => Unit) extends ScrollPane {
+  def apply(callback: Object => Unit): Navigation = {
+    new Navigation(callback)
+  }
+}
+
+case class Navigation private(callback: Object => Unit) extends ScrollPane with RklCallbackUpdateSupport[ScrollPane] {
+  override def withNewCallback(newCallback: Object => Unit): ScrollPane = this.copy(callback = newCallback)
+
   fitToHeight = true
   hbarPolicy = ScrollBarPolicy.AsNeeded
   vbarPolicy = ScrollBarPolicy.AsNeeded
   content = new NavigationContent(callback)
 }
 
-object Navigation {
-  private[sides] val imgHeight = 64
-  private[sides] val imgWidth = 64
-  val Width = imgWidth + 24
-}
-
-class NavigationContent(callback: Object => Unit) extends VBox {
+case class NavigationContent(callback: Object => Unit) extends VBox with RklCallbackUpdateSupport[VBox] {
+  override def withNewCallback(newCallback: Object => Unit): VBox = this.copy(callback = newCallback)
 
   children = Seq(
     new RklButton {

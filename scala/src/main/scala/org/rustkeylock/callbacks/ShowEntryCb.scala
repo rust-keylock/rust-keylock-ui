@@ -17,13 +17,13 @@ package org.rustkeylock.callbacks
 
 import com.typesafe.scalalogging.Logger
 import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
+import org.rustkeylock.components.RklStage
 import org.rustkeylock.fragments.ShowEntry
 import org.rustkeylock.japi.ScalaEntry
 import org.slf4j.LoggerFactory
 import scalafx.application.Platform
-import scalafx.stage.Stage
 
-class ShowEntryCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
+class ShowEntryCb(stage: RklStage) extends NativeCallbackToRustChannelSupport {
   private val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   def apply(anEntry: ScalaEntry, entryIndex: Integer, edit: java.lang.Boolean, delete: java.lang.Boolean): Unit = {
@@ -31,9 +31,9 @@ class ShowEntryCb(stage: Stage) extends NativeCallbackToRustChannelSupport {
     Platform.runLater(new UiThreadRunnable(stage, anEntry, entryIndex, edit, delete))
   }
 
-  class UiThreadRunnable(stage: Stage, anEntry: ScalaEntry, entryIndex: Int, edit: Boolean, delete: Boolean) extends Runnable {
+  class UiThreadRunnable(stage: RklStage, anEntry: ScalaEntry, entryIndex: Int, edit: Boolean, delete: Boolean) extends Runnable {
     override def run(): Unit = {
-      stage.setScene(new ShowEntry(anEntry, entryIndex, edit, delete, stage, doCallback))
+      stage.setScene(ShowEntry(anEntry, entryIndex, edit, delete, stage.fxStage(), doCallback))
     }
   }
 

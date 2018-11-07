@@ -17,8 +17,9 @@ package org.rustkeylock.fragments
 
 import java.net.{MalformedURLException, URL}
 
-import javafx.scene.image.Image
 import com.typesafe.scalalogging.Logger
+import javafx.scene.image.Image
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.ScalaEntry
@@ -27,28 +28,47 @@ import org.rustkeylock.utils.{Defs, Utils}
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
-import scalafx.scene.{Node, Scene}
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control._
 import scalafx.scene.image.ImageView
-import scalafx.scene.layout.{BorderPane, FlowPane, GridPane}
+import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
 import scala.util.{Failure, Try}
 
-class ShowEntry(anEntry: ScalaEntry,
-                entryIndex: Int,
-                edit: Boolean,
-                delete: Boolean,
-                stage: Stage,
-                callback: Object => Unit) extends Scene {
+object ShowEntry {
+  def apply(anEntry: ScalaEntry,
+            entryIndex: Int,
+            edit: Boolean,
+            delete: Boolean,
+            stage: Stage,
+            callback: Object => Unit): ShowEntry = {
+
+    new ShowEntry(anEntry: ScalaEntry,
+      entryIndex: Int,
+      edit: Boolean,
+      delete: Boolean,
+      stage: Stage,
+      callback)
+  }
+}
+
+case class ShowEntry private(anEntry: ScalaEntry,
+                        entryIndex: Int,
+                        edit: Boolean,
+                        delete: Boolean,
+                        stage: Stage,
+                        callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true
@@ -103,10 +123,10 @@ class ShowEntry(anEntry: ScalaEntry,
       }
     } else {
       new PasswordField() {
-          prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
-          promptText = "Password"
-          text = anEntry.pass
-          editable = edit
+        prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
+        promptText = "Password"
+        text = anEntry.pass
+        editable = edit
       }
     }
     val passwordMessage = new RklLabel

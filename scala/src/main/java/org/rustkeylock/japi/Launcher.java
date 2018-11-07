@@ -19,17 +19,20 @@ import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
 import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
 import org.rustkeylock.Ui;
+import org.rustkeylock.components.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.utils.Defs;
 import scalafx.stage.Stage;
 
 public class Launcher extends NativeCallbackToRustChannelSupport implements EventHandler<WindowEvent> {
+    private boolean initialized = false;
+
     public static Launcher start() {
         new Thread(() -> Ui.main(new String[]{})).start();
         return new Launcher();
     }
 
-    public static Stage getStage() {
+    public static RklStage getStage() {
         Stage s = Ui.stage();
         if (s == null) {
             try {
@@ -39,14 +42,17 @@ public class Launcher extends NativeCallbackToRustChannelSupport implements Even
             }
             return getStage();
         }
-        return s;
+        return new RklStage(s);
     }
 
     // This is called from the native in order to activate asynchronous callback for the exit event
     public void initHandler() {
-        // Call the getStage in order to implicitly wait for the initialization and set the OnCloseListener
-        Stage stage = getStage();
-        stage.onCloseRequest_$eq(this);
+        if (!initialized) {
+            // Call the getStage in order to implicitly wait for the initialization and set the OnCloseListener
+            Stage stage = getStage().fxStage();
+            stage.onCloseRequest_$eq(this);
+            initialized = true;
+        }
     }
 
     @Override

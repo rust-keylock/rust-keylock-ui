@@ -15,24 +15,30 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments.common
 
-import scalafx.scene.Scene
-import scalafx.scene.layout.BorderPane
-import scalafx.scene.layout.VBox
-import scalafx.scene.image.ImageView
-import scalafx.scene.paint.LinearGradient
-import scalafx.scene.effect.DropShadow
-import scalafx.scene.text.Text
-import scalafx.geometry.Pos
+import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.fragments.sides.Navigation
+import scalafx.geometry.Pos
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.image.ImageView
+import scalafx.scene.layout.{BorderPane, VBox}
+import scalafx.scene.text.Text
+import scalafx.stage.Stage
 
-class PleaseWait(callback: Object => Unit) extends Scene {
+object PleaseWait {
+  def apply(callback: Object => Unit): PleaseWait = {
+    new PleaseWait(callback)
+  }
+}
+
+case class PleaseWait private(callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
+  override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
     style = "-fx-background: white"
     // Navigation pane
-    left = new Navigation(callback)
+    left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
       fitToHeight = true

@@ -50,6 +50,6 @@ fn main() {
     let jvm = jvm_res.unwrap();
     debug!("Initializing the editor");
     let editor = ui_editor::new(jvm);
-    info!("TX Mutex initialized. Executing native rust_keylock!");
-    rust_keylock::execute(&editor)
+    info!("Executing native rust_keylock!");
+    rust_keylock::execute_async(&editor)
 }
