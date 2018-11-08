@@ -62,4 +62,3 @@ apps:
       - network
     environment:
       LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}/jre/lib/${SNAP_ARCH}/server:${SNAP}/usr/local/lib:$LD_LIBRARY_PATH
-      CARGO_HOME: ${HOME}/.cargo/env
