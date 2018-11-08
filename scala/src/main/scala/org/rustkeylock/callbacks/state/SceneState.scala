@@ -35,9 +35,9 @@ private[rustkeylock] object SceneState extends RklState[Scene] {
     prevScene.set(None)
   }
 
-  def getWithUpdatedCallback(callback: Object => Unit): Scene = {
+  override def getWithUpdatedCallback(callback: Object => Unit): Scene = {
     get().getOrElse(throw new RuntimeException("No saved state for Scene exists yet. Cannot update callback")) match {
-      case withCallbackChangeSupport: RklCallbackUpdateSupport[Scene] => withCallbackChangeSupport.withNewCallback(callback)
+      case withCallbackChangeSupport: RklCallbackUpdateSupport[_] => withCallbackChangeSupport.asInstanceOf[RklCallbackUpdateSupport[Scene]].withNewCallback(callback)
       case other: Scene => other
     }
   }

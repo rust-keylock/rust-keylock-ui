@@ -19,4 +19,5 @@ trait RklState[T] {
   def set(obj: T): Unit
   def get(): Option[T]
   def clear(): Unit
+  def getWithUpdatedCallback(callback: Object => Unit): T
 }
