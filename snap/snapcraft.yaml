@@ -15,44 +15,35 @@ confinement: strict
 icon: snap/gui/rkl.png
 
 parts:
-  rust-keylock-ui-scala:
+  rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
 #    source-tag: v0.7.0
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
+      curl https://sh.rustup.rs -sSf | sh -s -- -y
+      . ~/.cargo/env
+      cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
       - openjdk-8-jdk
       - openjfx
-    stage-packages:
-      - openjdk-8-jdk
-      - openjfx
-    organize:
-      ../build/scala/target/desktop-ui-0.7.0.jar: bin/scalaassets/desktop-ui-0.7.0.jar
-      ../build/scala/target/lib/: bin/scalaassets/lib/
-
-  rust-keylock-ui-rust:
-    source: https://github.com/rust-keylock/rust-keylock-ui.git
-    source-subdir: rust/
-#    source-tag: v0.7.0
-    after:
-      - rust-keylock-ui-scala
-    plugin: rust
-    rust-revision: 1.29.2
-    build-packages:
       - openssl
       - libssl-dev
     stage-packages:
+      - openjdk-8-jdk
+      - openjfx
       - openssl
       - libssl1.0.0
     organize:
+      ../build/scala/target/desktop-ui-0.7.0.jar: bin/scalaassets/desktop-ui-0.7.0.jar
+      ../build/scala/target/lib/: bin/scalaassets/lib/
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/deps/libj4rs-*.so: bin/deps/
   env:
     plugin: nil
     after:
-      - rust-keylock-ui-rust
+      - rust-keylock-ui-all
       - desktop-glib-only
 apps:
   rust-keylock-ui:
