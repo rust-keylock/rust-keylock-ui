@@ -40,6 +40,7 @@ parts:
       ../build/scala/target/lib/: bin/scalaassets/lib/
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/deps/libj4rs-*.so: bin/deps/
+      ../build/rust/target/release/rust-keylock-ui: bin/
   env:
     plugin: nil
     after:
