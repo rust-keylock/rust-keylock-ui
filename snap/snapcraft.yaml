@@ -19,12 +19,23 @@ parts:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
 #    source-tag: v0.7.0
+
     override-build: |
+      # Build Scala
       export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
-      curl https://sh.rustup.rs -sSf | sh -s -- -y
-      . ~/.cargo/env
-      cargo build --manifest-path=rust/Cargo.toml --release
+      # Setup Rust
+      BASEDIR=`pwd`
+      mkdir -p $BASEDIR/tools/.cargo
+      mkdir -p $BASEDIR/tools/.rustup
+      CARGO_HOME=$BASEDIR/tools/.cargo
+      RUSTUP_HOME=$BASEDIR/tools/.rustup
+      PATH=$CARGO_HOME/bin:$PATH
+      echo --------------------------------$CARGO_HOME
+      curl https://sh.rustup.rs -sSf > $BASEDIR/tools/rustup.sh
+      chmod +x $BASEDIR/tools/rustup.sh
+      CARGO_HOME=$BASEDIR/tools/.cargo RUSTUP_HOME=$BASEDIR/tools/.rustup sh tools/rustup.sh --no-modify-path -y
+      $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
       - openjdk-8-jdk
       - openjfx
@@ -41,6 +52,7 @@ parts:
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/deps/: bin/deps/
       ../build/rust/target/release/rust-keylock-ui: bin/
+      ../build/tools/.rustup: /tools/.rustup
   env:
     plugin: nil
     after:
@@ -54,4 +66,4 @@ apps:
       - opengl
       - network
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}/jre/lib/${SNAP_ARCH}/server:${SNAP}/usr/local/lib:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}/jre/lib/${SNAP_ARCH}/server:${SNAP}/usr/local/lib:${SNAP}/tools/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH
