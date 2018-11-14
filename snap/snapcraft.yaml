@@ -19,7 +19,6 @@ parts:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
 #    source-tag: v0.7.0
-
     override-build: |
       # Build Scala
       export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
@@ -28,13 +27,14 @@ parts:
       BASEDIR=`pwd`
       mkdir -p $BASEDIR/tools/.cargo
       mkdir -p $BASEDIR/tools/.rustup
-      CARGO_HOME=$BASEDIR/tools/.cargo
+      export CARGO_HOME=$BASEDIR/tools/.cargo
       RUSTUP_HOME=$BASEDIR/tools/.rustup
       PATH=$CARGO_HOME/bin:$PATH
-      echo --------------------------------$CARGO_HOME
       curl https://sh.rustup.rs -sSf > $BASEDIR/tools/rustup.sh
       chmod +x $BASEDIR/tools/rustup.sh
       CARGO_HOME=$BASEDIR/tools/.cargo RUSTUP_HOME=$BASEDIR/tools/.rustup sh tools/rustup.sh --no-modify-path -y
+      $CARGO_HOME/bin/rustup default stable
+      # Build Rust
       $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
       - openjdk-8-jdk
