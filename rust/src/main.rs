@@ -41,11 +41,11 @@ fn main() {
     default_classpath_entry.push("desktop-ui-0.7.0.jar");
 
     debug!("Starting the JVM");
-    let jvm_res = j4rs::new_jvm(vec![
-        ClasspathEntry::new(default_classpath_entry
+    let jvm_res = j4rs::JvmBuilder::new()
+        .classpath_entry(ClasspathEntry::new(default_classpath_entry
             .to_str()
-            .unwrap_or("./scalaassets/desktop-ui-0.7.0.jar"))],
-                                Vec::new());
+            .unwrap_or("./scalaassets/desktop-ui-0.7.0.jar")))
+        .build();
 
     let jvm = jvm_res.unwrap();
     debug!("Initializing the editor");
