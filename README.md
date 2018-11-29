@@ -1,3 +1,5 @@
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/rust-keylock-ui)
+
 ___rust-keylock-ui___ is the [Editor](https://rust-keylock.github.io/rust-keylock-lib/rust_keylock/trait.Editor.html) that manages the [rust-keylock-lib](https://github.com/rust-keylock/rust-keylock-lib), providing a User Interface using JavaFX (via [ScalaFX](http://www.scalafx.org)).
 
 ![Build Status](https://travis-ci.org/rust-keylock/rust-keylock-ui.svg?branch=master)
