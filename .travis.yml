@@ -4,11 +4,7 @@ services: docker
 rust:
 - stable
 jdk:
-- oraclejdk8
-addons:
-  apt:
-    packages:
-    - oracle-java8-installer
+- openjdk8
 scala:
 - 2.12.4
 before_install:
