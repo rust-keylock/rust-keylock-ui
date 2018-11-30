@@ -20,19 +20,19 @@
     </developers>
 
     <properties>
-        <scala.version>2.12.4</scala.version>
+        <scala.version>2.12.7</scala.version>
         <scala.stm.version>0.8</scala.stm.version>
         <specs2.version>3.8.9</specs2.version>
         <maven.surefire.version>2.19.1</maven.surefire.version>
         <junit.version>4.12</junit.version>
         <nexus.staging.plugin.version>1.6.7</nexus.staging.plugin.version>
-        <scala.maven.plugin.version>3.3.1</scala.maven.plugin.version>
-        <maven.jar.plugin.version>2.6</maven.jar.plugin.version>
-        <logback.version>1.2.2</logback.version>
-        <scala.logging.version>3.5.0</scala.logging.version>
-        <jna.version>4.4.0</jna.version>
+        <scala.maven.plugin.version>3.4.4</scala.maven.plugin.version>
+        <maven.jar.plugin.version>3.1.0</maven.jar.plugin.version>
+        <logback.version>1.2.3</logback.version>
+        <scala.logging.version>3.9.0</scala.logging.version>
         <javafx.maven.version>8.6.0</javafx.maven.version>
-        <maven.compiler.plugin.version>2.0.2</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+        <maven.eclipse.plugin.version>2.1.0</maven.eclipse.plugin.version>
     </properties>
 
     <repositories>
@@ -49,6 +49,16 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>11.0.1</version>
+        </dependency>
         <dependency>
             <groupId>io.github.astonbitecode</groupId>
             <artifactId>j4rs</artifactId>
@@ -144,6 +154,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
+                <version>${maven.eclipse.plugin.version}</version>
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <buildcommands>
@@ -177,6 +188,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>

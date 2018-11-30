@@ -4,9 +4,9 @@ services: docker
 rust:
 - stable
 jdk:
-- oraclejdk11
+- openjdk11
 scala:
-- 2.12.4
+- 2.12.7
 before_install:
 - curl https://sh.rustup.rs -sSf | sh -s -- -y
 - source ~/.cargo/env
