@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.scalafx</groupId>
             <artifactId>scalafx_2.12</artifactId>
-            <version>8.0.102-R11</version>
+            <version>11-R16</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

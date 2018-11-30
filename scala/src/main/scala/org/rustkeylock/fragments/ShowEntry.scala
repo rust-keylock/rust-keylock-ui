@@ -20,11 +20,11 @@ import java.net.{MalformedURLException, URL}
 import com.typesafe.scalalogging.Logger
 import javafx.scene.image.Image
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
-import org.rustkeylock.components.{RklButton, RklLabel}
+import org.rustkeylock.components.{RklButton, RklLabel, RklTextFieldWithButton}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.ScalaEntry
 import org.rustkeylock.japi.stubs.GuiResponse
-import org.rustkeylock.utils.{Defs, Utils}
+import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
@@ -56,11 +56,11 @@ object ShowEntry {
 }
 
 case class ShowEntry private(anEntry: ScalaEntry,
-                        entryIndex: Int,
-                        edit: Boolean,
-                        delete: Boolean,
-                        stage: Stage,
-                        callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
+                             entryIndex: Int,
+                             edit: Boolean,
+                             delete: Boolean,
+                             stage: Stage,
+                             callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
@@ -96,6 +96,13 @@ case class ShowEntry private(anEntry: ScalaEntry,
     }
     val titleMessage = new RklLabel
 
+    val copyUrlButton = new RklButton {
+      tooltip = "Click to copy URL"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.url)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
     val urlTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "https://example.com"
@@ -103,8 +110,16 @@ case class ShowEntry private(anEntry: ScalaEntry,
       editable = edit
       disable = !edit
     }
+    val urlTextFieldWB = RklTextFieldWithButton(urlTextField, copyUrlButton)
     val urlMessage = new RklLabel
 
+    val copyUsernameButton = new RklButton {
+      tooltip = "Click to copy Username"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.user)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
     val usernameTextField = new TextField() {
       prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
       promptText = "Username"
@@ -112,14 +127,23 @@ case class ShowEntry private(anEntry: ScalaEntry,
       editable = edit
       disable = !edit
     }
+    val usernameTextFieldWB = RklTextFieldWithButton(usernameTextField, copyUsernameButton)
     val usernameMessage = new RklLabel
 
+    val copyPasswordButton = new RklButton {
+      tooltip = "Click to copy Password"
+      onAction = handle(callback(GuiResponse.Copy(anEntry.pass)))
+      graphic = new ImageView {
+        image = new Image("images/copy.png")
+      }
+    }
     val passwordTextField = if (edit) {
       new TextField() {
         prefWidth <== stage.width - Navigation.Width - PaddingValue - PaddingValue
         promptText = "Password"
         text = anEntry.pass
         editable = edit
+        disable = !edit
       }
     } else {
       new PasswordField() {
@@ -127,8 +151,10 @@ case class ShowEntry private(anEntry: ScalaEntry,
         promptText = "Password"
         text = anEntry.pass
         editable = edit
+        disable = !edit
       }
     }
+    val passwordTextFieldWB = RklTextFieldWithButton(passwordTextField, copyPasswordButton)
     val passwordMessage = new RklLabel
 
     val descriptionTextArea = new TextArea() {
@@ -183,33 +209,6 @@ case class ShowEntry private(anEntry: ScalaEntry,
     }
     GridPane.setHalignment(areYouSureButton, HPos.Right)
 
-    val copyUrlButton = new RklButton {
-      tooltip = "Click to copy URL"
-      onAction = handle(callback(GuiResponse.Copy(anEntry.url)))
-      graphic = new ImageView {
-        image = new Image("images/copy.png")
-      }
-    }
-    GridPane.setHalignment(copyUrlButton, HPos.Left)
-
-    val copyUsernameButton = new RklButton {
-      tooltip = "Click to copy Username"
-      onAction = handle(callback(GuiResponse.Copy(anEntry.user)))
-      graphic = new ImageView {
-        image = new Image("images/copy.png")
-      }
-    }
-    GridPane.setHalignment(copyUsernameButton, HPos.Left)
-
-    val copyPasswordButton = new RklButton {
-      tooltip = "Click to copy Password"
-      onAction = handle(callback(GuiResponse.Copy(anEntry.pass)))
-      graphic = new ImageView {
-        image = new Image("images/copy.png")
-      }
-    }
-    GridPane.setHalignment(copyPasswordButton, HPos.Left)
-
     hgap = 3
     vgap = 10
     padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
@@ -221,16 +220,16 @@ case class ShowEntry private(anEntry: ScalaEntry,
     add(titleTextField, 0, 3, 2, 1)
     add(titleMessage, 0, 4)
 
-    add(Utils.flowPaneOf(List(new RklLabel("URL"), copyUrlButton)), 0, 5, 2, 1)
-    add(urlTextField, 0, 6, 2, 1)
+    add(new RklLabel("URL"), 0, 5, 2, 1)
+    add(urlTextFieldWB, 0, 6, 2, 1)
     add(urlMessage, 0, 7)
 
-    add(Utils.flowPaneOf(List(new RklLabel("Username"), copyUsernameButton)), 0, 8, 2, 1)
-    add(usernameTextField, 0, 9, 2, 1)
+    add(new RklLabel("Username"), 0, 8, 2, 1)
+    add(usernameTextFieldWB, 0, 9, 2, 1)
     add(usernameMessage, 0, 10)
 
-    add(Utils.flowPaneOf(List(new RklLabel("Password"), copyPasswordButton)), 0, 11, 2, 1)
-    add(passwordTextField, 0, 12, 2, 1)
+    add(new RklLabel("Password"), 0, 11, 2, 1)
+    add(passwordTextFieldWB, 0, 12, 2, 1)
     add(passwordMessage, 0, 13)
 
     add(new RklLabel("Description"), 0, 14, 2, 1)
