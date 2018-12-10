@@ -9,6 +9,7 @@ description: |
     - Extensible
  The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
  rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX (via ScalaFX).
+base: core18
 
 grade: devel
 confinement: strict
