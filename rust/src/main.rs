@@ -16,16 +16,15 @@
 
 extern crate dirs;
 extern crate j4rs;
-#[macro_use]
 extern crate log;
 extern crate log4rs;
 extern crate rust_keylock;
 extern crate serde;
-#[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 
 use j4rs::ClasspathEntry;
+use log::*;
 
 mod ui_editor;
 mod logger;

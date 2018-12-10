@@ -17,6 +17,8 @@
 use std::sync::mpsc::{self, Receiver};
 use j4rs::{Instance, InvocationArg, Jvm};
 use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
+use serde_derive::{Serialize, Deserialize};
+use log::*;
 
 pub struct DesktopImpl {
     jvm: Jvm,

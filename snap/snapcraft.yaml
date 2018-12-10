@@ -21,7 +21,7 @@ parts:
 #    source-tag: v0.7.0
     override-build: |
       # Build Scala
-      export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
+      export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
       # Setup Rust
       BASEDIR=`pwd`
@@ -34,25 +34,31 @@ parts:
       chmod +x $BASEDIR/tools/rustup.sh
       CARGO_HOME=$BASEDIR/tools/.cargo RUSTUP_HOME=$BASEDIR/tools/.rustup sh tools/rustup.sh --no-modify-path -y
       $CARGO_HOME/bin/rustup default stable
-      # Build Rust
+      # Build j4rs
+      echo Building the j4rs library
+      mkdir -p $BASEDIR/tools/j4rs
+      cd $BASEDIR/tools/j4rs
+      git clone https://github.com/astonbitecode/j4rs.git
+      $CARGO_HOME/bin/cargo build --manifest-path=j4rs/rust/Cargo.toml --release
+      # Build rust-keylock-ui-rust
+      echo Building rust-keylock-ui-rust
+      cd $BASEDIR
       $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
-      - openjdk-8-jdk
-      - openjfx
+      - openjdk-11-jdk
       - openssl
       - libssl-dev
+      - git
     stage-packages:
-      - openjdk-8-jdk
-      - openjfx
+      - openjdk-11-jdk
       - openssl
       - libssl1.0.0
     organize:
       ../build/scala/target/desktop-ui-0.7.0.jar: bin/scalaassets/desktop-ui-0.7.0.jar
       ../build/scala/target/lib/: bin/scalaassets/lib/
       ../build/rust/target/release/jassets: bin/jassets
-      ../build/rust/target/release/deps/: bin/deps/
       ../build/rust/target/release/rust-keylock-ui: bin/
-      ../build/tools/.rustup: /tools/.rustup
+      ../build/tools/j4rs/rust/target/release/libj4rs.so: bin/deps/libj4rs.so
   env:
     plugin: nil
     after:
@@ -66,4 +72,4 @@ apps:
       - opengl
       - network
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}/jre/lib/${SNAP_ARCH}/server:${SNAP}/usr/local/lib:${SNAP}/tools/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}/lib/server:${SNAP}/usr/local/lib:$LD_LIBRARY_PATH
