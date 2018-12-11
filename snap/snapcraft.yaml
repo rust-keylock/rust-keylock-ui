@@ -36,8 +36,7 @@ parts:
       $CARGO_HOME/bin/rustup default stable
       # Build j4rs
       echo Building the j4rs library
-      mkdir -p $BASEDIR/tools/j4rs
-      cd $BASEDIR/tools/j4rs
+      cd $BASEDIR/tools
       git clone https://github.com/astonbitecode/j4rs.git
       $CARGO_HOME/bin/cargo build --manifest-path=j4rs/rust/Cargo.toml --release
       # Build rust-keylock-ui-rust
