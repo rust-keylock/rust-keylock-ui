@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 
 fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
-    println!("cargo:rerun-if-changed=../scala/target/desktop-ui-0.7.0.jar");
+    println!("cargo:rerun-if-changed=../scala/target/desktop-ui-0.8.0.jar");
 
     // Copy the needed jar files if they are available
     // (that is, if the build is done with the full source-code - not in crates.io)
@@ -19,7 +19,7 @@ fn main() {
 // Copies the jars from the `scala` directory to the source directory of rust.
 fn copy_jars_from_scala() {
     // If the java directory exists, copy the generated jars in the `scalaassets` directory
-    if File::open("../scala/target/desktop-ui-0.7.0.jar").is_ok() {
+    if File::open("../scala/target/desktop-ui-0.8.0.jar").is_ok() {
         let home = env::var("CARGO_MANIFEST_DIR").unwrap();
         let scalaassets_path_buf = Path::new(&home).join("scalaassets");
         let scalaassets_path = scalaassets_path_buf.to_str().unwrap().to_owned();
@@ -29,7 +29,7 @@ fn copy_jars_from_scala() {
         let _ = fs::create_dir_all(scalaassets_path_buf.clone())
             .map_err(|error| panic!("Cannot create dir '{:?}': {:?}", scalaassets_path_buf, error));
 
-        let jar_source_path = "../scala/target/desktop-ui-0.7.0.jar";
+        let jar_source_path = "../scala/target/desktop-ui-0.8.0.jar";
         let lib_source_path = "../scala/target/lib";
         let ref options = fs_extra::dir::CopyOptions::new();
         let _ = fs_extra::copy_items(vec![lib_source_path, jar_source_path].as_ref(), scalaassets_path, options);
