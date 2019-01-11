@@ -33,4 +33,6 @@ object Defs {
   val MENU_SYNCHRONIZE = "Synchronize"
   val MENU_CURRENT = "Current"
   val EMPTY_ARG = "null"
+  val PrefWidthPixels = 650
+  val PrefHeightPixels = 750
 }

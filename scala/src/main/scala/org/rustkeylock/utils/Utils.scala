@@ -15,13 +15,33 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.utils
 
+import com.typesafe.scalalogging.Logger
+import org.slf4j.LoggerFactory
 import scalafx.scene.Node
 import scalafx.scene.layout.FlowPane
+import scalafx.stage.Screen
 
 object Utils {
+  private val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
   def flowPaneOf(nodes: List[Node]): FlowPane = {
     new FlowPane() {
       children = nodes
     }
+  }
+
+  def calculateXY(): (Double, Double) = {
+    val x = (Screen.primary.visualBounds.getMinX(), Screen.primary.visualBounds.getMaxX()) match {
+      case (min, max) if min <= Defs.PrefHeightPixels && max >= Defs.PrefWidthPixels => Defs.PrefWidthPixels
+      case (_, max) => max
+    }
+
+    val y = (Screen.primary.visualBounds.getMinY(), Screen.primary.visualBounds.getMaxY()) match {
+      case (min, max) if min <= Defs.PrefHeightPixels && max >= Defs.PrefHeightPixels => Defs.PrefHeightPixels
+      case (_, max) => max
+    }
+
+    logger.info(s"Setting window width to $x and height to $y")
+    (x, y)
   }
 }

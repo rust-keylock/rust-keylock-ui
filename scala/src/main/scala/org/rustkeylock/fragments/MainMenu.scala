@@ -19,10 +19,8 @@ import com.typesafe.scalalogging.Logger
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.fragments.sides.Navigation
 import org.slf4j.LoggerFactory
-import scalafx.geometry.{Insets, Pos}
+import scalafx.geometry.Pos
 import scalafx.scene.Scene
-import scalafx.scene.control.ScrollPane
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.{BorderPane, VBox}
 import scalafx.scene.text.Text
@@ -40,21 +38,16 @@ case class MainMenu private(stage: Stage, callback: Object => Unit) extends Scen
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
+    alignmentInParent = Pos.Center
     style = "-fx-background: white"
     // Navigation pane
     left = Navigation(callback)
     // Main pane
-    center = new ScrollPane {
-      fitToHeight = true
-      hbarPolicy = ScrollBarPolicy.AsNeeded
-      vbarPolicy = ScrollBarPolicy.AsNeeded
-      content = new Center
-    }
+    center = new Center
   }
 
   private class Center extends VBox {
     spacing = 33
-    padding = Insets(10, 10, 10, 10)
     alignment = Pos.Center
 
     children = Seq(

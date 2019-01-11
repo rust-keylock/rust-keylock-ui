@@ -19,14 +19,14 @@ import com.typesafe.scalalogging.Logger
 import javafx.event.EventHandler
 import javafx.scene.input.KeyEvent
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
-import org.rustkeylock.components.{RklButton, RklLabel}
+import org.rustkeylock.components.RklButton
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
-import org.rustkeylock.utils.Defs
+import org.rustkeylock.utils.{Defs, Utils}
 import org.slf4j.LoggerFactory
 import scalafx.Includes.handle
 import scalafx.collections.ObservableBuffer
-import scalafx.geometry.{HPos, Insets}
+import scalafx.geometry.{HPos, Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control.{ListView, ScrollPane}
@@ -37,6 +37,9 @@ import scalafx.stage.Stage
 
 object ListEntries {
   def apply(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit): ListEntries = {
+    val (x, y) = Utils.calculateXY()
+    stage.setWidth(x)
+    stage.setHeight(y)
     new ListEntries(entries, filter, stage, callback)
   }
 }
@@ -52,10 +55,15 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
+      alignmentInParent = Pos.TopCenter
       fitToHeight = true
       hbarPolicy = ScrollBarPolicy.AsNeeded
       vbarPolicy = ScrollBarPolicy.AsNeeded
-      content = new Center()
+      content = if (entries.nonEmpty) {
+        new Center()
+      } else {
+        new CenterEmptyList
+      }
     }
     onKeyPressed = new EventHandler[KeyEvent]() {
       def handle(event: KeyEvent) {
@@ -74,8 +82,54 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     }
   }
 
-  private class Center() extends GridPane {
+  private class CenterEmptyList() extends GridPane {
+    alignment = Pos.Center
     padding = Insets(10, 0, 0, 0)
+    vgap = 7
+    val title = new Text {
+      text = "Passwords"
+      style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
+    }
+    GridPane.setHalignment(title, HPos.Center)
+    val noEntriesLabel = new Text {
+      text = "No Entries yet..."
+      style = "-fx-font-size: 12pt;"
+    }
+    GridPane.setHalignment(noEntriesLabel, HPos.Center)
+    val instLabel = new Text {
+      text = "Click the plus button to add an entry"
+      style = "-fx-font-size: 12pt;"
+    }
+    GridPane.setHalignment(instLabel, HPos.Center)
+
+    val newButton = new RklButton {
+      tooltip = "Add New"
+      onAction = handle {
+        logger.debug("The User Adds a new entry")
+        callback(GuiResponse.GoToMenu(Defs.MENU_NEW_ENTRY))
+      }
+      graphic = new ImageView {
+        image = new Image("images/newimage.png")
+        fitHeight = 33
+        fitWidth = 33
+      }
+    }
+    GridPane.setHalignment(newButton, HPos.Right)
+
+    style = "-fx-background: white"
+
+    add(title, 0, 0, 2, 1)
+    add(newButton, 1, 1)
+    add(instLabel, 0, 2, 2, 1)
+    val emptyList = new EntriesList()
+    emptyList.setPlaceholder(noEntriesLabel)
+    add(emptyList, 0, 4, 2, 1)
+  }
+
+  private class Center() extends GridPane {
+    alignment = Pos.Center
+    padding = Insets(10, 0, 0, 0)
+    vgap = 11
     val title = new Text {
       text = "Passwords"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
@@ -109,13 +163,10 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     add(title, 0, 0, 2, 1)
     add(subtitle, 0, 1, 2, 1)
     add(newButton, 1, 2)
-    if (entries.nonEmpty) {
-      val entriesList = new EntriesList()
-      add(entriesList, 0, 3, 2, 1)
-      entriesList.requestFocus()
-    } else {
-      add(new RklLabel("No entries"), 0, 3, 2, 1)
-    }
+
+    val entriesList = new EntriesList()
+    add(entriesList, 0, 3, 2, 1)
+    entriesList.requestFocus()
   }
 
   private class EntriesList() extends ListView[String] {

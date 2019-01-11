@@ -55,7 +55,7 @@ parts:
       - openssl
       - libssl1.0.0
     organize:
-      ../build/scala/target/desktop-ui-0.7.0.jar: bin/scalaassets/desktop-ui-0.7.0.jar
+      ../build/scala/target/desktop-ui-0.8.0.jar: bin/scalaassets/desktop-ui-0.8.0.jar
       ../build/scala/target/lib/: bin/scalaassets/lib/
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/rust-keylock-ui: bin/
