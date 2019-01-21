@@ -16,6 +16,7 @@
 package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
+import javafx.scene.control.Separator
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
-import scalafx.geometry.{HPos, Insets}
+import scalafx.geometry.{HPos, Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.control.{PasswordField, ScrollPane}
@@ -42,6 +43,7 @@ object ChangePassword {
 
 case class ChangePassword private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
@@ -60,23 +62,30 @@ case class ChangePassword private(stage: Stage, callback: Object => Unit) extend
   }
 
   class Center extends GridPane {
+    padding = Insets(33, 0, 0, 0)
+    vgap = 11
+    alignment = Pos.TopCenter
     prefWidth <== stage.width - Navigation.Width
 
     private val password1 = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width
       promptText = "Password"
     }
     Platform.runLater(password1.requestFocus())
     val passwordMessage1 = new RklLabel
     private val password2 = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width
       promptText = " Re-enter password"
     }
     val passwordMessage2 = new RklLabel
 
     private val number1 = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width
       promptText = "Favorite number"
     }
     val numberMessage1 = new RklLabel
     private val number2 = new PasswordField() {
+      prefWidth <== stage.width - Navigation.Width
       promptText = "Re-enter favorite number"
     }
     val numberMessage2 = new RklLabel
@@ -103,24 +112,25 @@ case class ChangePassword private(stage: Stage, callback: Object => Unit) extend
     style = "-fx-background: white"
 
     add(label, 0, 0, 2, 1)
+    add(new Separator(), 0, 1, 2, 1)
 
-    add(new RklLabel("Please provide your password"), 0, 1)
-    add(password1, 1, 1)
-    add(passwordMessage1, 1, 2)
+    add(new RklLabel("Please provide your password"), 0, 2)
+    add(password1, 0, 3)
+    add(passwordMessage1, 0, 4)
 
-    add(new RklLabel("Re-enter your password"), 0, 3)
-    add(password2, 1, 3)
-    add(passwordMessage2, 1, 4)
+    add(new RklLabel("Re-enter your password"), 0, 5)
+    add(password2, 0, 6)
+    add(passwordMessage2, 0, 7)
 
-    add(new RklLabel("What is your favorite number?"), 0, 5)
-    add(number1, 1, 5)
-    add(numberMessage1, 1, 6)
+    add(new RklLabel("What is your favorite number?"), 0, 8)
+    add(number1, 0, 9)
+    add(numberMessage1, 0, 10)
 
-    add(new RklLabel("Re-enter your favorite number"), 0, 7)
-    add(number2, 1, 7)
-    add(numberMessage2, 1, 8)
+    add(new RklLabel("Re-enter your favorite number"), 0, 11)
+    add(number2, 0, 12)
+    add(numberMessage2, 0, 13)
 
-    add(applyButton, 0, 9, 2, 1)
+    add(applyButton, 0, 14, 2, 1)
 
     private def buttonHandler(): Unit = {
       passwordMessage1.clear()

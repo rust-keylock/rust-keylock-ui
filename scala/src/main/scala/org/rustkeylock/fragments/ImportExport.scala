@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.typesafe.scalalogging.Logger
+import javafx.scene.control.Separator
 import javafx.scene.image.Image
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
@@ -130,23 +131,24 @@ case class ImportExport private(export: Boolean, stage: Stage, callback: Object 
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
+    add(new Separator(), 0, 1, 2, 1)
 
-    add(new RklLabel("Path"), 0, 1)
-    add(pathTextField, 0, 2)
-    add(browseButton, 1, 2)
-    add(pathTextMessage, 0, 3)
+    add(new RklLabel("Path"), 0, 2)
+    add(pathTextField, 0, 3)
+    add(browseButton, 1, 3)
+    add(pathTextMessage, 0, 4)
 
     if (!export) {
-      add(new RklLabel("Use password"), 0, 4)
-      add(passwordField, 0, 5)
-      add(passwordFieldMessage, 0, 6)
+      add(new RklLabel("Use password"), 0, 5)
+      add(passwordField, 0, 6)
+      add(passwordFieldMessage, 0, 7)
 
-      add(new RklLabel("Use favorite number"), 0, 7)
-      add(numberField, 0, 8)
-      add(numberFieldMessage, 0, 9)
+      add(new RklLabel("Use favorite number"), 0, 8)
+      add(numberField, 0, 9)
+      add(numberFieldMessage, 0, 10)
     }
 
-    add(okButton, 0, 10, 1, 3)
+    add(okButton, 0, 11, 1, 3)
 
     private def browseFile(): Unit = {
       val fileChooser = new FileChooser {

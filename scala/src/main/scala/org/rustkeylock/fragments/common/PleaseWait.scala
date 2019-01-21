@@ -41,6 +41,7 @@ case class PleaseWait private(callback: Object => Unit) extends Scene with RklCa
     left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
+      alignmentInParent = Pos.Center
       fitToHeight = true
       hbarPolicy = ScrollBarPolicy.AsNeeded
       vbarPolicy = ScrollBarPolicy.AsNeeded

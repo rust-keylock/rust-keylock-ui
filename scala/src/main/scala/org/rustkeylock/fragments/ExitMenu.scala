@@ -16,6 +16,7 @@
 package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
+import javafx.scene.control.Separator
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
@@ -23,7 +24,7 @@ import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
-import scalafx.geometry.{HPos, Insets}
+import scalafx.geometry.{HPos, Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, GridPane}
@@ -49,6 +50,9 @@ case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scen
   }
 
   class Center() extends GridPane {
+    padding = Insets(33, 0, 0, 0)
+    vgap = 11
+    alignment = Pos.TopCenter
     private val title = new Text {
       text = "Unsaved Data!"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
@@ -89,10 +93,11 @@ case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scen
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(new RklLabel("You will loose unsaved changes."), 0, 1, 2, 1)
-    add(new RklLabel("Are you sure you want to exit?"), 0, 3, 2, 1)
-    add(noButton, 0, 4)
-    add(yesButton, 1, 4)
+    add(new Separator(), 0, 1, 2, 1)
+    add(new RklLabel("You will loose unsaved changes."), 0, 3, 2, 1)
+    add(new RklLabel("Are you sure you want to exit?"), 0, 5, 2, 1)
+    add(noButton, 0, 6)
+    add(yesButton, 1, 6)
   }
 
 }

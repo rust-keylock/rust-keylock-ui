@@ -18,6 +18,7 @@ package org.rustkeylock.fragments
 import java.net.{MalformedURLException, URL}
 
 import com.typesafe.scalalogging.Logger
+import javafx.scene.control.Separator
 import javafx.scene.image.Image
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel, RklTextFieldWithButton}
@@ -130,6 +131,17 @@ case class ShowEntry private(anEntry: ScalaEntry,
     val usernameTextFieldWB = RklTextFieldWithButton(usernameTextField, copyUsernameButton)
     val usernameMessage = new RklLabel
 
+    val passwordLabel = if (edit) {
+      new RklLabel("Password")
+    } else {
+      val passwordTooltip = new Tooltip {
+        text = anEntry.pass
+        autoHide = false
+      }
+      val l = new RklLabel("Password (hover here to reveal)")
+      l.setTooltip(passwordTooltip)
+      l
+    }
     val copyPasswordButton = new RklButton {
       tooltip = "Click to copy Password"
       onAction = handle(callback(GuiResponse.Copy(anEntry.pass)))
@@ -215,6 +227,7 @@ case class ShowEntry private(anEntry: ScalaEntry,
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
+    add(new Separator(), 0, 1, 2, 1)
 
     add(new RklLabel("Entry title"), 0, 2, 2, 1)
     add(titleTextField, 0, 3, 2, 1)
@@ -228,7 +241,7 @@ case class ShowEntry private(anEntry: ScalaEntry,
     add(usernameTextFieldWB, 0, 9, 2, 1)
     add(usernameMessage, 0, 10)
 
-    add(new RklLabel("Password"), 0, 11, 2, 1)
+    add(passwordLabel, 0, 11, 2, 1)
     add(passwordTextFieldWB, 0, 12, 2, 1)
     add(passwordMessage, 0, 13)
 

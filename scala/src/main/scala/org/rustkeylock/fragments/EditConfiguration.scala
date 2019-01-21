@@ -17,6 +17,7 @@ package org.rustkeylock.fragments
 
 import javafx.scene.image.Image
 import com.typesafe.scalalogging.Logger
+import javafx.scene.control.Separator
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.common.PleaseWait
@@ -140,6 +141,7 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
+    add(new Separator(), 0, 1, 2, 1)
     add(subtitleNextcloud, 0, 2)
     add(syncButton, 1, 2)
 

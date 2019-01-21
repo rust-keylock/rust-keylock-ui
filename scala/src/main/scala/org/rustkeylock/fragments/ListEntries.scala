@@ -17,6 +17,7 @@ package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
 import javafx.event.EventHandler
+import javafx.scene.control.Separator
 import javafx.scene.input.KeyEvent
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.RklButton
@@ -83,7 +84,7 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
   }
 
   private class CenterEmptyList() extends GridPane {
-    alignment = Pos.Center
+    alignment = Pos.TopCenter
     padding = Insets(10, 0, 0, 0)
     vgap = 7
     val title = new Text {
@@ -119,16 +120,17 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(newButton, 1, 1)
-    add(instLabel, 0, 2, 2, 1)
+    add(new Separator(), 0, 1, 2, 1)
+    add(newButton, 2, 1)
+    add(instLabel, 0, 3, 2, 1)
     val emptyList = new EntriesList()
     emptyList.setPlaceholder(noEntriesLabel)
     add(emptyList, 0, 4, 2, 1)
   }
 
   private class Center() extends GridPane {
-    alignment = Pos.Center
-    padding = Insets(10, 0, 0, 0)
+    alignment = Pos.TopCenter
+    padding = Insets(10, 10, 10, 10)
     vgap = 11
     val title = new Text {
       text = "Passwords"
@@ -161,11 +163,12 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     style = "-fx-background: white"
 
     add(title, 0, 0, 2, 1)
-    add(subtitle, 0, 1, 2, 1)
-    add(newButton, 1, 2)
+    add(new Separator(), 0, 1, 2, 1)
+    add(subtitle, 0, 2, 2, 1)
+    add(newButton, 1, 3)
 
     val entriesList = new EntriesList()
-    add(entriesList, 0, 3, 2, 1)
+    add(entriesList, 0, 4, 2, 1)
     entriesList.requestFocus()
   }
 
