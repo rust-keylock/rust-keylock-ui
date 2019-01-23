@@ -17,7 +17,6 @@ package org.rustkeylock.fragments
 
 import com.typesafe.scalalogging.Logger
 import javafx.event.EventHandler
-import javafx.scene.control.Separator
 import javafx.scene.input.KeyEvent
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.RklButton
@@ -30,7 +29,7 @@ import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{HPos, Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
-import scalafx.scene.control.{ListView, ScrollPane}
+import scalafx.scene.control.{ListView, ScrollPane, Separator}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
@@ -92,6 +91,8 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
     GridPane.setHalignment(title, HPos.Center)
+    val subtitle = new Text("")
+    GridPane.setHalignment(subtitle, HPos.Center)
     val noEntriesLabel = new Text {
       text = "No Entries yet..."
       style = "-fx-font-size: 12pt;"
@@ -121,8 +122,8 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
 
     add(title, 0, 0, 2, 1)
     add(new Separator(), 0, 1, 2, 1)
-    add(newButton, 2, 1)
-    add(instLabel, 0, 3, 2, 1)
+    add(subtitle, 0, 2, 2, 1)
+    add(newButton, 1, 3)
     val emptyList = new EntriesList()
     emptyList.setPlaceholder(noEntriesLabel)
     add(emptyList, 0, 4, 2, 1)
