@@ -46,6 +46,12 @@ case class ChangePassword private(stage: Stage, callback: Object => Unit) extend
 
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
+  val CenterWidth = if (SharedState.isLoggedIn()) {
+    stage.width - Navigation.Width
+  } else {
+    stage.width
+  }
+
   root = new BorderPane() {
     style = "-fx-background: white"
     if (SharedState.isLoggedIn()) {
@@ -65,27 +71,27 @@ case class ChangePassword private(stage: Stage, callback: Object => Unit) extend
     padding = Insets(33, 0, 0, 0)
     vgap = 11
     alignment = Pos.TopCenter
-    prefWidth <== stage.width - Navigation.Width
+    prefWidth <== CenterWidth
 
     private val password1 = new PasswordField() {
-      prefWidth <== stage.width - Navigation.Width
+      prefWidth <== CenterWidth
       promptText = "Password"
     }
     Platform.runLater(password1.requestFocus())
     val passwordMessage1 = new RklLabel
     private val password2 = new PasswordField() {
-      prefWidth <== stage.width - Navigation.Width
+      prefWidth <== CenterWidth
       promptText = " Re-enter password"
     }
     val passwordMessage2 = new RklLabel
 
     private val number1 = new PasswordField() {
-      prefWidth <== stage.width - Navigation.Width
+      prefWidth <== CenterWidth
       promptText = "Favorite number"
     }
     val numberMessage1 = new RklLabel
     private val number2 = new PasswordField() {
-      prefWidth <== stage.width - Navigation.Width
+      prefWidth <== CenterWidth
       promptText = "Re-enter favorite number"
     }
     val numberMessage2 = new RklLabel
