@@ -19,11 +19,14 @@ use log4rs::append::file::FileAppender;
 use log4rs::config::{Appender, Config, Logger, Root};
 use log4rs::encode::pattern::PatternEncoder;
 use log::LevelFilter;
-use std::env;
+use std::{env, fs};
 
 pub fn init() -> crate::errors::Result<()> {
     let mut logdir = dirs::home_dir().unwrap_or(env::current_dir()?);
-    logdir.push(".rust-keylock/logs/rust-keylock.log");
+    logdir.push(".rust-keylock/logs/");
+    fs::create_dir_all(&logdir)?;
+    logdir.push("rust-keylock.log");
+
 
     let filelogger = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("[{d}][{h({l})}][{M}] - {m}{n}")))
