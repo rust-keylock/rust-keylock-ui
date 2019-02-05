@@ -1,13 +1,13 @@
 dist: xenial
 language: scala
-services: docker
-rust:
-- stable
 jdk:
 - openjdk11
 scala:
 - 2.12.8
 before_install:
+before_install:
+- sudo apt-get update
+- sudo apt-get install -y libxcb-shape0 libxcb-shape0-dev libxcb-xfixes0 libxcb-xfixes0-dev
 - curl https://sh.rustup.rs -sSf | sh -s -- -y
 - source ~/.cargo/env
 script:
