@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 language: scala
 services: docker
 rust:
@@ -6,21 +6,18 @@ rust:
 jdk:
 - openjdk11
 scala:
-- 2.12.7
+- 2.12.8
 before_install:
 - curl https://sh.rustup.rs -sSf | sh -s -- -y
 - source ~/.cargo/env
 script:
 - mvn -f scala/pom.xml clean install
-after_success:
-- openssl aes-256-cbc -K $encrypted_325b49141a28_key -iv $encrypted_325b49141a28_iv
-  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d
-- sh build-scripts/build_rust_for_rust_keylock_ui.sh
+- cargo build --manifest-path=rust/Cargo.toml
 sudo: required
 deploy:
   'on':
     branch: master
-  provider: script
-  script: docker run -e SNAP_ARCH='amd64' -v $(pwd):$(pwd) -t snapcore/snapcraft sh -c "apt update -qq
-    && apt-get install curl -qq && cd $(pwd) && snapcraft && snapcraft push *.snap --release edge"
+  provider: snap
+  snap: rust-keylock-ui
+  channel: edge
   skip_cleanup: true

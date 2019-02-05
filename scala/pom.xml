@@ -20,7 +20,7 @@
     </developers>
 
     <properties>
-        <scala.version>2.12.7</scala.version>
+        <scala.version>2.12.8</scala.version>
         <scala.stm.version>0.8</scala.stm.version>
         <specs2.version>3.8.9</specs2.version>
         <maven.surefire.version>2.19.1</maven.surefire.version>
