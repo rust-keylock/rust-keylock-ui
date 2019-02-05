@@ -49,11 +49,17 @@ parts:
       - openssl
       - libssl-dev
       - git
+      - libxcb-shape0
+      - libxcb-shape0-dev
+      - libxcb-xfixes0
+      - libxcb-xfixes0-dev
     stage-packages:
       - openjdk-8-jdk
       - openjfx
       - openssl
       - libssl1.0.0
+      - libxcb-shape0
+      - libxcb-xfixes0
     organize:
       ../build/scala/target/desktop-ui-0.8.0.jar: bin/scalaassets/desktop-ui-0.8.0.jar
       ../build/scala/target/lib/: bin/scalaassets/lib/
