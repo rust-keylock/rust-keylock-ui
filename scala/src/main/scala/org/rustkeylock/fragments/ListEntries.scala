@@ -45,7 +45,8 @@ object ListEntries {
 }
 
 case class ListEntries private(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
-  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  private val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  private val PaddingValue = 10
 
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
@@ -55,7 +56,6 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     left = Navigation(callback)
     // Main pane
     center = new ScrollPane {
-      alignmentInParent = Pos.TopCenter
       fitToHeight = true
       hbarPolicy = ScrollBarPolicy.AsNeeded
       vbarPolicy = ScrollBarPolicy.AsNeeded
@@ -130,8 +130,7 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
   }
 
   private class Center() extends GridPane {
-    alignment = Pos.TopCenter
-    padding = Insets(10, 10, 10, 10)
+    padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
     vgap = 11
     val title = new Text {
       text = "Passwords"
@@ -176,7 +175,8 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
   private class EntriesList() extends ListView[String] {
     val logger = Logger(LoggerFactory.getLogger(this.getClass))
 
-    prefWidth <== stage.width - Navigation.Width
+    prefWidth <== stage.width - Navigation.Width - (PaddingValue * 3)
+    prefHeight <== stage.height
     items = new ObservableBuffer[String] ++ (entries)
     onMouseClicked = handle {
       val pos = selectionModel().getSelectedIndex
