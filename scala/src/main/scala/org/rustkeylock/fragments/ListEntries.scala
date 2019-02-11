@@ -15,6 +15,8 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
+import java.util.{Timer, TimerTask}
+
 import com.typesafe.scalalogging.Logger
 import javafx.event.EventHandler
 import javafx.scene.input.KeyEvent
@@ -44,9 +46,12 @@ object ListEntries {
   }
 }
 
-case class ListEntries private(entries: Seq[String], filter: String, stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
+case class ListEntries private(entries: Seq[String], initialFilter: String, stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   private val logger = Logger(LoggerFactory.getLogger(this.getClass))
   private val PaddingValue = 10
+  private val DelayMillisForKeypress = 300
+  private var timer = new Timer
+  private var filter = initialFilter
 
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
@@ -68,16 +73,21 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
     onKeyPressed = new EventHandler[KeyEvent]() {
       def handle(event: KeyEvent) {
         if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
-          val newFilter = filter + event.getText
-          logger.debug(s"Filter changed to '$newFilter'")
-          callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter))
+          filter = filter + event.getText
+          logger.debug(s"Filter changed to '$filter'")
         } else if (event.getCode.toString() == "BACK_SPACE") {
-          val newFilter = filter.dropRight(1)
-          logger.debug(s"Filter changed to '$newFilter'")
-          callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, newFilter))
+          filter = filter.dropRight(1)
+          logger.debug(s"Filter changed to '$filter'")
         } else {
           logger.debug(s"Ignoring pressed key of code ${event.getCode}")
         }
+        timer.cancel()
+        timer = new Timer()
+        timer.schedule(new TimerTask {
+          override def run(): Unit = {
+            callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, filter))
+          }
+        }, DelayMillisForKeypress)
       }
     }
   }
@@ -91,10 +101,16 @@ case class ListEntries private(entries: Seq[String], filter: String, stage: Stag
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
     GridPane.setHalignment(title, HPos.Center)
-    val subtitle = new Text("")
+    val subtitle = new Text {
+      text = if (filter.isEmpty()) {
+        ""
+      } else {
+        s"Currently applied filter: $filter"
+      }
+    }
     GridPane.setHalignment(subtitle, HPos.Center)
     val noEntriesLabel = new Text {
-      text = "No Entries yet..."
+      text = "No Entries..."
       style = "-fx-font-size: 12pt;"
     }
     GridPane.setHalignment(noEntriesLabel, HPos.Center)
