@@ -18,6 +18,7 @@ extern crate glob;
 
 use glob::glob;
 use std::env;
+use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
@@ -37,7 +38,6 @@ fn main() {
 
     // Prepare the command depending on the host
     if cfg!(windows) {
-
         command = Command::new(format!("{}\\rust-keylock-ui.exe", base_dir));
         let path_var = env::var("PATH").unwrap_or("".to_string());
         command.env("PATH", format!("{};{}", ld_library_path, path_var));
@@ -62,12 +62,19 @@ fn main() {
 }
 
 fn get_ld_library_path(lib_file_name: &str) -> String {
-    // Find the JAVA_HOME
-    let java_home = env::var("JAVA_HOME").unwrap_or("".to_owned());
+    // Try to use the JAVA_HOME variable
+    let mut java_home = env::var("JAVA_HOME").unwrap_or("".to_owned());
     if java_home.is_empty() {
-        panic!("JAVA_HOME is not set. \
-        Please make sure that Java is installed (version 1.8 at least) and the JAVA_HOME environment variable is set.");
+        println!("JAVA_HOME env var is not set. Attempting to locate it...");
+        // One more attempt to locate the JAVA_HOME
+        java_home = try_locate_java_home();
+        if java_home.is_empty() {
+            panic!("JAVA_HOME is not set. \n \
+                Please make sure that Java is installed (version 1.8 at least) and the JAVA_HOME environment variable is set.");
+        }
     }
+
+    println!("Using '{}' as JAVA_HOME", java_home);
 
     let query = format!("{}/**/{}", java_home, lib_file_name);
 
@@ -90,4 +97,33 @@ fn get_ld_library_path(lib_file_name: &str) -> String {
     }
 
     paths_vec[0].clone()
+}
+
+// Try to locate the JAVA_HOME by consulting the java executable
+fn try_locate_java_home() -> String {
+    let mut command: Command;
+
+    // Prepare the command depending on the host
+    if cfg!(windows) {
+        command = Command::new("where");
+    } else {
+        command = Command::new("which");
+    }
+
+    command.arg("java");
+
+    let output = command.output().expect("Failed to execute the command to try to locate the java executable");
+    let java_exec_path = String::from_utf8(output.stdout).expect("Cannot parse the output of the command while trying to locate the java executable");
+
+    let mut test_path = PathBuf::from(java_exec_path.trim());
+
+    while let Ok(path) = test_path.read_link() {
+        test_path = path;
+    }
+
+    // Here we should have found ourselves in a directory like /usr/lib/jvm/java-8-oracle/jre/bin/java
+    test_path.pop();
+    test_path.pop();
+
+    String::from(test_path.to_str().unwrap_or(""))
 }
