@@ -1,20 +1,20 @@
 [package]
 name = "rust-keylock-ui-rust"
-version = "0.9.0"
+version = "0.8.1"
 authors = ["aston <astonbitecode@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "rust-keylock-ui"
+name = "rust-keylock-ui-app"
 path = "src/main.rs"
 
 [[bin]]
-name = "rust-keylock-ui-runner"
+name = "rust-keylock-ui"
 path = "runner/src/main.rs"
 
 [dependencies]
-rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib"}
-j4rs = {git = "https://github.com/astonbitecode/j4rs"}
+rust_keylock = "0.8"
+j4rs = {git = "https://github.com/astonbitecode/j4rs", rev = "b444270e44142218adf45b9824856f74ab8533c8"}
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"

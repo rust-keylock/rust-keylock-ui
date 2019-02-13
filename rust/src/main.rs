@@ -37,13 +37,13 @@ fn main() {
     let mut default_classpath_entry = std::env::current_exe().unwrap();
     default_classpath_entry.pop();
     default_classpath_entry.push("scalaassets");
-    default_classpath_entry.push("desktop-ui-0.9.0.jar");
+    default_classpath_entry.push("desktop-ui-0.8.1.jar");
 
     debug!("Starting the JVM");
     let jvm_res = j4rs::JvmBuilder::new()
         .classpath_entry(ClasspathEntry::new(default_classpath_entry
             .to_str()
-            .unwrap_or("./scalaassets/desktop-ui-0.9.0.jar")))
+            .unwrap_or("./scalaassets/desktop-ui-0.8.1.jar")))
         .build();
 
     let jvm = jvm_res.unwrap();

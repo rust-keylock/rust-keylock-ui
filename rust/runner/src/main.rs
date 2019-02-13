@@ -38,15 +38,15 @@ fn main() {
 
     // Prepare the command depending on the host
     if cfg!(windows) {
-        command = Command::new(format!("{}\\rust-keylock-ui.exe", base_dir));
+        command = Command::new(format!("{}\\rust-keylock-ui-app.exe", base_dir));
         let path_var = env::var("PATH").unwrap_or("".to_string());
         command.env("PATH", format!("{};{}", ld_library_path, path_var));
     } else if cfg!(macos) {
-        command = Command::new(format!("{}/rust-keylock-ui", base_dir));
+        command = Command::new(format!("{}/rust-keylock-ui-app", base_dir));
         let ld = env::var("DYLD_LIBRARY_PATH").unwrap_or("".to_string());
         command.env("DYLD_LIBRARY_PATH", format!("{}:{}", ld_library_path, ld));
     } else {
-        command = Command::new(format!("{}/rust-keylock-ui", base_dir));
+        command = Command::new(format!("{}/rust-keylock-ui-app", base_dir));
         let ld = env::var("LD_LIBRARY_PATH").unwrap_or("".to_string());
         command.env("LD_LIBRARY_PATH", format!("{}:{}", ld_library_path, ld));
     };
@@ -118,7 +118,13 @@ fn try_locate_java_home() -> String {
     let mut test_path = PathBuf::from(java_exec_path.trim());
 
     while let Ok(path) = test_path.read_link() {
-        test_path = path;
+        test_path = if path.is_absolute() {
+            path
+        } else {
+            test_path.pop();
+            test_path.push(path);
+            test_path
+        };
     }
 
     // Here we should have found ourselves in a directory like /usr/lib/jvm/java-8-oracle/jre/bin/java
