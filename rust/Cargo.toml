@@ -9,7 +9,7 @@ name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = "0.8"
+rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib"}
 j4rs = "0.5"
 serde = "1.0"
 serde_json = "1.0"
