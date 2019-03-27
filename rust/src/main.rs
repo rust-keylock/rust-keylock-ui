@@ -50,5 +50,5 @@ fn main() {
     debug!("Initializing the editor");
     let editor = ui_editor::new(jvm);
     info!("Executing native rust_keylock!");
-    rust_keylock::execute_async(&editor)
+    rust_keylock::execute_async(Box::new(editor))
 }

@@ -15,9 +15,14 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
+import java.awt.Desktop
+import java.io.IOException
+import java.net.{URI, URISyntaxException}
+
 import javafx.scene.image.Image
 import com.typesafe.scalalogging.Logger
 import javafx.scene.control.Separator
+import org.rustkeylock.Ui
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.common.PleaseWait
@@ -69,6 +74,7 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
       text = "Configuration"
       style = "-fx-font-size: 12pt;-fx-font-weight: bold;"
     }
+
     GridPane.setHalignment(title, HPos.Center)
     private val subtitleNextcloud = new Text {
       text = "Nextcloud"
@@ -135,6 +141,22 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     }
     GridPane.setHalignment(okButton, HPos.Left)
 
+    private val subtitleDropbox = new Text {
+      text = "Dropbox"
+      style = "-fx-font-size: 10pt;-fx-font-weight: bold;"
+    }
+
+    private val getTokenButton = new RklButton {
+      tooltip = "Get Dropbox authorization"
+      onAction = handle(handleGetToken())
+      graphic = new ImageView {
+        image = new Image("images/synchronize.png")
+        fitHeight = 22
+        fitWidth = 22
+      }
+    }
+    GridPane.setHalignment(okButton, HPos.Left)
+
     hgap = 33
     vgap = 7
     padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
@@ -160,6 +182,10 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     add(selfSignedCertCheckBox, 0, 12, 2, 2)
     add(derCertLocationMessage, 0, 14)
 
+    add(new Separator(), 0, 15, 2, 1)
+    add(subtitleDropbox, 0, 16)
+    add(getTokenButton, 1, 16)
+
     add(okButton, 0, 18, 1, 1)
     add(cancelButton, 1, 18, 1, 1)
 
@@ -175,6 +201,19 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
 
     private def handleSynchronize(): Unit = {
       callback(GuiResponse.GoToMenu(Defs.MENU_SYNCHRONIZE))
+      Platform.runLater(new PleaseWaitRunnable)
+    }
+
+    private def handleGetToken(): Unit = {
+      try {
+        val url = strings(4)
+        callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_WAIT_FOR_DBX_TOKEN_CALLBACK, Defs.EMPTY_ARG, url))
+        Ui.hostServices.showDocument(url)
+      } catch {
+        case error: Exception => {
+          error.printStackTrace()
+        }
+      }
       Platform.runLater(new PleaseWaitRunnable)
     }
 

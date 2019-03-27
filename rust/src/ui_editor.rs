@@ -19,6 +19,7 @@ use j4rs::{Instance, InvocationArg, Jvm};
 use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
 use serde_derive::{Serialize, Deserialize};
 use log::*;
+use rust_keylock::dropbox::DropboxConfiguration;
 
 pub struct DesktopImpl {
     jvm: Jvm,
@@ -188,7 +189,9 @@ impl AsyncEditor for DesktopImpl {
                     configuration.nextcloud.server_url.clone(),
                     configuration.nextcloud.username.clone(),
                     configuration.nextcloud.decrypted_password().unwrap(),
-                    configuration.nextcloud.use_self_signed_certificate.to_string()];
+                    configuration.nextcloud.use_self_signed_certificate.to_string(),
+                    DropboxConfiguration::dropbox_url(),
+                    configuration.dropbox.decrypted_token().unwrap()];
                 self.jvm.invoke_to_channel(
                     &self.edit_configuration,
                     "apply",

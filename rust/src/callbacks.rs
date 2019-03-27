@@ -19,11 +19,12 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 
 use j4rs::{errors, Instance, InstanceReceiver, Jvm};
 use log::*;
-use rust_keylock::{Entry, Menu, UserOption, UserSelection};
+use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde_derive::Deserialize;
 
 use crate::ui_editor::{ScalaEntry, ScalaUserOption};
+use rust_keylock::dropbox::DropboxConfiguration;
 
 pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors::Result<InstanceReceiver>, launcher: &Instance) -> Receiver<UserSelection> {
     let (tx, rx) = mpsc::channel();
@@ -164,7 +165,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                                                 false)
                 };
 
-                UserSelection::UpdateConfiguration(ncc.unwrap())
+                UserSelection::UpdateConfiguration(AllConfigurations::new(ncc.unwrap(), DropboxConfiguration::default()))
             }
             GuiResponse::UserOptionSelected { user_option } => {
                 debug!("user_option_selected");

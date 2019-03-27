@@ -29,7 +29,6 @@ class EditConfigurationCb(stage: RklStage) extends NativeCallbackToRustChannelSu
 
   def apply(strings: java.util.List[String]): Unit = {
     val scalaStrings = asScalaIterator(strings.iterator()).toList
-    logger.debug(scalaStrings.mkString(","))
     Platform.runLater(new UiThreadRunnable(scalaStrings))
   }
 

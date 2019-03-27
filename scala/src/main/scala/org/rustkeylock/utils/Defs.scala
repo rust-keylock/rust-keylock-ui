@@ -31,6 +31,8 @@ object Defs {
   val MENU_IMPORT_ENTRIES = "ImportEntries"
   val MENU_SHOW_CONFIGURATION = "ShowConfiguration"
   val MENU_SYNCHRONIZE = "Synchronize"
+  val MENU_GET_DBX_TOKEN = "GetDbxToken"
+  val MENU_WAIT_FOR_DBX_TOKEN_CALLBACK = "WaitForDbxTokenCallback"
   val MENU_CURRENT = "Current"
   val EMPTY_ARG = "null"
   val PrefWidthPixels = 650
