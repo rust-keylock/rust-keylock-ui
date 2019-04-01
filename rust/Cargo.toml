@@ -1,6 +1,6 @@
 [package]
 name = "rust-keylock-ui-rust"
-version = "0.9.0"
+version = "0.8.2"
 authors = ["aston <astonbitecode@gmail.com>"]
 edition = "2018"
 
