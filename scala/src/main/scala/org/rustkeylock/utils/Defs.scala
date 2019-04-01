@@ -30,7 +30,6 @@ object Defs {
   val MENU_EXPORT_ENTRIES = "ExportEntries"
   val MENU_IMPORT_ENTRIES = "ImportEntries"
   val MENU_SHOW_CONFIGURATION = "ShowConfiguration"
-  val MENU_SYNCHRONIZE = "Synchronize"
   val MENU_CURRENT = "Current"
   val EMPTY_ARG = "null"
   val PrefWidthPixels = 650

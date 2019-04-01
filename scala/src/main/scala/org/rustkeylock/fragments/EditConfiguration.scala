@@ -124,17 +124,6 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     }
     GridPane.setHalignment(cancelButton, HPos.Right)
 
-    private val syncButton = new RklButton {
-      tooltip = "Synchronize now"
-      onAction = handle(handleSynchronize())
-      graphic = new ImageView {
-        image = new Image("images/synchronize.png")
-        fitHeight = 22
-        fitWidth = 22
-      }
-    }
-    GridPane.setHalignment(okButton, HPos.Left)
-
     hgap = 33
     vgap = 7
     padding = Insets(PaddingValue, PaddingValue, PaddingValue, PaddingValue)
@@ -143,7 +132,6 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     add(title, 0, 0, 2, 1)
     add(new Separator(), 0, 1, 2, 1)
     add(subtitleNextcloud, 0, 2)
-    add(syncButton, 1, 2)
 
     add(new RklLabel("Server URL"), 0, 3, 2, 1)
     add(urlTextField, 0, 4, 2, 1)
@@ -171,11 +159,6 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
       logger.debug(s"Applying Configuration with Strings: ${strings.mkString(",")}")
 
       callback(GuiResponse.SetConfiguration(bufferAsJavaList(strings)))
-    }
-
-    private def handleSynchronize(): Unit = {
-      callback(GuiResponse.GoToMenu(Defs.MENU_SYNCHRONIZE))
-      Platform.runLater(new PleaseWaitRunnable)
     }
 
     class PleaseWaitRunnable() extends Runnable {
