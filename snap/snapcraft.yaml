@@ -10,7 +10,7 @@ description: |
  The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
  rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX (via ScalaFX).
 
-grade: devel
+grade: stable
 confinement: strict
 icon: snap/gui/rkl.png
 
