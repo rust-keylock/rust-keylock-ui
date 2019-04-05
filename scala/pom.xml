@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.rustkeylock</groupId>
     <artifactId>desktop-ui</artifactId>
-    <version>0.8.2</version>
+    <version>0.9.0</version>
     <name>rust-keylock-ui</name>
     <description>A password manager and its goals are to be:
 
@@ -210,6 +210,7 @@
                 <configuration>
                     <outputDirectory>${project.build.directory}/lib</outputDirectory>
                     <excludeScope>provided</excludeScope>
+                    <excludeGroupIds>org.specs2,test</excludeGroupIds>
                 </configuration>
                 <executions>
                     <execution>
