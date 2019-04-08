@@ -34,7 +34,7 @@ pub fn init() -> crate::errors::Result<()> {
     let rollfile_pattern = logdir.to_str().unwrap_or("rust-keylock.{}.log");
     let policy = Box::new(CompoundPolicy::new(
         // 3 MB
-        Box::new(SizeTrigger::new(3145728)),
+        Box::new(SizeTrigger::new(3_145_728)),
         // 10 files window
         Box::new(FixedWindowRoller::builder().build(rollfile_pattern, 10)?),
     ));

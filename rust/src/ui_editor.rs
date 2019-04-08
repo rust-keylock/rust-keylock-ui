@@ -44,28 +44,28 @@ pub fn new(jvm: Jvm) -> DesktopImpl {
     // Create the Java classes that navigate the UI
     let show_menu = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMenuCb",
-        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entries = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowEntriesSetCb",
-        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entry = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowEntryCb",
-        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let edit_configuration = jvm.create_instance(
         "org.rustkeylock.callbacks.EditConfigurationCb",
-        &vec![InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_message = jvm.create_instance(
         "org.rustkeylock.callbacks.ShowMessageCb",
-        &vec![InvocationArg::from(jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap())]).unwrap();
+        &[InvocationArg::from(jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap())]).unwrap();
     // Return the Editor
     DesktopImpl {
-        jvm: jvm,
-        launcher: launcher,
-        show_menu: show_menu,
-        show_entries: show_entries,
-        show_entry: show_entry,
-        edit_configuration: edit_configuration,
-        show_message: show_message,
+        jvm,
+        launcher,
+        show_menu,
+        show_entries,
+        show_entry,
+        edit_configuration,
+        show_message,
     }
 }
 
@@ -76,7 +76,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &vec![InvocationArg::from(try_pass_menu_name)]);
+            &[InvocationArg::from(try_pass_menu_name)]);
         debug!("Waiting for password...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
@@ -87,7 +87,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &vec![InvocationArg::from(change_pass_menu_name)]);
+            &[InvocationArg::from(change_pass_menu_name)]);
         debug!("Waiting for password...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
@@ -100,13 +100,13 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::Main.get_name())])
+                    &[InvocationArg::from(Menu::Main.get_name())])
             }
             &Menu::EntriesList(_) => {
                 let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
                     .map(|entry| ScalaEntry::new(entry))
                     .collect();
-                let filter = if safe.get_filter().len() == 0 {
+                let filter = if safe.get_filter().is_empty() {
                     "null".to_string()
                 } else {
                     safe.get_filter().clone()
@@ -114,7 +114,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_entries,
                     "apply",
-                    &vec![
+                    &[
                         InvocationArg::from((
                             scala_entries.as_slice(),
                             "org.rustkeylock.japi.ScalaEntry",
@@ -126,7 +126,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
-                    &vec![
+                    &[
                         InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
@@ -139,7 +139,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
-                    &vec![
+                    &[
                         InvocationArg::new(&entry, "org.rustkeylock.japi.ScalaEntry"),
                         InvocationArg::from(index as i32),
                         InvocationArg::from(false),
@@ -152,7 +152,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
-                    &vec![
+                    &[
                         InvocationArg::new(&empty_entry, "org.rustkeylock.japi.ScalaEntry"),
                         InvocationArg::from(-1),
                         InvocationArg::from(true),
@@ -160,11 +160,11 @@ impl AsyncEditor for DesktopImpl {
                     ])
             }
             &Menu::EditEntry(index) => {
-                let ref selected_entry = safe.get_entry_decrypted(index);
+                let selected_entry = safe.get_entry_decrypted(index);
                 self.jvm.invoke_to_channel(
                     &self.show_entry,
                     "apply",
-                    &vec![
+                    &[
                         InvocationArg::new(&ScalaEntry::new(&selected_entry), "org.rustkeylock.japi.ScalaEntry"),
                         InvocationArg::from(index as i32),
                         InvocationArg::from(true),
@@ -175,13 +175,13 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ExportEntries.get_name())])
+                    &[InvocationArg::from(Menu::ExportEntries.get_name())])
             }
             &Menu::ImportEntries => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::ImportEntries.get_name())])
+                    &[InvocationArg::from(Menu::ImportEntries.get_name())])
             }
             &Menu::ShowConfiguration => {
                 let conf_strings = vec![
@@ -192,13 +192,13 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.edit_configuration,
                     "apply",
-                    &vec![InvocationArg::from((conf_strings.as_slice(), &self.jvm))])
+                    &[InvocationArg::from((conf_strings.as_slice(), &self.jvm))])
             }
             &Menu::Current => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &vec![InvocationArg::from(Menu::Current.get_name())])
+                    &[InvocationArg::from(Menu::Current.get_name())])
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
@@ -212,7 +212,7 @@ impl AsyncEditor for DesktopImpl {
             let instance_receiver = self.jvm.invoke_to_channel(
                 &self.show_menu,
                 "apply",
-                &vec![InvocationArg::from(Menu::Exit.get_name())]);
+                &[InvocationArg::from(Menu::Exit.get_name())]);
 
             super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
         } else {
@@ -231,7 +231,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_message,
             "apply",
-            &vec![
+            &[
                 InvocationArg::from((
                     scala_user_options.as_slice(),
                     "org.rustkeylock.japi.ScalaUserOption",
