@@ -54,3 +54,9 @@ impl From<io::Error> for RklUiError {
         RklUiError { description: format!("{:?}", err) }
     }
 }
+
+impl From<Box<dyn Error + Send + Sync>> for RklUiError {
+    fn from(err: Box<dyn Error + Send + Sync>) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
+    }
+}

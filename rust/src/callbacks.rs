@@ -31,7 +31,7 @@ pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors:
     let handler_instance_receiver = jvm.invoke_to_channel(
         &launcher,
         "initHandler",
-        &vec![]).expect("Could not register the Launcher callback");
+        &[]).expect("Could not register the Launcher callback");
 
     let _ = thread::spawn(move || {
         let jvm = Jvm::attach_thread().unwrap();
@@ -143,8 +143,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             }
             GuiResponse::DeleteEntry { index } => {
                 debug!("delete_entry");
-                let user_selection = UserSelection::DeleteEntry(index);
-                user_selection
+                UserSelection::DeleteEntry(index)
             }
             GuiResponse::SetConfiguration { strings } => {
                 debug!("set_configuration with {} elements", strings.len());
@@ -181,14 +180,13 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             GuiResponse::ExportImport { path, mode, password, number } => {
                 debug!("export_import");
 
-                let user_selection = if mode > 0 {
+                if mode > 0 {
                     debug!("Followed exporting path");
                     UserSelection::ExportTo(path)
                 } else {
                     debug!("Followed importing path");
                     UserSelection::ImportFrom(path, password, number as usize)
-                };
-                user_selection
+                }
             }
             GuiResponse::Copy { data } => {
                 debug!("copy");
