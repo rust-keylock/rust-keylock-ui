@@ -149,7 +149,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 debug!("set_configuration with {} elements", strings.len());
 
                 let ncc = if strings.len() == 4 {
-                    let b = match strings[3].as_ref() {
+                    let b = match strings[4].as_ref() {
                         "true" => true,
                         _ => false,
                     };
@@ -164,7 +164,13 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                                                 false)
                 };
 
-                UserSelection::UpdateConfiguration(AllConfigurations::new(ncc.unwrap(), DropboxConfiguration::default()))
+                let dbxc = if strings.len() == 4 {
+                    DropboxConfiguration::new(strings[3].clone())
+                } else {
+                    Ok(DropboxConfiguration::default())
+                };
+
+                UserSelection::UpdateConfiguration(AllConfigurations::new(ncc.unwrap(), dbxc.unwrap()))
             }
             GuiResponse::UserOptionSelected { user_option } => {
                 debug!("user_option_selected");

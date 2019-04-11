@@ -172,7 +172,14 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
 
     add(new Separator(), 0, 15, 2, 1)
     add(subtitleDropbox, 0, 16)
-    add(getTokenButton, 1, 16)
+
+    val tokenLabel = if (strings(3).isEmpty) {
+      new RklLabel("Please press the button to acquire a new authentication token")
+    } else {
+      new RklLabel("Token is acquired")
+    }
+    add(tokenLabel, 0, 17)
+    add(getTokenButton, 1, 17)
 
     add(okButton, 0, 18, 1, 1)
     add(cancelButton, 1, 18, 1, 1)
