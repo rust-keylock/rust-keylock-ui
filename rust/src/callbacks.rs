@@ -149,7 +149,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 debug!("set_configuration with {} elements", strings.len());
 
                 let ncc = if strings.len() == 4 {
-                    let b = match strings[4].as_ref() {
+                    let b = match strings[3].as_ref() {
                         "true" => true,
                         _ => false,
                     };
