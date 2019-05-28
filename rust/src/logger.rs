@@ -57,6 +57,9 @@ pub fn init() -> crate::errors::Result<()> {
         .logger(Logger::builder()
             .appender("filelogger")
             .build("tokio_reactor", LevelFilter::Error))
+        .logger(Logger::builder()
+            .appender("filelogger")
+            .build("j4rs", LevelFilter::Error))
         .build(Root::builder().appender("filelogger").build(LevelFilter::Debug))?;
 
     let _handle = log4rs::init_config(config)?;
