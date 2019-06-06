@@ -13,6 +13,7 @@ description: |
 grade: stable
 confinement: strict
 icon: snap/gui/rkl.png
+base: core18
 
 parts:
   rust-keylock-ui-all:
@@ -21,7 +22,7 @@ parts:
 #    source-tag: v0.9.0
     override-build: |
       # Build Scala
-      export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}"
+      export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
       mvn -f ./scala clean install
       # Setup Rust
       BASEDIR=`pwd`
@@ -44,8 +45,7 @@ parts:
       cd $BASEDIR
       $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
-      - openjdk-8-jdk
-      - openjfx
+      - openjdk-11-jdk
       - openssl
       - libssl-dev
       - git
@@ -54,8 +54,7 @@ parts:
       - libxcb-xfixes0
       - libxcb-xfixes0-dev
     stage-packages:
-      - openjdk-8-jdk
-      - openjfx
+      - openjdk-11-jdk
       - openssl
       - libssl1.0.0
       - libxcb-shape0
@@ -66,6 +65,14 @@ parts:
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/rust-keylock-ui: bin/
       ../build/tools/j4rs/rust/target/release/libj4rs.so: bin/deps/libj4rs.so
+  desktop-glib-only:
+    build-packages:
+      - libglib2.0-dev
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    stage-packages:
+      - libglib2.0-bin
   env:
     plugin: nil
     after:
@@ -79,4 +86,6 @@ apps:
       - opengl
       - network
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/lib/jvm/java-8-openjdk-${SNAP_ARCH}/jre/lib/${SNAP_ARCH}/server:${SNAP}/usr/local/lib:${SNAP}/tools/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/tools/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH
+      JAVA_HOME: ${SNAP}/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}
+      RUST_KEYLOCK_UI_JAVA_USER_HOME: ${HOME}

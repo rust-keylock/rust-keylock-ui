@@ -23,7 +23,9 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
-use j4rs::ClasspathEntry;
+use std::env;
+
+use j4rs::{ClasspathEntry, JavaOpt};
 use log::*;
 
 mod ui_editor;
@@ -39,11 +41,22 @@ fn main() {
     default_classpath_entry.push("scalaassets");
     default_classpath_entry.push("desktop-ui-0.9.0.jar");
 
+    let jh = env::var("RUST_KEYLOCK_UI_JAVA_USER_HOME")
+        .map(|s| format!("-Duser.home={}", s))
+        .unwrap_or("".to_string());
+
+    let jopts: Vec<JavaOpt> = if jh.is_empty() {
+        Vec::new()
+    } else {
+        vec![JavaOpt::new(&jh)]
+    };
+
     debug!("Starting the JVM");
     let jvm_res = j4rs::JvmBuilder::new()
         .classpath_entry(ClasspathEntry::new(default_classpath_entry
             .to_str()
             .unwrap_or("./scalaassets/desktop-ui-0.9.0.jar")))
+        .java_opts(jopts)
         .build();
 
     let jvm = jvm_res.unwrap();
