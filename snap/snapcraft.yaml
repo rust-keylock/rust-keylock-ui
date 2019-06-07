@@ -82,6 +82,8 @@ apps:
   rust-keylock-ui:
     command: desktop-launch $SNAP/bin/rust-keylock-ui
     plugs:
+      - desktop
+      - desktop-legacy
       - x11
       - opengl
       - network

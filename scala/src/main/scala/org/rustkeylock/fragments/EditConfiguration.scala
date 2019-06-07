@@ -15,13 +15,9 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.fragments
 
-import java.awt.Desktop
-import java.io.IOException
-import java.net.{URI, URISyntaxException}
-
-import javafx.scene.image.Image
 import com.typesafe.scalalogging.Logger
 import javafx.scene.control.Separator
+import javafx.scene.image.Image
 import org.rustkeylock.Ui
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
@@ -30,9 +26,6 @@ import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.stubs.GuiResponse
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters._
-import scala.collection.mutable.ListBuffer
 import scalafx.Includes.{handle, jfxImage2sfx}
 import scalafx.application.Platform
 import scalafx.geometry.{HPos, Insets}
@@ -44,6 +37,11 @@ import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
+import scala.collection.JavaConverters._
+import scala.collection.mutable.ListBuffer
+import scala.util.Try
+import sys.process._
+
 object EditConfiguration {
   def apply(strings: List[String], stage: Stage, callback: Object => Unit): EditConfiguration = {
     new EditConfiguration(strings, stage, callback)
@@ -52,6 +50,7 @@ object EditConfiguration {
 
 case class EditConfiguration private(strings: List[String], stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
@@ -198,7 +197,12 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
       try {
         val url = strings(4)
         callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_WAIT_FOR_DBX_TOKEN_CALLBACK, Defs.EMPTY_ARG, url))
-        Ui.hostServices.showDocument(url)
+        if (Try(sys.env("RUST_KEYLOCK_UI_JAVA_USER_HOME")).isSuccess) {
+          println("Running in snap! Using xdg-open to open the browser...")
+          ("xdg-open " + url) !
+        } else {
+          Ui.hostServices.showDocument(url)
+        }
       } catch {
         case error: Exception => {
           error.printStackTrace()
