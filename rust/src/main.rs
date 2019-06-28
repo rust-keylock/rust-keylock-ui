@@ -25,7 +25,7 @@ extern crate serde_json;
 
 use std::env;
 
-use j4rs::{ClasspathEntry, JavaOpt};
+use j4rs::JavaOpt;
 use log::*;
 
 mod ui_editor;
@@ -35,11 +35,6 @@ mod errors;
 
 fn main() {
     logger::init().expect("Could not initialize logging ");
-
-    let mut default_classpath_entry = std::env::current_exe().unwrap();
-    default_classpath_entry.pop();
-    default_classpath_entry.push("scalaassets");
-    default_classpath_entry.push("desktop-ui-0.9.0.jar");
 
     let jh = env::var("RUST_KEYLOCK_UI_JAVA_USER_HOME")
         .map(|s| format!("-Duser.home={}", s))
@@ -53,9 +48,6 @@ fn main() {
 
     debug!("Starting the JVM");
     let jvm_res = j4rs::JvmBuilder::new()
-        .classpath_entry(ClasspathEntry::new(default_classpath_entry
-            .to_str()
-            .unwrap_or("./scalaassets/desktop-ui-0.9.0.jar")))
         .java_opts(jopts)
         .build();
 
