@@ -21,9 +21,7 @@ parts:
     source: https://github.com/rust-keylock/rust-keylock-ui.git
 #    source-tag: v0.9.0
     override-build: |
-      # Build Scala
       export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
-      mvn -f ./scala clean install
       # Setup Rust
       BASEDIR=`pwd`
       mkdir -p $BASEDIR/tools/.cargo
@@ -60,8 +58,6 @@ parts:
       - libxcb-shape0
       - libxcb-xfixes0
     organize:
-      ../build/scala/target/desktop-ui-0.9.0.jar: bin/scalaassets/desktop-ui-0.9.0.jar
-      ../build/scala/target/lib/: bin/scalaassets/lib/
       ../build/rust/target/release/jassets: bin/jassets
       ../build/rust/target/release/rust-keylock-ui: bin/
       ../build/tools/j4rs/rust/target/release/libj4rs.so: bin/deps/libj4rs.so

@@ -1,8 +1,9 @@
 use std::env;
-use j4rs;
-use j4rs::{JvmBuilder, LocalJarArtifact, MavenArtifact, Jvm};
 use std::fs::{self, File};
-use std::path::{Path, MAIN_SEPARATOR};
+use std::path::{MAIN_SEPARATOR, Path};
+
+use j4rs;
+use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
 
 fn main() {
     let ui_jar = "desktop-ui-0.9.0.jar";
@@ -10,7 +11,11 @@ fn main() {
     println!("cargo:rerun-if-changed={}", desktop_ui_jar_in_scala_target);
 
     // The target os is needed for the classifiers of javafx dependencies
-    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or("linux".to_string());
+    let target_os = match env::var("CARGO_CFG_TARGET_OS").unwrap_or("linux".to_string()).as_ref() {
+        "macos" => "mac".to_string(),
+        "windows" => "win".to_string(),
+        _ => "linux".to_string()
+    };
 
     // If the scala target directory exists, copy the desktop-ui jar to rust
     copy_from_scala(&desktop_ui_jar_in_scala_target);
