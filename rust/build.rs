@@ -1,25 +1,52 @@
-extern crate fs_extra;
-
-use std::{env, fs};
-use std::error::Error;
-use std::fmt;
-use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::env;
+use j4rs;
+use j4rs::{JvmBuilder, LocalJarArtifact, MavenArtifact, Jvm};
+use std::fs::{self, File};
+use std::path::{Path, MAIN_SEPARATOR};
 
 fn main() {
-    let out_dir = env::var("OUT_DIR").unwrap();
-    println!("cargo:rerun-if-changed=../scala/target/desktop-ui-0.9.0.jar");
+    let ui_jar = "desktop-ui-0.9.0.jar";
+    let desktop_ui_jar_in_scala_target = format!("../scala/target/{}", ui_jar);
+    println!("cargo:rerun-if-changed={}", desktop_ui_jar_in_scala_target);
 
-    // Copy the needed jar files if they are available
-    // (that is, if the build is done with the full source-code - not in crates.io)
-    copy_jars_from_scala();
-    let _ = copy_jars_to_exec_directory(&out_dir);
+    // The target os is needed for the classifiers of javafx dependencies
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or("linux".to_string());
+
+    // If the scala target directory exists, copy the desktop-ui jar to rust
+    copy_from_scala(&desktop_ui_jar_in_scala_target);
+
+    let jvm = JvmBuilder::new().build().unwrap();
+
+    // Deploy the desktop-ui jar
+    let home = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let scalaassets_path_buf = Path::new(&home).join("scalaassets");
+    let scalaassets_path = scalaassets_path_buf.to_str().unwrap().to_owned();
+    let artf1 = LocalJarArtifact::new(&format!("{}{}{}", scalaassets_path, MAIN_SEPARATOR, ui_jar));
+    jvm.deploy_artifact(&artf1).unwrap();
+
+    // Deploy from Maven
+    maven("org.openjfx:javafx-base:11.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-base:11.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-controls:11.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-controls:11.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-graphics:11.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-graphics:11.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-media:11.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-media:11.0.2:{}", target_os), &jvm);
+    maven("org.scala-lang:scala-library:2.12.8", &jvm);
+    maven("org.scala-lang:scala-reflect:2.12.7", &jvm);
+    maven("org.scala-stm:scala-stm_2.12:0.8", &jvm);
+    maven("org.scalafx:scalafx_2.12:11-R16", &jvm);
+    maven("com.typesafe.scala-logging:scala-logging_2.12:3.9.0", &jvm);
 }
 
-// Copies the jars from the `scala` directory to the source directory of rust.
-fn copy_jars_from_scala() {
-    // If the java directory exists, copy the generated jars in the `scalaassets` directory
-    if File::open("../scala/target/desktop-ui-0.9.0.jar").is_ok() {
+fn maven(s: &str, jvm: &Jvm) {
+    let artifact = MavenArtifact::from(s);
+    jvm.deploy_artifact(&artifact).expect(s);
+}
+
+fn copy_from_scala(desktop_ui_jar_in_scala_target: &str) {
+    if File::open(desktop_ui_jar_in_scala_target).is_ok() {
         let home = env::var("CARGO_MANIFEST_DIR").unwrap();
         let scalaassets_path_buf = Path::new(&home).join("scalaassets");
         let scalaassets_path = scalaassets_path_buf.to_str().unwrap().to_owned();
@@ -29,60 +56,8 @@ fn copy_jars_from_scala() {
         let _ = fs::create_dir_all(scalaassets_path_buf.clone())
             .map_err(|error| panic!("Cannot create dir '{:?}': {:?}", scalaassets_path_buf, error));
 
-        let jar_source_path = "../scala/target/desktop-ui-0.9.0.jar";
-        let lib_source_path = "../scala/target/lib";
+        let jar_source_path = desktop_ui_jar_in_scala_target;
         let ref options = fs_extra::dir::CopyOptions::new();
-        let _ = fs_extra::copy_items(vec![lib_source_path, jar_source_path].as_ref(), scalaassets_path, options);
-    }
-}
-
-// Copies the jars to and returns the PathBuf of the exec directory.
-fn copy_jars_to_exec_directory(out_dir: &str) -> PathBuf {
-    let mut exec_dir_path_buf = PathBuf::from(out_dir);
-    exec_dir_path_buf.pop();
-    exec_dir_path_buf.pop();
-    exec_dir_path_buf.pop();
-
-    let scalaassets_output = exec_dir_path_buf.clone();
-    let scalaassets_output_dir = scalaassets_output.to_str().unwrap();
-
-
-    let home = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let scalaassets_path_buf = Path::new(&home).join("scalaassets");
-    let scalaassets_path = scalaassets_path_buf.to_str().unwrap().to_owned();
-
-    let _ = fs_extra::remove_items(vec![format!("{}/scalaassets", scalaassets_output_dir)].as_ref());
-
-    let ref options = fs_extra::dir::CopyOptions::new();
-    let _ = fs_extra::copy_items(vec![scalaassets_path].as_ref(), scalaassets_output_dir, options);
-    exec_dir_path_buf
-}
-
-#[derive(Debug)]
-struct RklUiBuildError {
-    description: String
-}
-
-impl fmt::Display for RklUiBuildError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.description)
-    }
-}
-
-impl Error for RklUiBuildError {
-    fn description(&self) -> &str {
-        self.description.as_str()
-    }
-}
-
-impl From<std::env::VarError> for RklUiBuildError {
-    fn from(err: std::env::VarError) -> RklUiBuildError {
-        RklUiBuildError { description: format!("{:?}", err) }
-    }
-}
-
-impl From<std::io::Error> for RklUiBuildError {
-    fn from(err: std::io::Error) -> RklUiBuildError {
-        RklUiBuildError { description: format!("{:?}", err) }
+        let _ = fs_extra::copy_items(vec![jar_source_path].as_ref(), scalaassets_path, options);
     }
 }
