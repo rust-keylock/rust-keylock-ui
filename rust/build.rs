@@ -30,6 +30,7 @@ fn main() {
     jvm.deploy_artifact(&artf1).unwrap();
 
     // Deploy from Maven
+    println!("cargo:warning=Downloading Maven dependencies... This may take a while the first time you build.");
     maven("org.openjfx:javafx-base:11.0.2", &jvm);
     maven(&format!("org.openjfx:javafx-base:11.0.2:{}", target_os), &jvm);
     maven("org.openjfx:javafx-controls:11.0.2", &jvm);
@@ -43,6 +44,7 @@ fn main() {
     maven("org.scala-stm:scala-stm_2.12:0.8", &jvm);
     maven("org.scalafx:scalafx_2.12:11-R16", &jvm);
     maven("com.typesafe.scala-logging:scala-logging_2.12:3.9.0", &jvm);
+    println!("cargo:warning=Maven dependencies downloaded!");
 }
 
 fn maven(s: &str, jvm: &Jvm) {
