@@ -23,7 +23,7 @@ import org.rustkeylock.utils.SharedState
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.application.Platform
-import scalafx.geometry.{HPos, Insets}
+import scalafx.geometry.{HPos, Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.PasswordField
 import scalafx.scene.image.ImageView
@@ -70,6 +70,8 @@ case class EnterPassword private(stage: Stage, callback: Object => Unit) extends
   GridPane.setHalignment(image, HPos.Center)
 
   root = new GridPane() {
+    alignmentInParent = Pos.Center
+    alignment = Pos.Center
     hgap = 33
     vgap = 10
     padding = Insets(10, 10, 10, 10)
