@@ -186,11 +186,15 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     private def handleOk(): Unit = {
       urlMessage.clear()
 
-      val strings = ListBuffer(urlTextField.getText, usernameTextField.getText, passwordTextField.getText, selfSignedCertCheckBox.isSelected.toString)
+      val newStrings = ListBuffer(
+        urlTextField.getText,
+        usernameTextField.getText,
+        passwordTextField.getText,
+        selfSignedCertCheckBox.isSelected.toString,
+        strings(5)
+      )
 
-      logger.debug(s"Applying Configuration with Strings: ${strings.mkString(",")}")
-
-      callback(GuiResponse.SetConfiguration(bufferAsJavaList(strings)))
+      callback(GuiResponse.SetConfiguration(bufferAsJavaList(newStrings)))
     }
 
     private def handleGetToken(): Unit = {
