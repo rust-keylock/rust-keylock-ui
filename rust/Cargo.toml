@@ -3,6 +3,16 @@ name = "rust-keylock-ui"
 version = "0.9.0"
 authors = ["aston <astonbitecode@gmail.com>"]
 edition = "2018"
+description = "A password manager with goals to be Secure, Simple to use, Portable and Extensible"
+keywords = ["password", "manager", "safe", "encryption", "key"]
+license = "GPL-3.0"
+repository = "https://github.com/rust-keylock/rust-keylock-ui"
+homepage = "https://rust-keylock.github.io/"
+readme = "README.md"
+categories = ["cryptography", "authentication"]
+
+[badges]
+travis-ci = { repository = "rust-keylock/rust-keylock-ui", branch = "master" }
 
 [[bin]]
 name = "rust-keylock-ui"

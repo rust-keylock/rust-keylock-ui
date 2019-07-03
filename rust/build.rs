@@ -4,6 +4,7 @@ use std::path::{MAIN_SEPARATOR, Path};
 
 use j4rs;
 use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
+use std::error::Error;
 
 fn main() {
     let ui_jar = "desktop-ui-0.9.0.jar";
@@ -49,7 +50,9 @@ fn main() {
 
 fn maven(s: &str, jvm: &Jvm) {
     let artifact = MavenArtifact::from(s);
-    jvm.deploy_artifact(&artifact).expect(s);
+    let _ = jvm.deploy_artifact(&artifact).map_err(|error| {
+        println!("cargo:warning=Could not download Maven artifact {}: {}", s, error.description());
+    });
 }
 
 fn copy_from_scala(desktop_ui_jar_in_scala_target: &str) {
