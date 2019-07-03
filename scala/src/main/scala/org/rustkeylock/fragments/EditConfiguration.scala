@@ -135,12 +135,12 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     }
 
     private val getTokenButton = new RklButton {
-      tooltip = "Get Dropbox authorization"
+      tooltip = "Get a Dropbox authorization token"
       onAction = handle(handleGetToken())
       graphic = new ImageView {
-        image = new Image("images/synchronize.png")
-        fitHeight = 22
-        fitWidth = 22
+        image = new Image("images/dropbox_circle_black_64.png")
+        fitHeight = 30
+        fitWidth = 30
       }
     }
     GridPane.setHalignment(okButton, HPos.Left)
@@ -173,9 +173,9 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     add(subtitleDropbox, 0, 16)
 
     val tokenLabel = if (strings(5).isEmpty) {
-      new RklLabel("Please press the button to acquire a new authentication token")
+      new RklLabel("Press the button to acquire a new authentication token.")
     } else {
-      new RklLabel("Token is acquired")
+      new RklLabel("A token is acquired. Press the button if you want to renew.")
     }
     add(tokenLabel, 0, 17)
     add(getTokenButton, 1, 17)
