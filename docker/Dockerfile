@@ -51,4 +51,3 @@ RUN bash -c 'unzip /tmp/openjdk-11.0.1_windows-x64_bin.zip -d /usr/lib/jvm/openj
 RUN bash -c 'rm /tmp/openjdk-11.0.1_windows-x64_bin.zip'
 
 ENV JAVA_HOME="/usr/lib/jvm/openjdk-11.0.1_windows-x64/jdk-11.0.1"
-ENV LD_LIBRARY_PATH="/usr/lib/jvm/openjdk-11.0.1_windows-x64/jdk-11.0.1/bin/server"
