@@ -1,10 +1,10 @@
 use std::env;
+use std::error::Error;
 use std::fs::{self, File};
 use std::path::{MAIN_SEPARATOR, Path};
 
 use j4rs;
 use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
-use std::error::Error;
 
 fn main() {
     let ui_jar = "desktop-ui-0.9.0.jar";
@@ -21,7 +21,20 @@ fn main() {
     // If the scala target directory exists, copy the desktop-ui jar to rust
     copy_from_scala(&desktop_ui_jar_in_scala_target);
 
-    let jvm = JvmBuilder::new().build().unwrap();
+    // The jassets are located inside the default rust-keylock location
+    let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
+    j4rs_installation_path_buf.push("etc");
+    j4rs_installation_path_buf.push("lib");
+    fs::create_dir_all(&j4rs_installation_path_buf).unwrap();
+
+    let j4rs_installation_path = j4rs_installation_path_buf.to_str().unwrap();
+
+    Jvm::copy_j4rs_libs_under(j4rs_installation_path).unwrap();
+
+    let jvm = JvmBuilder::new()
+        .with_base_path(j4rs_installation_path)
+        .build()
+        .unwrap();
 
     // Deploy the desktop-ui jar
     let home = env::var("CARGO_MANIFEST_DIR").unwrap();

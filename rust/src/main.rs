@@ -47,8 +47,16 @@ fn main() {
     };
 
     debug!("Starting the JVM");
+    // The jassets are located inside the default rust-keylock location
+    let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
+    j4rs_installation_path_buf.push("etc");
+    j4rs_installation_path_buf.push("lib");
+
+    let j4rs_installation_path = j4rs_installation_path_buf.to_str().unwrap();
+
     let jvm_res = j4rs::JvmBuilder::new()
         .java_opts(jopts)
+        .with_base_path(j4rs_installation_path)
         .build();
 
     let jvm = jvm_res.unwrap();
