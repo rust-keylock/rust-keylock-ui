@@ -1,5 +1,5 @@
 name: rust-keylock-ui
-version: '0.9.0'
+version: '0.9.1'
 summary: A password manager written (mostly) in Rust
 description: |
  rust-keylock is a password manager and its goals are to be:
@@ -19,7 +19,7 @@ parts:
   rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-#    source-tag: v0.9.0
+#    source-tag: v0.9.1
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
       # Setup Rust
@@ -33,13 +33,10 @@ parts:
       chmod +x $BASEDIR/tools/rustup.sh
       CARGO_HOME=$BASEDIR/tools/.cargo RUSTUP_HOME=$BASEDIR/tools/.rustup sh tools/rustup.sh --no-modify-path -y
       $CARGO_HOME/bin/rustup default stable
-      # Build j4rs
-      echo Building the j4rs library
-      cd $BASEDIR/tools
-      git clone https://github.com/astonbitecode/j4rs.git
-      $CARGO_HOME/bin/cargo build --manifest-path=j4rs/rust/Cargo.toml --release
       # Build rust-keylock-ui-rust
       echo Building rust-keylock-ui-rust
+      export RKL_J4RS_INST_DIR=$BASEDIR/j4rs
+      mkdir -p $RKL_J4RS_INST_DIR
       cd $BASEDIR
       $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
     build-packages:
@@ -58,9 +55,8 @@ parts:
       - libxcb-shape0
       - libxcb-xfixes0
     organize:
-      ../build/rust/target/release/jassets: bin/jassets
+      ../build/j4rs: opt/j4rs
       ../build/rust/target/release/rust-keylock-ui: bin/
-      ../build/tools/j4rs/rust/target/release/libj4rs.so: bin/deps/libj4rs.so
   desktop-glib-only:
     build-packages:
       - libglib2.0-dev
@@ -84,6 +80,6 @@ apps:
       - opengl
       - network
     environment:
-      LD_LIBRARY_PATH: ${SNAP}/usr/local/lib:${SNAP}/tools/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH
+      RKL_J4RS_INST_DIR: ${SNAP}/opt/j4rs
       JAVA_HOME: ${SNAP}/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}
       RUST_KEYLOCK_UI_JAVA_USER_HOME: ${HOME}
