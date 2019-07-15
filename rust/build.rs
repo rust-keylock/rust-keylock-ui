@@ -23,7 +23,6 @@ fn main() {
 
     // The jassets are located inside the default rust-keylock location
     let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
-    j4rs_installation_path_buf.push("etc");
     j4rs_installation_path_buf.push("lib");
     fs::create_dir_all(&j4rs_installation_path_buf).unwrap();
 
