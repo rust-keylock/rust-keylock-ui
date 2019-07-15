@@ -21,19 +21,26 @@ fn main() {
     // If the scala target directory exists, copy the desktop-ui jar to rust
     copy_from_scala(&desktop_ui_jar_in_scala_target);
 
-    // The jassets are located inside the default rust-keylock location
-    let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
-    j4rs_installation_path_buf.push("lib");
-    fs::create_dir_all(&j4rs_installation_path_buf).unwrap();
+    let j4rs_installation_path = match env::var("RKL_J4RS_INST_DIR") {
+        Ok(path) => {
+            path
+        }
+        Err(_) => {
+            let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
+            j4rs_installation_path_buf.push("lib");
 
-    let _ = fs_extra::remove_items(vec![&j4rs_installation_path_buf].as_ref());
+            j4rs_installation_path_buf.to_str().unwrap().to_owned()
+        }
+    };
 
-    let j4rs_installation_path = j4rs_installation_path_buf.to_str().unwrap();
+    fs::create_dir_all(&j4rs_installation_path).unwrap();
 
-    Jvm::copy_j4rs_libs_under(j4rs_installation_path).unwrap();
+    let _ = fs_extra::remove_items(vec![&j4rs_installation_path].as_ref());
+
+    Jvm::copy_j4rs_libs_under(&j4rs_installation_path).unwrap();
 
     let jvm = JvmBuilder::new()
-        .with_base_path(j4rs_installation_path)
+        .with_base_path(&j4rs_installation_path)
         .build()
         .unwrap();
 

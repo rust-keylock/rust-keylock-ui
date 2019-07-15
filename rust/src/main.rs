@@ -47,15 +47,25 @@ fn main() {
     };
 
     debug!("Starting the JVM");
-    // The jassets are located inside the default rust-keylock location
-    let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
-    j4rs_installation_path_buf.push("lib");
 
-    let j4rs_installation_path = j4rs_installation_path_buf.to_str().unwrap();
+    // Set the desired j4rs installation directory.
+    // In a snaps environment, this is under the $SNAP/opt/j4rs.
+    // In other environments, it is under the default rust-keylock location (in the home directory)
+    let j4rs_installation_path = match env::var("RKL_J4RS_INST_DIR") {
+        Ok(path) => {
+            path
+        }
+        Err(_) => {
+            let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
+            j4rs_installation_path_buf.push("lib");
+
+            j4rs_installation_path_buf.to_str().unwrap().to_owned()
+        }
+    };
 
     let jvm_res = j4rs::JvmBuilder::new()
         .java_opts(jopts)
-        .with_base_path(j4rs_installation_path)
+        .with_base_path(&j4rs_installation_path)
         .build();
 
     let jvm = jvm_res.unwrap();
