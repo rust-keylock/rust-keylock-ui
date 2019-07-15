@@ -26,6 +26,8 @@ fn main() {
     j4rs_installation_path_buf.push("lib");
     fs::create_dir_all(&j4rs_installation_path_buf).unwrap();
 
+    let _ = fs_extra::remove_items(vec![&j4rs_installation_path_buf].as_ref());
+
     let j4rs_installation_path = j4rs_installation_path_buf.to_str().unwrap();
 
     Jvm::copy_j4rs_libs_under(j4rs_installation_path).unwrap();
