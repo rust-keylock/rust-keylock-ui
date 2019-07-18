@@ -7,7 +7,7 @@ use j4rs;
 use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
 
 fn main() {
-    let ui_jar = "desktop-ui-0.9.0.jar";
+    let ui_jar = "desktop-ui-0.9.1.jar";
     let desktop_ui_jar_in_scala_target = format!("../scala/target/{}", ui_jar);
     println!("cargo:rerun-if-changed={}", desktop_ui_jar_in_scala_target);
 
