@@ -19,7 +19,7 @@ import com.typesafe.scalalogging.Logger
 import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport
 import org.rustkeylock.components.RklStage
 import org.rustkeylock.japi.ScalaUserOption
-import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.application.Platform
@@ -79,11 +79,11 @@ class ShowMessageCb(stage: RklStage) extends NativeCallbackToRustChannelSupport 
             }
             case None => {
               logger.error(s"Button ${sb.getText} does not exist in the User Options offered! How did it got here?? Please consider opening a bug to the developers.")
-              doCallback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_MAIN, Defs.EMPTY_ARG, ""))
+              doCallback(GuiResponse.GoToMenu(ScalaMenu.Main()))
             }
           }
         }
-        case None => doCallback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_MAIN, Defs.EMPTY_ARG, ""))
+        case None => doCallback(GuiResponse.GoToMenu(ScalaMenu.Main()))
       }
     }
   }

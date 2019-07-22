@@ -15,11 +15,12 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::sync::mpsc::{self, Receiver};
+
 use j4rs::{Instance, InvocationArg, Jvm};
-use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
-use serde_derive::{Serialize, Deserialize};
 use log::*;
+use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
 use rust_keylock::dropbox::DropboxConfiguration;
+use serde_derive::{Deserialize, Serialize};
 
 pub struct DesktopImpl {
     jvm: Jvm,
@@ -73,22 +74,20 @@ pub fn new(jvm: Jvm) -> DesktopImpl {
 impl AsyncEditor for DesktopImpl {
     fn show_password_enter(&self) -> Receiver<UserSelection> {
         debug!("Opening the password fragment");
-        let try_pass_menu_name = Menu::TryPass(false).get_name();
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &[InvocationArg::from(try_pass_menu_name)]);
+            &[InvocationArg::from("TryPass")]);
         debug!("Waiting for password...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
 
     fn show_change_password(&self) -> Receiver<UserSelection> {
         debug!("Opening the change password fragment");
-        let change_pass_menu_name = Menu::ChangePass.get_name();
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &[InvocationArg::from(change_pass_menu_name)]);
+            &[InvocationArg::from("ChangePass")]);
         debug!("Waiting for password...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
@@ -101,7 +100,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from(Menu::Main.get_name())])
+                    &[InvocationArg::from("Main")])
             }
             &Menu::EntriesList(_) => {
                 let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
@@ -176,13 +175,13 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from(Menu::ExportEntries.get_name())])
+                    &[InvocationArg::from("ExportEntries")])
             }
             &Menu::ImportEntries => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from(Menu::ImportEntries.get_name())])
+                    &[InvocationArg::from("ImportEntries")])
             }
             &Menu::ShowConfiguration => {
                 let conf_strings = vec![
@@ -201,7 +200,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from(Menu::Current.get_name())])
+                    &[InvocationArg::from("Current")])
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
@@ -215,7 +214,7 @@ impl AsyncEditor for DesktopImpl {
             let instance_receiver = self.jvm.invoke_to_channel(
                 &self.show_menu,
                 "apply",
-                &[InvocationArg::from(Menu::Exit.get_name())]);
+                &[InvocationArg::from("Exit")]);
 
             super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
         } else {
@@ -247,7 +246,7 @@ impl AsyncEditor for DesktopImpl {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ScalaEntry {
+pub(crate) struct ScalaEntry {
     pub name: String,
     pub url: String,
     pub user: String,
@@ -278,7 +277,7 @@ impl ScalaEntry {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ScalaUserOption {
+pub(crate) struct ScalaUserOption {
     pub label: String,
     pub value: String,
     pub short_label: String,
@@ -290,6 +289,52 @@ impl ScalaUserOption {
             label: user_option.label.clone(),
             value: user_option.value.to_string(),
             short_label: user_option.short_label.clone(),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub(crate) enum ScalaMenu {
+    TryPass { b: bool },
+    ChangePass,
+    Main,
+    EntriesList { filter: String },
+    NewEntry,
+    ShowEntry { idx: usize },
+    EditEntry { idx: usize },
+    DeleteEntry { idx: usize },
+    Save { b: bool },
+    Exit,
+    ForceExit,
+    TryFileRecovery,
+    ImportEntries,
+    ExportEntries,
+    ShowConfiguration,
+    WaitForDbxTokenCallback { s: String },
+    SetDbxToken { s: String },
+    Current,
+}
+
+impl ScalaMenu {
+    pub(crate) fn to_menu(self) -> Menu {
+        match self {
+            ScalaMenu::Main => Menu::Main,
+            ScalaMenu::Exit => Menu::Exit,
+            ScalaMenu::EntriesList { filter } => Menu::EntriesList(filter),
+            ScalaMenu::Save { b } => Menu::Save(b),
+            ScalaMenu::ChangePass => Menu::ChangePass,
+            ScalaMenu::ExportEntries => Menu::ExportEntries,
+            ScalaMenu::ImportEntries => Menu::ImportEntries,
+            ScalaMenu::ShowConfiguration => Menu::ShowConfiguration,
+            ScalaMenu::ForceExit => Menu::ForceExit,
+            ScalaMenu::NewEntry => Menu::NewEntry,
+            ScalaMenu::WaitForDbxTokenCallback { s } => Menu::WaitForDbxTokenCallback(s),
+            ScalaMenu::ShowEntry { idx } => Menu::ShowEntry(idx),
+            ScalaMenu::EditEntry { idx } => Menu::EditEntry(idx),
+            ScalaMenu::DeleteEntry { idx } => Menu::DeleteEntry(idx),
+            _ => {
+                Menu::Current
+            }
         }
     }
 }

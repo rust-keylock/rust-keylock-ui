@@ -23,7 +23,7 @@ import javafx.scene.input.KeyEvent
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.RklButton
 import org.rustkeylock.fragments.sides.Navigation
-import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.rustkeylock.utils.{Defs, Utils}
 import org.slf4j.LoggerFactory
 import scalafx.Includes.handle
@@ -85,7 +85,7 @@ case class ListEntries private(entries: Seq[String], initialFilter: String, stag
         timer = new Timer()
         timer.schedule(new TimerTask {
           override def run(): Unit = {
-            callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, filter))
+            callback(GuiResponse.GoToMenu(ScalaMenu.EntriesList(filter)))
           }
         }, DelayMillisForKeypress)
       }
@@ -124,7 +124,7 @@ case class ListEntries private(entries: Seq[String], initialFilter: String, stag
       tooltip = "Add New"
       onAction = handle {
         logger.debug("The User Adds a new entry")
-        callback(GuiResponse.GoToMenu(Defs.MENU_NEW_ENTRY))
+        callback(GuiResponse.GoToMenu(ScalaMenu.NewEntry))
       }
       graphic = new ImageView {
         image = new Image("images/newimage.png")
@@ -166,7 +166,7 @@ case class ListEntries private(entries: Seq[String], initialFilter: String, stag
       tooltip = "Add New"
       onAction = handle {
         logger.debug("The User Adds a new entry")
-        callback(GuiResponse.GoToMenu(Defs.MENU_NEW_ENTRY))
+        callback(GuiResponse.GoToMenu(ScalaMenu.NewEntry()))
       }
       graphic = new ImageView {
         image = new Image("images/newimage.png")
@@ -198,7 +198,7 @@ case class ListEntries private(entries: Seq[String], initialFilter: String, stag
       val pos = selectionModel().getSelectedIndex
       if (pos >= 0 && pos < entries.size) {
         logger.debug(s"Clicked entry with index $pos in the list of entries")
-        callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_SHOW_ENTRY, pos.toString(), Defs.EMPTY_ARG))
+        callback(GuiResponse.GoToMenu(ScalaMenu.ShowEntry(pos)))
       }
     }
   }

@@ -21,9 +21,9 @@ use j4rs::{errors, Instance, InstanceReceiver, Jvm};
 use log::*;
 use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
 use rust_keylock::nextcloud::NextcloudConfiguration;
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-use crate::ui_editor::{ScalaEntry, ScalaUserOption};
+use crate::ui_editor::{ScalaEntry, ScalaUserOption, ScalaMenu};
 use rust_keylock::dropbox::DropboxConfiguration;
 
 pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors::Result<InstanceReceiver>, launcher: &Instance) -> Receiver<UserSelection> {
@@ -95,31 +95,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 UserSelection::ProvidedPassword(password, number)
             }
             GuiResponse::GoToMenu { menu } => {
-                debug!("go_to_menu called with {}", menu);
-                let menu = Menu::from(menu, None, None);
-                UserSelection::GoTo(menu)
-            }
-            GuiResponse::GoToMenuPlusArgs { menu, intarg, stringarg } => {
-                debug!("go_to_menu_plus_arg: menu: {}, num = '{}' and str = '{}'",
-                       menu,
-                       intarg,
-                       stringarg);
-
-                let num_opt = if intarg == "null" {
-                    None
-                } else {
-                    let num = intarg.parse::<usize>().unwrap();
-                    Some(num)
-                };
-
-                let str_opt = if stringarg == "null" {
-                    None
-                } else {
-                    Some(stringarg)
-                };
-
-                let menu = Menu::from(menu, num_opt, str_opt);
-                UserSelection::GoTo(menu)
+                UserSelection::GoTo(menu.to_menu())
             }
             GuiResponse::AddEntry { entry } => {
                 debug!("add_entry");
@@ -205,11 +181,10 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
     }
 }
 
-#[derive(Deserialize, Debug)]
-enum GuiResponse {
+#[derive(Deserialize, Serialize, Debug)]
+pub(crate) enum GuiResponse {
     ProvidedPassword { password: String, number: usize },
-    GoToMenu { menu: String },
-    GoToMenuPlusArgs { menu: String, intarg: String, stringarg: String },
+    GoToMenu { menu: ScalaMenu },
     AddEntry { entry: ScalaEntry },
     ReplaceEntry { entry: ScalaEntry, index: usize },
     DeleteEntry { index: usize },

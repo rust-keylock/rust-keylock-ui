@@ -17,7 +17,7 @@ package org.rustkeylock.fragments.sides
 
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.RklButton
-import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.rustkeylock.utils.Defs
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -52,7 +52,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
   children = Seq(
     new RklButton {
       tooltip = "Passwords"
-      onAction = handle(callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_ENTRIES_LIST, Defs.EMPTY_ARG, "")))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.EntriesList(""))))
       graphic = new ImageView {
         image = new Image("images/circled_list.png")
         fitHeight = Navigation.imgHeight
@@ -61,7 +61,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Encrypt and save"
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_SAVE)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.Save(false))))
       graphic = new ImageView {
         image = new Image("images/save.png")
         fitHeight = Navigation.imgHeight
@@ -70,7 +70,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Change master password"
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_CHANGE_PASS)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.ChangePass())))
       graphic = new ImageView {
         image = new Image("images/edit.png")
         fitHeight = Navigation.imgHeight
@@ -79,7 +79,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Export to..."
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_EXPORT_ENTRIES)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.ExportEntries())))
       graphic = new ImageView {
         image = new Image("images/export.png")
         fitHeight = Navigation.imgHeight
@@ -88,7 +88,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Import from..."
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_IMPORT_ENTRIES)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.ImportEntries())))
       graphic = new ImageView {
         image = new Image("images/importimg.png")
         fitHeight = Navigation.imgHeight
@@ -97,7 +97,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Edit Configuration..."
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_SHOW_CONFIGURATION)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.ShowConfiguration())))
       graphic = new ImageView {
         image = new Image("images/settings.png")
         fitHeight = Navigation.imgHeight
@@ -106,7 +106,7 @@ case class NavigationContent(callback: Object => Unit) extends VBox with RklCall
     },
     new RklButton {
       tooltip = "Exit"
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_EXIT)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.Exit())))
       graphic = new ImageView {
         image = new Image("images/close.png")
         fitHeight = Navigation.imgHeight

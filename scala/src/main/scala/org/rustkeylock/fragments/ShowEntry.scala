@@ -24,8 +24,7 @@ import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel, RklTextFieldWithButton}
 import org.rustkeylock.fragments.sides.Navigation
 import org.rustkeylock.japi.ScalaEntry
-import org.rustkeylock.japi.stubs.GuiResponse
-import org.rustkeylock.utils.Defs
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets}
@@ -179,7 +178,7 @@ case class ShowEntry private(anEntry: ScalaEntry,
 
     val editButton = new RklButton {
       tooltip = "Edit"
-      onAction = handle(callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_EDIT_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.EditEntry(entryIndex))))
       graphic = new ImageView {
         image = new Image("images/edit.png")
         fitHeight = 33
@@ -190,7 +189,7 @@ case class ShowEntry private(anEntry: ScalaEntry,
 
     val deleteButton = new RklButton {
       tooltip = "Delete"
-      onAction = handle(callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_DELETE_ENTRY, entryIndex.toString(), Defs.EMPTY_ARG)))
+      onAction = handle(callback(GuiResponse.GoToMenu(ScalaMenu.DeleteEntry(entryIndex))))
       graphic = new ImageView {
         image = new Image("images/delete.png")
         fitHeight = 33

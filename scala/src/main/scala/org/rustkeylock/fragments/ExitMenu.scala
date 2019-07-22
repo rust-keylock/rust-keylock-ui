@@ -20,8 +20,7 @@ import javafx.scene.control.Separator
 import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.sides.Navigation
-import org.rustkeylock.japi.stubs.GuiResponse
-import org.rustkeylock.utils.Defs
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.slf4j.LoggerFactory
 import scalafx.Includes._
 import scalafx.geometry.{HPos, Insets, Pos}
@@ -39,6 +38,7 @@ object ExitMenu {
 
 case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scene with RklCallbackUpdateSupport[Scene] {
   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
   override def withNewCallback(newCallback: Object => Unit): Scene = this.copy(callback = newCallback)
 
   root = new BorderPane() {
@@ -64,7 +64,7 @@ case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scen
       tooltip = "Yes"
       onAction = handle {
         logger.debug("The User selected to force Exit with unsaved data")
-        callback(GuiResponse.GoToMenu(Defs.MENU_FORCE_EXIT))
+        callback(GuiResponse.GoToMenu(ScalaMenu.ForceExit()))
       }
       graphic = new ImageView {
         image = new Image("images/yes.png")
@@ -78,7 +78,7 @@ case class ExitMenu private(stage: Stage, callback: Object => Unit) extends Scen
       tooltip = "No"
       onAction = handle {
         logger.debug("The User selected not to exit because of unsaved data")
-        callback(GuiResponse.GoToMenu(Defs.MENU_MAIN))
+        callback(GuiResponse.GoToMenu(ScalaMenu.Main()))
       }
       graphic = new ImageView {
         image = new Image("images/no.png")

@@ -23,7 +23,7 @@ import org.rustkeylock.callbacks.RklCallbackUpdateSupport
 import org.rustkeylock.components.{RklButton, RklLabel}
 import org.rustkeylock.fragments.common.PleaseWait
 import org.rustkeylock.fragments.sides.Navigation
-import org.rustkeylock.japi.stubs.GuiResponse
+import org.rustkeylock.japi.stubs.{GuiResponse, ScalaMenu}
 import org.rustkeylock.utils.Defs
 import org.slf4j.LoggerFactory
 import scalafx.Includes.{handle, jfxImage2sfx}
@@ -120,7 +120,7 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
 
     private val cancelButton = new RklButton {
       tooltip = "Cancel"
-      onAction = handle(callback(GuiResponse.GoToMenu(Defs.MENU_MAIN)))
+      onAction = handle(GuiResponse.GoToMenu(ScalaMenu.Main()))
       graphic = new ImageView {
         image = new Image("images/close.png")
         fitHeight = 33
@@ -200,7 +200,7 @@ case class EditConfiguration private(strings: List[String], stage: Stage, callba
     private def handleGetToken(): Unit = {
       try {
         val url = strings(4)
-        callback(GuiResponse.GoToMenuPlusArgs(Defs.MENU_WAIT_FOR_DBX_TOKEN_CALLBACK, Defs.EMPTY_ARG, url))
+        callback(GuiResponse.GoToMenu(ScalaMenu.WaitForDbxTokenCallback(url)))
         if (Try(sys.env("RUST_KEYLOCK_UI_JAVA_USER_HOME")).isSuccess) {
           println("Running in snap! Using xdg-open to open the browser...")
           ("xdg-open " + url) !

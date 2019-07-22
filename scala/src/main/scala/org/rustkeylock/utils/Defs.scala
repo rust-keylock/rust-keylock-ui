@@ -16,10 +16,9 @@
 package org.rustkeylock.utils
 
 object Defs {
-  val MENU_TRY_PASS = "TryPass(false)"
+  val MENU_TRY_PASS = "TryPass"
   val MENU_CHANGE_PASS = "ChangePass"
   val MENU_MAIN = "Main"
-  val MENU_ENTRIES_LIST = "EntriesList"
   val MENU_SHOW_ENTRY = "ShowEntry"
   val MENU_SAVE = "Save"
   val MENU_EXIT = "Exit"

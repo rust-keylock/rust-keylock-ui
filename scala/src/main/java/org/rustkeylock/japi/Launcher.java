@@ -21,6 +21,7 @@ import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
 import org.rustkeylock.Ui;
 import org.rustkeylock.components.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
+import org.rustkeylock.japi.stubs.ScalaMenu;
 import org.rustkeylock.utils.Defs;
 import scalafx.stage.Stage;
 
@@ -57,7 +58,7 @@ public class Launcher extends NativeCallbackToRustChannelSupport implements Even
 
     @Override
     public void handle(WindowEvent ev) {
-        doCallback(GuiResponse.GoToMenu(Defs.MENU_EXIT()));
+        doCallback(GuiResponse.GoToMenu(ScalaMenu.Exit()));
         ev.consume();
     }
 }
