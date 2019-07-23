@@ -18,9 +18,11 @@ use std::sync::mpsc::{self, Receiver};
 
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
-use rust_keylock::{AsyncEditor, Entry, Menu, MessageSeverity, RklConfiguration, Safe, UserOption, UserSelection};
-use rust_keylock::dropbox::DropboxConfiguration;
 use serde_derive::{Deserialize, Serialize};
+
+use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
+use rust_keylock::dropbox::DropboxConfiguration;
+use rust_keylock::nextcloud::NextcloudConfiguration;
 
 pub struct DesktopImpl {
     jvm: Jvm,
@@ -88,12 +90,12 @@ impl AsyncEditor for DesktopImpl {
             &self.show_menu,
             "apply",
             &[InvocationArg::from("ChangePass")]);
-        debug!("Waiting for password...");
+        debug!("Waiting for password change...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
 
-    fn show_menu(&self, menu: &Menu, safe: &Safe, configuration: &RklConfiguration) -> Receiver<UserSelection> {
-        debug!("Opening menu '{:?}' with entries size {}", menu, safe.get_entries().len());
+    fn show_menu(&self, menu: &Menu) -> Receiver<UserSelection> {
+        debug!("Opening menu '{:?}'", menu);
 
         let instance_receiver_res = match menu {
             &Menu::Main => {
@@ -101,50 +103,6 @@ impl AsyncEditor for DesktopImpl {
                     &self.show_menu,
                     "apply",
                     &[InvocationArg::from("Main")])
-            }
-            &Menu::EntriesList(_) => {
-                let scala_entries: Vec<ScalaEntry> = safe.get_entries().iter()
-                    .map(|entry| ScalaEntry::new(entry))
-                    .collect();
-                let filter = if safe.get_filter().is_empty() {
-                    "null".to_string()
-                } else {
-                    safe.get_filter().clone()
-                };
-                self.jvm.invoke_to_channel(
-                    &self.show_entries,
-                    "apply",
-                    &[
-                        InvocationArg::from((
-                            scala_entries.as_slice(),
-                            "org.rustkeylock.japi.ScalaEntry",
-                            &self.jvm)),
-                        InvocationArg::from(filter)])
-            }
-            &Menu::ShowEntry(index) => {
-                let entry = safe.get_entry_decrypted(index);
-                self.jvm.invoke_to_channel(
-                    &self.show_entry,
-                    "apply",
-                    &[
-                        InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
-                        InvocationArg::from(false),
-                        InvocationArg::from(false)
-                    ])
-            }
-            &Menu::DeleteEntry(index) => {
-                let entry = ScalaEntry::new(safe.get_entry(index));
-
-                self.jvm.invoke_to_channel(
-                    &self.show_entry,
-                    "apply",
-                    &[
-                        InvocationArg::new(&entry, "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
-                        InvocationArg::from(false),
-                        InvocationArg::from(true)
-                    ])
             }
             &Menu::NewEntry => {
                 let empty_entry = ScalaEntry::empty();
@@ -155,18 +113,6 @@ impl AsyncEditor for DesktopImpl {
                     &[
                         InvocationArg::new(&empty_entry, "org.rustkeylock.japi.ScalaEntry"),
                         InvocationArg::from(-1),
-                        InvocationArg::from(true),
-                        InvocationArg::from(false)
-                    ])
-            }
-            &Menu::EditEntry(index) => {
-                let selected_entry = safe.get_entry_decrypted(index);
-                self.jvm.invoke_to_channel(
-                    &self.show_entry,
-                    "apply",
-                    &[
-                        InvocationArg::new(&ScalaEntry::new(&selected_entry), "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
                         InvocationArg::from(true),
                         InvocationArg::from(false)
                     ])
@@ -183,19 +129,6 @@ impl AsyncEditor for DesktopImpl {
                     "apply",
                     &[InvocationArg::from("ImportEntries")])
             }
-            &Menu::ShowConfiguration => {
-                let conf_strings = vec![
-                    configuration.nextcloud.server_url.clone(),
-                    configuration.nextcloud.username.clone(),
-                    configuration.nextcloud.decrypted_password().unwrap(),
-                    configuration.nextcloud.use_self_signed_certificate.to_string(),
-                    DropboxConfiguration::dropbox_url(),
-                    configuration.dropbox.decrypted_token().unwrap()];
-                self.jvm.invoke_to_channel(
-                    &self.edit_configuration,
-                    "apply",
-                    &[InvocationArg::from((conf_strings.as_slice(), &self.jvm))])
-            }
             &Menu::Current => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
@@ -205,6 +138,82 @@ impl AsyncEditor for DesktopImpl {
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
 
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
+    }
+
+    fn show_entries(&self, entries: Vec<Entry>, filter: String) -> Receiver<UserSelection> {
+        let scala_entries: Vec<ScalaEntry> = entries.iter()
+            .map(|entry| ScalaEntry::new(entry))
+            .collect();
+        let filter = if filter.is_empty() {
+            "null".to_string()
+        } else {
+            filter
+        };
+        let instance_receiver_res = self.jvm.invoke_to_channel(
+            &self.show_entries,
+            "apply",
+            &[
+                InvocationArg::from((
+                    scala_entries.as_slice(),
+                    "org.rustkeylock.japi.ScalaEntry",
+                    &self.jvm)),
+                InvocationArg::from(filter)]);
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
+    }
+
+    fn show_entry(&self, entry: Entry, index: usize, presentation_type: EntryPresentationType) -> Receiver<UserSelection> {
+        let instance_receiver_res = match presentation_type {
+            EntryPresentationType::View => {
+                self.jvm.invoke_to_channel(
+                    &self.show_entry,
+                    "apply",
+                    &[
+                        InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(false),
+                        InvocationArg::from(false)
+                    ])
+            }
+            EntryPresentationType::Delete => {
+                self.jvm.invoke_to_channel(
+                    &self.show_entry,
+                    "apply",
+                    &[
+                        InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(false),
+                        InvocationArg::from(true)
+                    ])
+            }
+            EntryPresentationType::Edit => {
+                self.jvm.invoke_to_channel(
+                    &self.show_entry,
+                    "apply",
+                    &[
+                        InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                        InvocationArg::from(index as i32),
+                        InvocationArg::from(true),
+                        InvocationArg::from(false)
+                    ])
+            }
+        };
+
+        super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
+    }
+
+    fn show_configuration(&self, nextcloud: NextcloudConfiguration, dropbox: DropboxConfiguration) -> Receiver<UserSelection> {
+        let conf_strings = vec![
+            nextcloud.server_url.clone(),
+            nextcloud.username.clone(),
+            nextcloud.decrypted_password().unwrap(),
+            nextcloud.use_self_signed_certificate.to_string(),
+            DropboxConfiguration::dropbox_url(),
+            dropbox.decrypted_token().unwrap()];
+        let instance_receiver_res = self.jvm.invoke_to_channel(
+            &self.edit_configuration,
+            "apply",
+            &[InvocationArg::from((conf_strings.as_slice(), &self.jvm))]);
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
     }
 
