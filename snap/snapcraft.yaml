@@ -2,13 +2,13 @@ name: rust-keylock-ui
 version: '0.10.0'
 summary: A password manager written (mostly) in Rust
 description: |
- rust-keylock is a password manager and its goals are to be:
-    - Secure
-    - Simple to use
-    - Portable
-    - Extensible
- The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
- rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX (via ScalaFX).
+  rust-keylock is a password manager and its goals are to be:
+     - Secure
+     - Simple to use
+     - Portable
+     - Extensible
+  The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
+  rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX (via ScalaFX).
 
 grade: stable
 confinement: strict
@@ -19,7 +19,7 @@ parts:
   rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-#    source-tag: v0.10.0
+    #    source-tag: v0.10.0
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
       # Setup Rust
@@ -54,6 +54,7 @@ parts:
       - libssl1.0.0
       - libxcb-shape0
       - libxcb-xfixes0
+      - libxcb-render0
     organize:
       ../build/j4rs: opt/j4rs
       ../build/rust/target/release/rust-keylock-ui: bin/
@@ -79,6 +80,7 @@ apps:
       - x11
       - opengl
       - network
+      - wayland
     environment:
       RKL_J4RS_INST_DIR: ${SNAP}/opt/j4rs
       JAVA_HOME: ${SNAP}/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}
