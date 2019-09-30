@@ -21,7 +21,7 @@ use j4rs::{errors, Instance, InstanceReceiver, Jvm};
 use log::*;
 use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
 use rust_keylock::nextcloud::NextcloudConfiguration;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use crate::ui_editor::{ScalaEntry, ScalaUserOption, ScalaMenu};
 use rust_keylock::dropbox::DropboxConfiguration;

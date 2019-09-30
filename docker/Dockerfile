@@ -19,7 +19,6 @@ RUN dpkg --add-architecture i386 && apt-get update && \
     apt-get install -y --no-install-recommends \
         wine-stable \
         wine64 \
-        wine32 \
         libz-mingw-w64-dev
 
 RUN apt-get install -y --no-install-recommends g++-mingw-w64-x86-64
@@ -49,5 +48,9 @@ RUN bash -c 'cd /tmp && curl -O https://download.java.net/java/GA/jdk11/13/GPL/o
 RUN bash -c 'mkdir -p /usr/lib/jvm/openjdk-11.0.1_windows-x64'
 RUN bash -c 'unzip /tmp/openjdk-11.0.1_windows-x64_bin.zip -d /usr/lib/jvm/openjdk-11.0.1_windows-x64'
 RUN bash -c 'rm /tmp/openjdk-11.0.1_windows-x64_bin.zip'
+
+# Install additional needed libs.
+# We need a JDK for windows for building (cross-compilation needs the jvm.dll to be present).
+RUN apt-get install -y --no-install-recommends python3 openssl libssl-dev libxcb-shape0 libxcb-shape0-dev libxcb-xfixes0 libxcb-xfixes0-dev
 
 ENV JAVA_HOME="/usr/lib/jvm/openjdk-11.0.1_windows-x64/jdk-11.0.1"

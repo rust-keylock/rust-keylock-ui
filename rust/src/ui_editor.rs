@@ -15,10 +15,11 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::sync::mpsc::{self, Receiver};
+use std::convert::TryFrom;
 
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
 use rust_keylock::dropbox::DropboxConfiguration;
@@ -79,7 +80,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &[InvocationArg::from("TryPass")]);
+            &[InvocationArg::try_from("TryPass").unwrap()]);
         debug!("Waiting for password...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
@@ -89,7 +90,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver = self.jvm.invoke_to_channel(
             &self.show_menu,
             "apply",
-            &[InvocationArg::from("ChangePass")]);
+            &[InvocationArg::try_from("ChangePass").unwrap()]);
         debug!("Waiting for password change...");
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }
@@ -102,7 +103,7 @@ impl AsyncEditor for DesktopImpl {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from("Main")])
+                    &[InvocationArg::try_from("Main").unwrap()])
             }
             &Menu::NewEntry => {
                 let empty_entry = ScalaEntry::empty();
@@ -112,28 +113,28 @@ impl AsyncEditor for DesktopImpl {
                     "apply",
                     &[
                         InvocationArg::new(&empty_entry, "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(-1),
-                        InvocationArg::from(true),
-                        InvocationArg::from(false)
+                        InvocationArg::try_from(-1).unwrap(),
+                        InvocationArg::try_from(true).unwrap(),
+                        InvocationArg::try_from(false).unwrap()
                     ])
             }
             &Menu::ExportEntries => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from("ExportEntries")])
+                    &[InvocationArg::try_from("ExportEntries").unwrap()])
             }
             &Menu::ImportEntries => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from("ImportEntries")])
+                    &[InvocationArg::try_from("ImportEntries").unwrap()])
             }
             &Menu::Current => {
                 self.jvm.invoke_to_channel(
                     &self.show_menu,
                     "apply",
-                    &[InvocationArg::from("Current")])
+                    &[InvocationArg::try_from("Current").unwrap()])
             }
             other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
         };
@@ -154,11 +155,11 @@ impl AsyncEditor for DesktopImpl {
             &self.show_entries,
             "apply",
             &[
-                InvocationArg::from((
+                InvocationArg::try_from((
                     scala_entries.as_slice(),
-                    "org.rustkeylock.japi.ScalaEntry",
-                    &self.jvm)),
-                InvocationArg::from(filter)]);
+                    "org.rustkeylock.japi.ScalaEntry"))
+                    .unwrap(),
+                InvocationArg::try_from(filter).unwrap()]);
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
     }
 
@@ -170,9 +171,9 @@ impl AsyncEditor for DesktopImpl {
                     "apply",
                     &[
                         InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
-                        InvocationArg::from(false),
-                        InvocationArg::from(false)
+                        InvocationArg::try_from(index as i32).unwrap(),
+                        InvocationArg::try_from(false).unwrap(),
+                        InvocationArg::try_from(false).unwrap()
                     ])
             }
             EntryPresentationType::Delete => {
@@ -181,9 +182,9 @@ impl AsyncEditor for DesktopImpl {
                     "apply",
                     &[
                         InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
-                        InvocationArg::from(false),
-                        InvocationArg::from(true)
+                        InvocationArg::try_from(index as i32).unwrap(),
+                        InvocationArg::try_from(false).unwrap(),
+                        InvocationArg::try_from(true).unwrap(),
                     ])
             }
             EntryPresentationType::Edit => {
@@ -192,9 +193,9 @@ impl AsyncEditor for DesktopImpl {
                     "apply",
                     &[
                         InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
-                        InvocationArg::from(index as i32),
-                        InvocationArg::from(true),
-                        InvocationArg::from(false)
+                        InvocationArg::try_from(index as i32).unwrap(),
+                        InvocationArg::try_from(true).unwrap(),
+                        InvocationArg::try_from(false).unwrap()
                     ])
             }
         };
@@ -213,7 +214,7 @@ impl AsyncEditor for DesktopImpl {
         let instance_receiver_res = self.jvm.invoke_to_channel(
             &self.edit_configuration,
             "apply",
-            &[InvocationArg::from((conf_strings.as_slice(), &self.jvm))]);
+            &[InvocationArg::try_from(conf_strings.as_slice()).unwrap()]);
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver_res, &self.launcher)
     }
 
@@ -223,7 +224,7 @@ impl AsyncEditor for DesktopImpl {
             let instance_receiver = self.jvm.invoke_to_channel(
                 &self.show_menu,
                 "apply",
-                &[InvocationArg::from("Exit")]);
+                &[InvocationArg::try_from("Exit").unwrap()]);
 
             super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
         } else {
@@ -243,12 +244,11 @@ impl AsyncEditor for DesktopImpl {
             &self.show_message,
             "apply",
             &[
-                InvocationArg::from((
+                InvocationArg::try_from((
                     scala_user_options.as_slice(),
-                    "org.rustkeylock.japi.ScalaUserOption",
-                    &self.jvm)),
-                InvocationArg::from(message),
-                InvocationArg::from(severity.to_string())]);
+                    "org.rustkeylock.japi.ScalaUserOption")).unwrap(),
+                InvocationArg::try_from(message).unwrap(),
+                InvocationArg::try_from(severity.to_string()).unwrap()]);
 
         super::callbacks::handle_instance_receiver_result(&self.jvm, instance_receiver, &self.launcher)
     }

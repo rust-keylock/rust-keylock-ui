@@ -20,8 +20,6 @@ extern crate log;
 extern crate log4rs;
 extern crate rust_keylock;
 extern crate serde;
-extern crate serde_derive;
-extern crate serde_json;
 
 use std::env;
 
