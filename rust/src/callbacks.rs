@@ -17,7 +17,8 @@
 use std::{thread, time};
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
-use j4rs::{errors, Instance, InstanceReceiver, Jvm};
+use j4rs;
+use j4rs::{Instance, InstanceReceiver, Jvm};
 use log::*;
 use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
 use rust_keylock::nextcloud::NextcloudConfiguration;
@@ -26,7 +27,7 @@ use serde::{Deserialize, Serialize};
 use crate::ui_editor::{ScalaEntry, ScalaUserOption, ScalaMenu};
 use rust_keylock::dropbox::DropboxConfiguration;
 
-pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors::Result<InstanceReceiver>, launcher: &Instance) -> Receiver<UserSelection> {
+pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>, launcher: &Instance) -> crate::errors::Result<Receiver<UserSelection>> {
     let (tx, rx) = mpsc::channel();
     let handler_instance_receiver = jvm.invoke_to_channel(
         &launcher,
@@ -39,10 +40,10 @@ pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: errors:
         let _ = tx.send(sel);
     });
 
-    rx
+    Ok(rx)
 }
 
-fn retrieve_user_selection(jvm: &Jvm, handler_instance_receiver: &InstanceReceiver, instance_receiver_res: errors::Result<InstanceReceiver>) -> UserSelection {
+fn retrieve_user_selection(jvm: &Jvm, handler_instance_receiver: &InstanceReceiver, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>) -> UserSelection {
     match instance_receiver_res {
         Ok(instance_receiver) => {
             let user_selection;
