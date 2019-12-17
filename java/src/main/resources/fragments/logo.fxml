@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<BorderPane prefWidth="600.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <VBox alignment="CENTER" layoutY="69.0" prefHeight="373.0" prefWidth="598.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/rkl.png" />
+               </image>
+            </ImageView>
+         </children>
+        </VBox>
+    </center>
+   <bottom>
+      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </bottom>
+   <top>
+      <HBox alignment="CENTER" prefHeight="73.0" prefWidth="598.0" BorderPane.alignment="CENTER">
+         <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="rust-keylock">
+                    <font>
+                        <Font size="23.0" />
+                    </font>
+                </Text>
+         </children>
+      </HBox>
+   </top>
+</BorderPane>

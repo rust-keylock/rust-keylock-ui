@@ -24,15 +24,13 @@ use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde::{Deserialize, Serialize};
 
-use crate::ui_editor::{ScalaEntry, ScalaUserOption, ScalaMenu};
+use crate::ui_editor::{JavaEntry, JavaUserOption, JavaMenu};
 use rust_keylock::dropbox::DropboxConfiguration;
 
-pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>, launcher: &Instance) -> crate::errors::Result<Receiver<UserSelection>> {
+pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>) -> crate::errors::Result<Receiver<UserSelection>> {
     let (tx, rx) = mpsc::channel();
-    let handler_instance_receiver = jvm.invoke_to_channel(
-        &launcher,
-        "initHandler",
-        &[]).expect("Could not register the Launcher callback");
+    let ui_stopper = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "initOnCloseHandler", &[]).expect("Could not retrieve the UI Stopper");
+    let handler_instance_receiver = jvm.init_callback_channel(&ui_stopper).expect("Could not register the Launcher callback");
 
     let _ = thread::spawn(move || {
         let jvm = Jvm::attach_thread().unwrap();
@@ -185,12 +183,12 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
 #[derive(Deserialize, Serialize, Debug)]
 pub(crate) enum GuiResponse {
     ProvidedPassword { password: String, number: usize },
-    GoToMenu { menu: ScalaMenu },
-    AddEntry { entry: ScalaEntry },
-    ReplaceEntry { entry: ScalaEntry, index: usize },
+    GoToMenu { menu: JavaMenu },
+    AddEntry { entry: JavaEntry },
+    ReplaceEntry { entry: JavaEntry, index: usize },
     DeleteEntry { index: usize },
     SetConfiguration { strings: Vec<String> },
-    UserOptionSelected { user_option: ScalaUserOption },
+    UserOptionSelected { user_option: JavaUserOption },
     ExportImport { path: String, mode: usize, password: String, number: usize },
     Copy { data: String },
 }

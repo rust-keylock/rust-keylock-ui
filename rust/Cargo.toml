@@ -20,7 +20,7 @@ path = "src/main.rs"
 
 [dependencies]
 rust_keylock = "0.10.0"
-j4rs = "0.10"
+j4rs = {git="https://github.com/astonbitecode/j4rs.git"}
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 log4rs = "0.8"
@@ -29,5 +29,5 @@ glob = "0.2"
 
 [build-dependencies]
 fs_extra = "1.1.0"
-j4rs = "0.10"
+j4rs = {git="https://github.com/astonbitecode/j4rs.git"}
 rust_keylock = "0.10.0"

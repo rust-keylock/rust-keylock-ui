@@ -29,7 +29,6 @@ use crate::errors;
 
 pub struct DesktopImpl {
     jvm: Jvm,
-    launcher: Instance,
     show_menu: Instance,
     show_entries: Instance,
     show_entry: Instance,
@@ -39,35 +38,37 @@ pub struct DesktopImpl {
 
 pub fn new(jvm: Jvm) -> DesktopImpl {
     // Start the Ui
-    debug!("Calling org.rustkeylock.japi.Launcher.start");
-    let launcher = jvm.invoke_static(
-        "org.rustkeylock.japi.Launcher",
-        "start",
+    debug!("Calling org.rustkeylock.ui.UiLauncher.launch");
+    let _ = jvm.invoke_static(
+        "org.rustkeylock.ui.UiLauncher",
+        "launch",
         &Vec::new())
         .unwrap();
-    debug!("Calling org.rustkeylock.japi.Launcher.getStage");
-    let fx_stage = jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap();
+
+    debug!("Calling org.rustkeylock.ui.UiLauncher.getStage");
+    let fx_stage = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "getStage", &Vec::new()).unwrap();
+
     debug!("Stage retrieved. Proceeding...");
     // Create the Java classes that navigate the UI
     let show_menu = jvm.create_instance(
-        "org.rustkeylock.callbacks.ShowMenuCb",
+        "org.rustkeylock.ui.callbacks.ShowMenuCb",
         &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entries = jvm.create_instance(
-        "org.rustkeylock.callbacks.ShowEntriesSetCb",
+        "org.rustkeylock.ui.callbacks.ShowEntriesSetCb",
         &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_entry = jvm.create_instance(
-        "org.rustkeylock.callbacks.ShowEntryCb",
+        "org.rustkeylock.ui.callbacks.ShowEntryCb",
         &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let edit_configuration = jvm.create_instance(
-        "org.rustkeylock.callbacks.EditConfigurationCb",
+        "org.rustkeylock.ui.callbacks.EditConfigurationCb",
         &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
     let show_message = jvm.create_instance(
-        "org.rustkeylock.callbacks.ShowMessageCb",
-        &[InvocationArg::from(jvm.invoke_static("org.rustkeylock.japi.Launcher", "getStage", &Vec::new()).unwrap())]).unwrap();
+        "org.rustkeylock.ui.callbacks.ShowMessageCb",
+        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+
     // Return the Editor
     DesktopImpl {
         jvm,
-        launcher,
         show_menu,
         show_entries,
         show_entry,
@@ -121,7 +122,7 @@ fn show_password_enter(editor: &DesktopImpl) -> errors::Result<Receiver<UserSele
         "apply",
         &[InvocationArg::try_from("TryPass").unwrap()]);
     debug!("Waiting for password...");
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
 
 fn show_change_password(editor: &DesktopImpl) -> errors::Result<Receiver<UserSelection>> {
@@ -131,7 +132,7 @@ fn show_change_password(editor: &DesktopImpl) -> errors::Result<Receiver<UserSel
         "apply",
         &[InvocationArg::try_from("ChangePass").unwrap()]);
     debug!("Waiting for password change...");
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
 
 fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserSelection>> {
@@ -145,13 +146,13 @@ fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserS
                 &[InvocationArg::try_from("Main").unwrap()])
         }
         &Menu::NewEntry => {
-            let empty_entry = ScalaEntry::empty();
+            let empty_entry = JavaEntry::empty();
             // In order to denote that this is a new entry, put -1 as index
             editor.jvm.invoke_to_channel(
                 &editor.show_entry,
                 "apply",
                 &[
-                    InvocationArg::new(&empty_entry, "org.rustkeylock.japi.ScalaEntry"),
+                    InvocationArg::new(&empty_entry, "org.rustkeylock.japi.JavaEntry"),
                     InvocationArg::try_from(-1).unwrap(),
                     InvocationArg::try_from(true).unwrap(),
                     InvocationArg::try_from(false).unwrap()
@@ -178,12 +179,12 @@ fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserS
         other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
     };
 
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
 fn show_entries(editor: &DesktopImpl, entries: Vec<Entry>, filter: String) -> errors::Result<Receiver<UserSelection>> {
-    let scala_entries: Vec<ScalaEntry> = entries.iter()
-        .map(|entry| ScalaEntry::new(entry))
+    let java_entries: Vec<JavaEntry> = entries.iter()
+        .map(|entry| JavaEntry::new(entry))
         .collect();
     let filter = if filter.is_empty() {
         "null".to_string()
@@ -195,11 +196,11 @@ fn show_entries(editor: &DesktopImpl, entries: Vec<Entry>, filter: String) -> er
         "apply",
         &[
             InvocationArg::try_from((
-                scala_entries.as_slice(),
-                "org.rustkeylock.japi.ScalaEntry"))
+                java_entries.as_slice(),
+                "org.rustkeylock.japi.JavaEntry"))
                 .unwrap(),
             InvocationArg::try_from(filter).unwrap()]);
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
 fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_type: EntryPresentationType) -> errors::Result<Receiver<UserSelection>> {
@@ -209,7 +210,7 @@ fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_typ
                 &editor.show_entry,
                 "apply",
                 &[
-                    InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
                     InvocationArg::try_from(index as i32).unwrap(),
                     InvocationArg::try_from(false).unwrap(),
                     InvocationArg::try_from(false).unwrap()
@@ -220,7 +221,7 @@ fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_typ
                 &editor.show_entry,
                 "apply",
                 &[
-                    InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
                     InvocationArg::try_from(index as i32).unwrap(),
                     InvocationArg::try_from(false).unwrap(),
                     InvocationArg::try_from(true).unwrap(),
@@ -231,7 +232,7 @@ fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_typ
                 &editor.show_entry,
                 "apply",
                 &[
-                    InvocationArg::new(&ScalaEntry::new(&entry), "org.rustkeylock.japi.ScalaEntry"),
+                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
                     InvocationArg::try_from(index as i32).unwrap(),
                     InvocationArg::try_from(true).unwrap(),
                     InvocationArg::try_from(false).unwrap()
@@ -239,7 +240,7 @@ fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_typ
         }
     };
 
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
 fn show_configuration(editor: &DesktopImpl, nextcloud: NextcloudConfiguration, dropbox: DropboxConfiguration) -> errors::Result<Receiver<UserSelection>> {
@@ -254,7 +255,7 @@ fn show_configuration(editor: &DesktopImpl, nextcloud: NextcloudConfiguration, d
         &editor.edit_configuration,
         "apply",
         &[InvocationArg::try_from(conf_strings.as_slice()).unwrap()]);
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
 fn exit(editor: &DesktopImpl, contents_changed: bool) -> errors::Result<Receiver<UserSelection>> {
@@ -265,7 +266,7 @@ fn exit(editor: &DesktopImpl, contents_changed: bool) -> errors::Result<Receiver
             "apply",
             &[InvocationArg::try_from("Exit").unwrap()]);
 
-        super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver, &editor.launcher)
+        super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
     } else {
         let (tx, rx) = mpsc::channel();
         let _ = tx.send(UserSelection::GoTo(Menu::ForceExit));
@@ -275,21 +276,21 @@ fn exit(editor: &DesktopImpl, contents_changed: bool) -> errors::Result<Receiver
 
 fn show_message(editor: &DesktopImpl, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> errors::Result<Receiver<UserSelection>> {
     debug!("Showing Message '{}'", message);
-    let scala_user_options: Vec<ScalaUserOption> = options.iter()
+    let java_user_options: Vec<JavaUserOption> = options.iter()
         .clone()
-        .map(|user_option| ScalaUserOption::new(user_option))
+        .map(|user_option| JavaUserOption::new(user_option))
         .collect();
     let instance_receiver = editor.jvm.invoke_to_channel(
         &editor.show_message,
         "apply",
         &[
             InvocationArg::try_from((
-                scala_user_options.as_slice(),
-                "org.rustkeylock.japi.ScalaUserOption")).unwrap(),
+                java_user_options.as_slice(),
+                "org.rustkeylock.japi.JavaUserOption")).unwrap(),
             InvocationArg::try_from(message).unwrap(),
             InvocationArg::try_from(severity.to_string()).unwrap()]);
 
-    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver, &editor.launcher)
+    super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
 
 fn handle_error(error: &errors::RklUiError) -> Receiver<UserSelection> {
@@ -301,7 +302,7 @@ fn handle_error(error: &errors::RklUiError) -> Receiver<UserSelection> {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct ScalaEntry {
+pub(crate) struct JavaEntry {
     pub name: String,
     pub url: String,
     pub user: String,
@@ -309,9 +310,9 @@ pub(crate) struct ScalaEntry {
     pub desc: String,
 }
 
-impl ScalaEntry {
-    fn new(entry: &Entry) -> ScalaEntry {
-        ScalaEntry {
+impl JavaEntry {
+    fn new(entry: &Entry) -> JavaEntry {
+        JavaEntry {
             name: entry.name.clone(),
             url: entry.url.clone(),
             user: entry.user.clone(),
@@ -320,8 +321,8 @@ impl ScalaEntry {
         }
     }
 
-    fn empty() -> ScalaEntry {
-        ScalaEntry {
+    fn empty() -> JavaEntry {
+        JavaEntry {
             name: "".to_string(),
             url: "".to_string(),
             user: "".to_string(),
@@ -332,15 +333,15 @@ impl ScalaEntry {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct ScalaUserOption {
+pub(crate) struct JavaUserOption {
     pub label: String,
     pub value: String,
     pub short_label: String,
 }
 
-impl ScalaUserOption {
-    fn new(user_option: &UserOption) -> ScalaUserOption {
-        ScalaUserOption {
+impl JavaUserOption {
+    fn new(user_option: &UserOption) -> JavaUserOption {
+        JavaUserOption {
             label: user_option.label.clone(),
             value: user_option.value.to_string(),
             short_label: user_option.short_label.clone(),
@@ -349,7 +350,7 @@ impl ScalaUserOption {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub(crate) enum ScalaMenu {
+pub(crate) enum JavaMenu {
     TryPass { b: bool },
     ChangePass,
     Main,
@@ -370,23 +371,23 @@ pub(crate) enum ScalaMenu {
     Current,
 }
 
-impl ScalaMenu {
+impl JavaMenu {
     pub(crate) fn to_menu(self) -> Menu {
         match self {
-            ScalaMenu::Main => Menu::Main,
-            ScalaMenu::Exit => Menu::Exit,
-            ScalaMenu::EntriesList { filter } => Menu::EntriesList(filter),
-            ScalaMenu::Save { b } => Menu::Save(b),
-            ScalaMenu::ChangePass => Menu::ChangePass,
-            ScalaMenu::ExportEntries => Menu::ExportEntries,
-            ScalaMenu::ImportEntries => Menu::ImportEntries,
-            ScalaMenu::ShowConfiguration => Menu::ShowConfiguration,
-            ScalaMenu::ForceExit => Menu::ForceExit,
-            ScalaMenu::NewEntry => Menu::NewEntry,
-            ScalaMenu::WaitForDbxTokenCallback { s } => Menu::WaitForDbxTokenCallback(s),
-            ScalaMenu::ShowEntry { idx } => Menu::ShowEntry(idx),
-            ScalaMenu::EditEntry { idx } => Menu::EditEntry(idx),
-            ScalaMenu::DeleteEntry { idx } => Menu::DeleteEntry(idx),
+            JavaMenu::Main => Menu::Main,
+            JavaMenu::Exit => Menu::Exit,
+            JavaMenu::EntriesList { filter } => Menu::EntriesList(filter),
+            JavaMenu::Save { b } => Menu::Save(b),
+            JavaMenu::ChangePass => Menu::ChangePass,
+            JavaMenu::ExportEntries => Menu::ExportEntries,
+            JavaMenu::ImportEntries => Menu::ImportEntries,
+            JavaMenu::ShowConfiguration => Menu::ShowConfiguration,
+            JavaMenu::ForceExit => Menu::ForceExit,
+            JavaMenu::NewEntry => Menu::NewEntry,
+            JavaMenu::WaitForDbxTokenCallback { s } => Menu::WaitForDbxTokenCallback(s),
+            JavaMenu::ShowEntry { idx } => Menu::ShowEntry(idx),
+            JavaMenu::EditEntry { idx } => Menu::EditEntry(idx),
+            JavaMenu::DeleteEntry { idx } => Menu::DeleteEntry(idx),
             _ => {
                 Menu::Current
             }

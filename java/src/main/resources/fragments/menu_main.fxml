@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rustkeylock.controllers.MainMenuController">
+    <center>
+        <VBox alignment="CENTER" layoutY="69.0" prefHeight="598.0" prefWidth="0.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <opaqueInsets>
+            <Insets bottom="10.0" />
+         </opaqueInsets>
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/rkl.png" />
+               </image>
+               <VBox.margin>
+                  <Insets left="235.0" right="235.0" />
+               </VBox.margin>
+            </ImageView>
+         </children>
+        </VBox>
+    </center>
+   <top>
+      <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="rust-keylock">
+                    <font>
+                        <Font size="23.0" />
+                    </font>
+                </Text>
+            <Separator prefWidth="200.0" />
+         </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+   </top>
+   <left>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <JFXButton graphicTextGap="0.0" onAction="#goToShowEntries" text=" " fx:id="goToEntriesButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/circled_list.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Passwords" />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#encryptAndSave" text=" " fx:id="encryptAndSaveButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/save.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Encrypt and save" />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#goToChangePassword" text=" " fx:id="goToChangePassButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/edit.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Change master password" />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#goToExportTo" text=" " fx:id="goToExportToButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/export.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Export to..." />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#goToImportFrom" text=" " fx:id="goToImportFromButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/importimg.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Inport from..." />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" " fx:id="goToShowConfigurationButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/settings.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Show Configuration" />
+               </tooltip>
+            </JFXButton>
+            <JFXButton graphicTextGap="0.0" onAction="#goToExit" text=" " fx:id="goToExitButton">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/close.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Exit" />
+               </tooltip>
+            </JFXButton>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="20.0" />
+         </padding>
+      </VBox>
+   </left>
+</BorderPane>

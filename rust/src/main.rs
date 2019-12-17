@@ -25,6 +25,7 @@ use std::env;
 
 use j4rs::JavaOpt;
 use log::*;
+use std::path::PathBuf;
 
 mod ui_editor;
 mod logger;
@@ -38,32 +39,41 @@ fn main() {
         .map(|s| format!("-Duser.home={}", s))
         .unwrap_or("".to_string());
 
-    let jopts: Vec<JavaOpt> = if jh.is_empty() {
-        Vec::new()
-    } else {
-        vec![JavaOpt::new(&jh)]
-    };
-
     debug!("Starting the JVM");
 
     // Set the desired j4rs installation directory.
     // In a snaps environment, this is under the $SNAP/opt/j4rs.
     // In other environments, it is under the default rust-keylock location (in the home directory)
-    let j4rs_installation_path = match env::var("RKL_J4RS_INST_DIR") {
+    let mut j4rs_installation_path = match env::var("RKL_J4RS_INST_DIR") {
         Ok(path) => {
-            path
+            PathBuf::from(path)
         }
         Err(_) => {
             let mut j4rs_installation_path_buf = rust_keylock::default_rustkeylock_location();
             j4rs_installation_path_buf.push("lib");
 
-            j4rs_installation_path_buf.to_str().unwrap().to_owned()
+            j4rs_installation_path_buf
         }
     };
 
+    let base_path_string = j4rs_installation_path.to_str().unwrap().to_owned();
+
+    j4rs_installation_path.push("jassets");
+    let jassets_path_string = j4rs_installation_path.to_str().unwrap().to_owned();
+
+    let mut jopts: Vec<JavaOpt> = if jh.is_empty() {
+        Vec::new()
+    } else {
+        vec![JavaOpt::new(&jh)]
+    };
+
+    let modules_path = format!("--module-path {}", jassets_path_string);
+    jopts.push(JavaOpt::new(&modules_path));
+    jopts.push(JavaOpt::new("--add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml"));
+
     let jvm_res = j4rs::JvmBuilder::new()
         .java_opts(jopts)
-        .with_base_path(&j4rs_installation_path)
+        .with_base_path(&base_path_string)
         .build();
 
     let jvm = jvm_res.unwrap();
