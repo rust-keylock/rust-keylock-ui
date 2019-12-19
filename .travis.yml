@@ -26,11 +26,11 @@ before_install:
 script:
   - mvn -f java/pom.xml clean install
   - cargo build --manifest-path=rust/Cargo.toml
-#  - echo "Starting migration"
-#  - sudo /snap/bin/lxd.migrate -yes
-#  - echo "Waiting to get ready"
-#  - sudo /snap/bin/lxd waitready
-#  - echo "Initializing"
+  - echo "Starting migration"
+  - sudo /snap/bin/lxd.migrate -yes
+  - echo "Waiting to get ready"
+  - sudo /snap/bin/lxd waitready
+  - echo "Initializing"
   - sudo /snap/bin/lxd init --auto
   - echo "Executing snapcraft"
   - sudo snapcraft --use-lxd
