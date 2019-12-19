@@ -23,8 +23,12 @@ import java.util.Optional;
 public class Utils {
     public static void removeChildNodeById(HBox parent, String idToRemove) {
         Optional<Node> childFound = parent.getChildren().stream()
-                .filter(node -> node.getId().equals(idToRemove))
+                .filter(node -> idToRemove.equals(node.getId()))
                 .findFirst();
         childFound.map(node -> parent.getChildren().remove(node));
+    }
+
+    public static void addNode(HBox parent, Node node) {
+        parent.getChildren().add(node);
     }
 }

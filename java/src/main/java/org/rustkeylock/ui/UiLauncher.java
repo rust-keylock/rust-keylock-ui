@@ -19,6 +19,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class UiLauncher extends Application {
     @Override
     public void start(Stage fxStage) throws Exception {
         logger.info("Starting rust-keylock-ui");
+        fxStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/rkl.png")));
         URL resurl = getClass().getResource("/fragments/logo.fxml");
 
         FXMLLoader loader = new FXMLLoader();

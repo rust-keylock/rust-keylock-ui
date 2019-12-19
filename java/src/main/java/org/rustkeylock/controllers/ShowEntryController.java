@@ -15,6 +15,7 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,6 +35,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ShowEntryController extends BaseController implements RklController, Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -76,12 +79,29 @@ public class ShowEntryController extends BaseController implements RklController
     private final StringProperty editButtonId = new SimpleStringProperty(EDIT_BUTTON_ID);
     @FXML
     private final StringProperty cancelButtonId = new SimpleStringProperty(CANCEL_BUTTON_ID);
+    @FXML
+    private HBox showHidePasswordHBox = new HBox();
+    @FXML
+    private final StringProperty showPasswordButtonId = new SimpleStringProperty(SHOW_PASSWORD_BUTTON_ID);
+    @FXML
+    private final StringProperty hidePasswordButtonId = new SimpleStringProperty(HIDE_PASSWORD_BUTTON_ID);
+    @FXML
+    private JFXButton showPasswordButton;
+    @FXML
+    private JFXButton hidePasswordButton;
 
     private static final String DELETE_BUTTON_ID = "deleteButton";
     private static final String OK_BUTTON_ID = "okButton";
     private static final String CAUTION_BUTTON_ID = "cautionButton";
     private static final String EDIT_BUTTON_ID = "editButton";
     private static final String CANCEL_BUTTON_ID = "cancelButton";
+    private static final String SHOW_PASSWORD_BUTTON_ID = "showPassword";
+    private static final String HIDE_PASSWORD_BUTTON_ID = "hidePassword";
+    private static final String MASK_UTF_CHAR = "\u2022";
+    private static final String MASK_STRING = Stream.iterate(0, n -> n + 1)
+            .limit(9)
+            .map(i -> MASK_UTF_CHAR)
+            .collect(Collectors.joining(""));
 
     private final JavaEntry anEntry;
     private final Integer entryIndex;
@@ -121,7 +141,8 @@ public class ShowEntryController extends BaseController implements RklController
 
         passwordTextField.setEditable(edit);
         passwordTextField.setDisable(!edit);
-        passwordTextField.setText(anEntry.getPass());
+        passwordTextField.setText(MASK_STRING);
+        Utils.removeChildNodeById(showHidePasswordHBox, HIDE_PASSWORD_BUTTON_ID);
 
         descriptionTextArea.setEditable(edit);
         descriptionTextArea.setDisable(!edit);
@@ -156,6 +177,20 @@ public class ShowEntryController extends BaseController implements RklController
             Utils.removeChildNodeById(righButtonsHBox, DELETE_BUTTON_ID);
             Utils.removeChildNodeById(righButtonsHBox, OK_BUTTON_ID);
             Utils.removeChildNodeById(righButtonsHBox, CAUTION_BUTTON_ID);
+        }
+    }
+
+    @FXML
+    private void toggleRevealPassword(ActionEvent event) {
+        event.consume();
+        if (passwordTextField.getText().startsWith(MASK_UTF_CHAR)) {
+            passwordTextField.setText(anEntry.getPass());
+            Utils.removeChildNodeById(showHidePasswordHBox, SHOW_PASSWORD_BUTTON_ID);
+            Utils.addNode(showHidePasswordHBox, hidePasswordButton);
+        } else {
+            passwordTextField.setText(MASK_STRING);
+            Utils.removeChildNodeById(showHidePasswordHBox, HIDE_PASSWORD_BUTTON_ID);
+            Utils.addNode(showHidePasswordHBox, showPasswordButton);
         }
     }
 
@@ -469,5 +504,37 @@ public class ShowEntryController extends BaseController implements RklController
 
     public void setCancelButtonId(String cancelButtonId) {
         this.cancelButtonId.set(cancelButtonId);
+    }
+
+    public HBox getShowHidePasswordHBox() {
+        return showHidePasswordHBox;
+    }
+
+    public void setShowHidePasswordHBox(HBox showHidePasswordHBox) {
+        this.showHidePasswordHBox = showHidePasswordHBox;
+    }
+
+    public String getShowPasswordButtonId() {
+        return showPasswordButtonId.get();
+    }
+
+    public StringProperty showPasswordButtonIdProperty() {
+        return showPasswordButtonId;
+    }
+
+    public void setShowPasswordButtonId(String showPasswordButtonId) {
+        this.showPasswordButtonId.set(showPasswordButtonId);
+    }
+
+    public String getHidePasswordButtonId() {
+        return hidePasswordButtonId.get();
+    }
+
+    public StringProperty hidePasswordButtonIdProperty() {
+        return hidePasswordButtonId;
+    }
+
+    public void setHidePasswordButtonId(String hidePasswordButtonId) {
+        this.hidePasswordButtonId.set(hidePasswordButtonId);
     }
 }

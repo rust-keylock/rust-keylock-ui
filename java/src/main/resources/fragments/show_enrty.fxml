@@ -155,17 +155,38 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="20.0">
+            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0" fx:id="showHidePasswordHBox">
                <children>
-                  <Label prefHeight="16.0" prefWidth="348.0" text="Password (hover here tto reveal)">
+                  <Label text="Password">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Label>
+                  <JFXButton id="${controller.showPasswordButtonId}" graphicTextGap="0.0" onAction="#toggleRevealPassword" text=" " fx:id="showPasswordButton">
+                     <tooltip>
+                        <Tooltip text="Show password" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/eye_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton id="${controller.hidePasswordButtonId}" graphicTextGap="0.0" onAction="#toggleRevealPassword" text=" " fx:id="hidePasswordButton">
+                     <tooltip>
+                        <Tooltip text="Hide password" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/eye-off_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
                </children>
-               <padding>
-                  <Insets left="10.0" right="10.0" />
-               </padding>
             </HBox>
             <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="36.0" spacing="20.0">
                <children>
@@ -237,7 +258,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="55.0" prefWidth="467.0" spacing="150.0">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefWidth="200.0" fx:id="leftButtonsHBox">
+                  <HBox fx:id="leftButtonsHBox" alignment="CENTER_LEFT" prefWidth="200.0">
                      <children>
                         <JFXButton id="${controller.editButtonId}" graphicTextGap="0.0" onAction="#leftButtonAction" text=" ">
                            <tooltip>
