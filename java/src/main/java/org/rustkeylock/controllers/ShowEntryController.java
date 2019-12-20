@@ -158,6 +158,8 @@ public class ShowEntryController extends BaseController implements RklController
             Utils.removeChildNodeById(righButtonsHBox, OK_BUTTON_ID);
             Utils.removeChildNodeById(righButtonsHBox, CAUTION_BUTTON_ID);
         } else if (edit && !delete) {
+            showPasswordButton.setDisable(true);
+            hidePasswordButton.setDisable(true);
             disableMenuButtons();
             Utils.removeChildNodeById(leftButtonsHBox, EDIT_BUTTON_ID);
             setLeftButtonTooltip("Cancel");

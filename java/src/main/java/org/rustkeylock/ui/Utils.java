@@ -29,6 +29,8 @@ public class Utils {
     }
 
     public static void addNode(HBox parent, Node node) {
-        parent.getChildren().add(node);
+        if (!parent.getChildren().contains(node)) {
+            parent.getChildren().add(node);
+        }
     }
 }
