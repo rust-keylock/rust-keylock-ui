@@ -141,7 +141,9 @@ public class ShowEntryController extends BaseController implements RklController
 
         passwordTextField.setEditable(edit);
         passwordTextField.setDisable(!edit);
-        passwordTextField.setText(MASK_STRING);
+        if (!anEntry.getPass().isEmpty()) {
+            passwordTextField.setText(MASK_STRING);
+        }
         Utils.removeChildNodeById(showHidePasswordHBox, HIDE_PASSWORD_BUTTON_ID);
 
         descriptionTextArea.setEditable(edit);
