@@ -24,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.rustkeylock.japi.stubs.GuiResponse;
@@ -128,14 +129,22 @@ public class ImportExportController extends BaseController implements RklControl
         setPasswordMessage("");
         setNumberMessage("");
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(homePath));
-        File file = fileChooser.showOpenDialog(stage);
-        if (file == null) {
-            pathString = pathString;
+        if (isExport()) {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setInitialDirectory(new File(homePath));
+            File file = directoryChooser.showDialog(stage);
+            if (file != null) {
+                pathString = file.getAbsolutePath() + File.separator + proposedFilename;
+            }
         } else {
-            pathString = file.getAbsolutePath();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File(homePath));
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                pathString = file.getAbsolutePath();
+            }
         }
+
         logger.info("Chosen file: " + path);
         path.setText(pathString);
     }
