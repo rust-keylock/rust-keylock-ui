@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.rustkeylock</groupId>
     <artifactId>desktop-ui</artifactId>
-    <version>0.10.0</version>
+    <version>0.11.0</version>
     <name>rust-keylock-ui</name>
     <description>A password manager and its goals are to be:
 
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>io.github.astonbitecode</groupId>
             <artifactId>j4rs</artifactId>
-            <version>0.11.0-SNAPSHOT</version>
+            <version>0.11.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
