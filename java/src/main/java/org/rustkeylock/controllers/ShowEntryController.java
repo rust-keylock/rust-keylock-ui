@@ -15,14 +15,14 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.japi.stubs.GuiResponse;
@@ -42,23 +42,23 @@ public class ShowEntryController extends BaseController implements RklController
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Consumer<Object> callback;
     @FXML
-    private JFXTextField titleTextField = new JFXTextField();
+    private TextField titleTextField = new TextField();
     @FXML
     private StringProperty titleMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextField urlTextField = new JFXTextField();
+    private TextField urlTextField = new TextField();
     @FXML
     private StringProperty urlMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextField usernameTextField = new JFXTextField();
+    private TextField usernameTextField = new TextField();
     @FXML
     private StringProperty usernameMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextField passwordTextField = new JFXTextField();
+    private TextField passwordTextField = new TextField();
     @FXML
     private StringProperty passwordMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextArea descriptionTextArea = new JFXTextArea();
+    private TextArea descriptionTextArea = new TextArea();
     @FXML
     private StringProperty descriptionMessage = new SimpleStringProperty("");
     @FXML
@@ -86,9 +86,9 @@ public class ShowEntryController extends BaseController implements RklController
     @FXML
     private final StringProperty hidePasswordButtonId = new SimpleStringProperty(HIDE_PASSWORD_BUTTON_ID);
     @FXML
-    private JFXButton showPasswordButton;
+    private Button showPasswordButton;
     @FXML
-    private JFXButton hidePasswordButton;
+    private Button hidePasswordButton;
 
     private static final String DELETE_BUTTON_ID = "deleteButton";
     private static final String OK_BUTTON_ID = "okButton";
@@ -354,43 +354,43 @@ public class ShowEntryController extends BaseController implements RklController
         this.descriptionMessage.set(descriptionMessage);
     }
 
-    public JFXTextField getTitleTextField() {
+    public TextField getTitleTextField() {
         return titleTextField;
     }
 
-    public void setTitleTextField(JFXTextField titleTextField) {
+    public void setTitleTextField(TextField titleTextField) {
         this.titleTextField = titleTextField;
     }
 
-    public JFXTextField getUrlTextField() {
+    public TextField getUrlTextField() {
         return urlTextField;
     }
 
-    public void setUrlTextField(JFXTextField urlTextField) {
+    public void setUrlTextField(TextField urlTextField) {
         this.urlTextField = urlTextField;
     }
 
-    public JFXTextField getUsernameTextField() {
+    public TextField getUsernameTextField() {
         return usernameTextField;
     }
 
-    public void setUsernameTextField(JFXTextField usernameTextField) {
+    public void setUsernameTextField(TextField usernameTextField) {
         this.usernameTextField = usernameTextField;
     }
 
-    public JFXTextField getPasswordTextField() {
+    public TextField getPasswordTextField() {
         return passwordTextField;
     }
 
-    public void setPasswordTextField(JFXTextField passwordTextField) {
+    public void setPasswordTextField(TextField passwordTextField) {
         this.passwordTextField = passwordTextField;
     }
 
-    public JFXTextArea getDescriptionTextArea() {
+    public TextArea getDescriptionTextArea() {
         return descriptionTextArea;
     }
 
-    public void setDescriptionTextArea(JFXTextArea descriptionTextArea) {
+    public void setDescriptionTextArea(TextArea descriptionTextArea) {
         this.descriptionTextArea = descriptionTextArea;
     }
 

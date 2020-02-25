@@ -15,7 +15,6 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXPasswordField;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,6 +22,7 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.PasswordField;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.ui.Defs;
@@ -36,19 +36,19 @@ import java.util.function.Consumer;
 public class ChangePasswordController extends BaseController implements RklController, Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @FXML
-    private JFXPasswordField password1 = new JFXPasswordField();
+    private PasswordField password1 = new PasswordField();
     @FXML
     private StringProperty passwordMessage1 = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField password2 = new JFXPasswordField();
+    private PasswordField password2 = new PasswordField();
     @FXML
     private StringProperty passwordMessage2 = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField number1 = new JFXPasswordField();
+    private PasswordField number1 = new PasswordField();
     @FXML
     private StringProperty numberMessage1 = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField number2 = new JFXPasswordField();
+    private PasswordField number2 = new PasswordField();
     @FXML
     private StringProperty numberMessage2 = new SimpleStringProperty("");
     @FXML
@@ -122,11 +122,11 @@ public class ChangePasswordController extends BaseController implements RklContr
         }
     }
 
-    public JFXPasswordField getPassword1() {
+    public PasswordField getPassword1() {
         return password1;
     }
 
-    public void setPassword1(JFXPasswordField password1) {
+    public void setPassword1(PasswordField password1) {
         this.password1 = password1;
     }
 
@@ -142,11 +142,11 @@ public class ChangePasswordController extends BaseController implements RklContr
         this.passwordMessage1.set(passwordMessage1);
     }
 
-    public JFXPasswordField getPassword2() {
+    public PasswordField getPassword2() {
         return password2;
     }
 
-    public void setPassword2(JFXPasswordField password2) {
+    public void setPassword2(PasswordField password2) {
         this.password2 = password2;
     }
 
@@ -162,11 +162,11 @@ public class ChangePasswordController extends BaseController implements RklContr
         this.passwordMessage2.set(passwordMessage2);
     }
 
-    public JFXPasswordField getNumber1() {
+    public PasswordField getNumber1() {
         return number1;
     }
 
-    public void setNumber1(JFXPasswordField number1) {
+    public void setNumber1(PasswordField number1) {
         this.number1 = number1;
     }
 
@@ -182,11 +182,11 @@ public class ChangePasswordController extends BaseController implements RklContr
         this.numberMessage1.set(numberMessage1);
     }
 
-    public JFXPasswordField getNumber2() {
+    public PasswordField getNumber2() {
         return number2;
     }
 
-    public void setNumber2(JFXPasswordField number2) {
+    public void setNumber2(PasswordField number2) {
         this.number2 = number2;
     }
 

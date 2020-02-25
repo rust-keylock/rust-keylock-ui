@@ -15,9 +15,9 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXButton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 
@@ -25,19 +25,19 @@ import java.util.function.Consumer;
 
 public abstract class BaseController {
     @FXML
-    private JFXButton goToEntriesButton;
+    private Button goToEntriesButton;
     @FXML
-    private JFXButton encryptAndSaveButton;
+    private Button encryptAndSaveButton;
     @FXML
-    private JFXButton goToChangePassButton;
+    private Button goToChangePassButton;
     @FXML
-    private JFXButton goToExportToButton;
+    private Button goToExportToButton;
     @FXML
-    private JFXButton goToImportFromButton;
+    private Button goToImportFromButton;
     @FXML
-    private JFXButton goToShowConfigurationButton;
+    private Button goToShowConfigurationButton;
     @FXML
-    private JFXButton goToExitButton;
+    private Button goToExitButton;
 
     abstract Consumer<Object> getCallback();
 

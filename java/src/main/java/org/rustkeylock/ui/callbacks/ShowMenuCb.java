@@ -23,6 +23,7 @@ import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
 import org.rustkeylock.controllers.*;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.ui.Defs;
+import org.rustkeylock.ui.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +89,7 @@ public class ShowMenuCb extends NativeCallbackToRustChannelSupport {
 
                     controller = loader.getController();
                     Scene scene = new Scene(root);
+                    Utils.applyRklCss(scene);
                     stage.updateView(scene, controller);
                 } else {
                     controller = stage.getCurrentlyActiveController().orElseThrow(() -> new RuntimeException("Saved state not found!"));

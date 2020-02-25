@@ -15,8 +15,6 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -24,6 +22,8 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -43,15 +43,15 @@ public class ImportExportController extends BaseController implements RklControl
     @FXML
     private StringProperty title = new SimpleStringProperty("");
     @FXML
-    private JFXTextField path = new JFXTextField();
+    private TextField path = new TextField();
     @FXML
     private StringProperty pathMessage = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField password = new JFXPasswordField();
+    private PasswordField password = new PasswordField();
     @FXML
     private StringProperty passwordMessage = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField number = new JFXPasswordField();
+    private PasswordField number = new PasswordField();
     @FXML
     private StringProperty numberMessage = new SimpleStringProperty("");
     private Consumer<Object> callback;
@@ -159,11 +159,11 @@ public class ImportExportController extends BaseController implements RklControl
         return this.callback;
     }
 
-    public JFXTextField getPath() {
+    public TextField getPath() {
         return path;
     }
 
-    public void setPath(JFXTextField path) {
+    public void setPath(TextField path) {
         this.path = path;
     }
 
@@ -179,11 +179,11 @@ public class ImportExportController extends BaseController implements RklControl
         this.pathMessage.set(pathMessage);
     }
 
-    public JFXPasswordField getPassword() {
+    public PasswordField getPassword() {
         return password;
     }
 
-    public void setPassword(JFXPasswordField password) {
+    public void setPassword(PasswordField password) {
         this.password = password;
     }
 
@@ -199,11 +199,11 @@ public class ImportExportController extends BaseController implements RklControl
         this.passwordMessage.set(passwordMessage);
     }
 
-    public JFXPasswordField getNumber() {
+    public PasswordField getNumber() {
         return number;
     }
 
-    public void setNumber(JFXPasswordField number) {
+    public void setNumber(PasswordField number) {
         this.number = number;
     }
 

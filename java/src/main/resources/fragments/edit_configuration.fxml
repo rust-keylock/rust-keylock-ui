@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
@@ -16,6 +13,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
 <BorderPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rustkeylock.controllers.EditConfigurationController">
     <center>
         <VBox alignment="TOP_CENTER" layoutY="69.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -60,7 +59,7 @@
                <children>
                   <AnchorPane prefHeight="18.0" prefWidth="447.0">
                      <children>
-                        <JFXTextField fx:id="ncServerUrl" prefHeight="26.0" prefWidth="447.0" />
+                        <TextField fx:id="ncServerUrl" prefHeight="26.0" prefWidth="447.0" />
                      </children>
                   </AnchorPane>
                </children>
@@ -96,7 +95,7 @@
                <children>
                   <AnchorPane prefHeight="0.0" prefWidth="447.0">
                      <children>
-                        <JFXTextField fx:id="ncUsername" prefHeight="26.0" prefWidth="447.0" />
+                        <TextField fx:id="ncUsername" prefHeight="26.0" prefWidth="447.0" />
                      </children>
                   </AnchorPane>
                </children>
@@ -132,7 +131,7 @@
                <children>
                   <AnchorPane prefHeight="0.0" prefWidth="447.0">
                      <children>
-                        <JFXTextField fx:id="ncPassword" prefHeight="26.0" prefWidth="447.0" />
+                        <TextField fx:id="ncPassword" prefHeight="26.0" prefWidth="447.0" />
                      </children>
                   </AnchorPane>
                </children>
@@ -178,7 +177,7 @@
             <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="82.0" spacing="20.0">
                <children>
                   <Label text="${controller.dropboxTokenLabel}" />
-                  <JFXButton graphicTextGap="0.0" onAction="#getDropboxToken" text=" ">
+                  <Button graphicTextGap="0.0" onAction="#getDropboxToken" text=" ">
                      <tooltip>
                         <Tooltip text="Get a Dropbox authorization token" />
                      </tooltip>
@@ -192,7 +191,7 @@
                      <padding>
                         <Insets left="18.0" />
                      </padding>
-                  </JFXButton>
+                  </Button>
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
@@ -207,7 +206,7 @@
                <children>
                   <HBox fx:id="righButtonsHBox" alignment="CENTER_LEFT" prefHeight="100.0">
                      <children>
-                        <JFXButton graphicTextGap="0.0" onAction="#cancel" text=" ">
+                        <Button graphicTextGap="0.0" onAction="#cancel" text=" ">
                            <tooltip>
                               <Tooltip text="Cancel" />
                            </tooltip>
@@ -218,12 +217,12 @@
                                  </image>
                               </ImageView>
                            </graphic>
-                        </JFXButton>
+                        </Button>
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefWidth="200.0">
                      <children>
-                        <JFXButton graphicTextGap="0.0" onAction="#apply" text=" ">
+                        <Button graphicTextGap="0.0" onAction="#apply" text=" ">
                            <tooltip>
                               <Tooltip text="Apply" />
                            </tooltip>
@@ -234,7 +233,7 @@
                                  </image>
                               </ImageView>
                            </graphic>
-                        </JFXButton>
+                        </Button>
                      </children>
                   </HBox>
                </children>
@@ -269,7 +268,7 @@
    <left>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton fx:id="goToEntriesButton" graphicTextGap="0.0" onAction="#goToShowEntries" text=" ">
+            <Button fx:id="goToEntriesButton" graphicTextGap="0.0" onAction="#goToShowEntries" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -280,8 +279,8 @@
                <tooltip>
                   <Tooltip text="Passwords" />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="encryptAndSaveButton" graphicTextGap="0.0" onAction="#encryptAndSave" text=" ">
+            </Button>
+            <Button fx:id="encryptAndSaveButton" graphicTextGap="0.0" onAction="#encryptAndSave" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -292,8 +291,8 @@
                <tooltip>
                   <Tooltip text="Encrypt and save" />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="goToChangePassButton" graphicTextGap="0.0" onAction="#goToChangePassword" text=" ">
+            </Button>
+            <Button fx:id="goToChangePassButton" graphicTextGap="0.0" onAction="#goToChangePassword" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -304,8 +303,8 @@
                <tooltip>
                   <Tooltip text="Change master password" />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="goToExportToButton" graphicTextGap="0.0" onAction="#goToExportTo" text=" ">
+            </Button>
+            <Button fx:id="goToExportToButton" graphicTextGap="0.0" onAction="#goToExportTo" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -316,8 +315,8 @@
                <tooltip>
                   <Tooltip text="Export to..." />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="goToImportFromButton" graphicTextGap="0.0" onAction="#goToImportFrom" text=" ">
+            </Button>
+            <Button fx:id="goToImportFromButton" graphicTextGap="0.0" onAction="#goToImportFrom" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -328,8 +327,8 @@
                <tooltip>
                   <Tooltip text="Inport from..." />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="goToShowConfigurationButton" graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" ">
+            </Button>
+            <Button fx:id="goToShowConfigurationButton" graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -340,8 +339,8 @@
                <tooltip>
                   <Tooltip text="Show Configuration" />
                </tooltip>
-            </JFXButton>
-            <JFXButton fx:id="goToExitButton" graphicTextGap="0.0" onAction="#goToExit" text=" ">
+            </Button>
+            <Button fx:id="goToExitButton" graphicTextGap="0.0" onAction="#goToExit" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -352,7 +351,7 @@
                <tooltip>
                   <Tooltip text="Exit" />
                </tooltip>
-            </JFXButton>
+            </Button>
          </children>
          <opaqueInsets>
             <Insets />

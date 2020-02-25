@@ -25,6 +25,7 @@ import org.rustkeylock.controllers.RklController;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.ui.Defs;
+import org.rustkeylock.ui.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,7 @@ public class ShowEntriesSetCb extends NativeCallbackToRustChannelSupport {
                 controller.setCallback(this::doCallback);
 
                 Scene scene = new Scene(root);
+                Utils.applyRklCss(scene);
                 stage.updateView(scene, controller);
             } catch (IOException error) {
                 error.printStackTrace();

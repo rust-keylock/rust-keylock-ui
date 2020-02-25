@@ -15,7 +15,6 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXListView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -23,6 +22,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.rustkeylock.japi.stubs.GuiResponse;
@@ -48,11 +48,11 @@ public class ListEntriesController extends BaseController implements RklControll
     private Timer timer = new Timer();
     private long DELAY_MILLIS_FOR_KEYPRESS = 300;
     @FXML
-    private JFXListView<String> entriesListView;
+    private ListView<String> entriesListView;
     private List<String> entries;
 
     public ListEntriesController(List<String> entries, String initialFilter) {
-        this.entriesListView = new JFXListView<>();
+        this.entriesListView = new ListView<>();
         this.entries = entries;
         setFilterText(initialFilter);
         this.filter = initialFilter;
@@ -126,11 +126,11 @@ public class ListEntriesController extends BaseController implements RklControll
         }
     }
 
-    public JFXListView<String> getEntriesListView() {
+    public ListView<String> getEntriesListView() {
         return entriesListView;
     }
 
-    public void setEntriesListView(JFXListView<String> entriesListView) {
+    public void setEntriesListView(ListView<String> entriesListView) {
         this.entriesListView = entriesListView;
     }
 }

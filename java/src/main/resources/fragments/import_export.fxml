@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXPasswordField?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
@@ -16,6 +13,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
 <BorderPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rustkeylock.controllers.ImportExportController">
     <center>
         <VBox alignment="TOP_CENTER" layoutY="69.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -27,8 +26,8 @@
                <children>
                   <AnchorPane prefHeight="31.0" prefWidth="438.0">
                      <children>
-                        <JFXTextField prefHeight="26.0" prefWidth="421.0" promptText="Path" fx:id="path"/>
-                        <JFXButton graphicTextGap="0.0" layoutX="384.0" layoutY="-12.0" onAction="#browseForFile" text=" " AnchorPane.rightAnchor="0.0">
+                        <TextField prefHeight="26.0" prefWidth="421.0" promptText="Path" fx:id="path"/>
+                        <Button graphicTextGap="0.0" layoutX="384.0" layoutY="-12.0" onAction="#browseForFile" text=" " AnchorPane.rightAnchor="0.0">
                            <tooltip>
                               <Tooltip text="Apply" />
                            </tooltip>
@@ -39,7 +38,7 @@
                                  </image>
                               </ImageView>
                            </graphic>
-                        </JFXButton>
+                        </Button>
                      </children>
                   </AnchorPane>
                </children>
@@ -101,7 +100,7 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT">
                <children>
-                  <JFXButton graphicTextGap="0.0" onAction="#apply" text=" ">
+                  <Button graphicTextGap="0.0" onAction="#apply" text=" ">
                      <tooltip>
                         <Tooltip text="Apply" />
                      </tooltip>
@@ -112,7 +111,7 @@
                            </image>
                         </ImageView>
                      </graphic>
-                  </JFXButton>
+                  </Button>
                </children>
                <padding>
                   <Insets right="50.0" top="20.0" />
@@ -148,7 +147,7 @@
    <left>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton graphicTextGap="0.0" onAction="#goToShowEntries" text=" " fx:id="goToEntriesButton">
+            <Button graphicTextGap="0.0" onAction="#goToShowEntries" text=" " fx:id="goToEntriesButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -159,8 +158,8 @@
                <tooltip>
                   <Tooltip text="Passwords" />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#encryptAndSave" text=" " fx:id="encryptAndSaveButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#encryptAndSave" text=" " fx:id="encryptAndSaveButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -171,8 +170,8 @@
                <tooltip>
                   <Tooltip text="Encrypt and save" />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#goToChangePassword" text=" " fx:id="goToChangePassButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#goToChangePassword" text=" " fx:id="goToChangePassButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -183,8 +182,8 @@
                <tooltip>
                   <Tooltip text="Change master password" />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#goToExportTo" text=" " fx:id="goToExportToButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#goToExportTo" text=" " fx:id="goToExportToButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -195,8 +194,8 @@
                <tooltip>
                   <Tooltip text="Export to..." />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#goToImportFrom" text=" " fx:id="goToImportFromButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#goToImportFrom" text=" " fx:id="goToImportFromButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -207,8 +206,8 @@
                <tooltip>
                   <Tooltip text="Inport from..." />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" " fx:id="goToShowConfigurationButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" " fx:id="goToShowConfigurationButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -219,8 +218,8 @@
                <tooltip>
                   <Tooltip text="Show Configuration" />
                </tooltip>
-            </JFXButton>
-            <JFXButton graphicTextGap="0.0" onAction="#goToExit" text=" " fx:id="goToExitButton">
+            </Button>
+            <Button graphicTextGap="0.0" onAction="#goToExit" text=" " fx:id="goToExitButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -231,7 +230,7 @@
                <tooltip>
                   <Tooltip text="Exit" />
                </tooltip>
-            </JFXButton>
+            </Button>
          </children>
          <opaqueInsets>
             <Insets />

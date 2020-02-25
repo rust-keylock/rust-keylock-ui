@@ -15,11 +15,11 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXPasswordField;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
 
@@ -27,11 +27,11 @@ import java.util.function.Consumer;
 
 public class EnterPasswordController implements RklController {
     @FXML
-    private JFXPasswordField password = new JFXPasswordField();
+    private PasswordField password = new PasswordField();
     @FXML
     private StringProperty passwordMessage = new SimpleStringProperty("");
     @FXML
-    private JFXPasswordField number = new JFXPasswordField();
+    private PasswordField number = new PasswordField();
     @FXML
     private StringProperty numberMessage = new SimpleStringProperty("");
     private Consumer<Object> callback;
@@ -96,19 +96,19 @@ public class EnterPasswordController implements RklController {
         this.numberMessage.set(numberMessage);
     }
 
-    public JFXPasswordField getPassword() {
+    public PasswordField getPassword() {
         return password;
     }
 
-    public void setPassword(JFXPasswordField password) {
+    public void setPassword(PasswordField password) {
         this.password = password;
     }
 
-    public JFXPasswordField getNumber() {
+    public PasswordField getNumber() {
         return number;
     }
 
-    public void setNumber(JFXPasswordField number) {
+    public void setNumber(PasswordField number) {
         this.number = number;
     }
 }

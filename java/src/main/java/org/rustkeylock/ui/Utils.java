@@ -16,6 +16,7 @@
 package org.rustkeylock.ui;
 
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 
 import java.util.Optional;
@@ -32,5 +33,10 @@ public class Utils {
         if (!parent.getChildren().contains(node)) {
             parent.getChildren().add(node);
         }
+    }
+
+    public static void applyRklCss(Scene scene) {
+        String rklCss = Utils.class.getResource("/style/rkl.css").toExternalForm();
+        scene.getStylesheets().add(rklCss);
     }
 }

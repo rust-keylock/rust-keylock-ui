@@ -15,13 +15,13 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
@@ -39,19 +39,19 @@ public class EditConfigurationController extends BaseController implements RklCo
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Consumer<Object> callback;
     @FXML
-    private JFXTextField ncServerUrl = new JFXTextField();
+    private TextField ncServerUrl = new TextField();
     @FXML
     private StringProperty ncServerUrlMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextField ncUsername = new JFXTextField();
+    private TextField ncUsername = new TextField();
     @FXML
     private StringProperty ncUsernameMessage = new SimpleStringProperty("");
     @FXML
-    private JFXTextField ncPassword = new JFXTextField();
+    private TextField ncPassword = new TextField();
     @FXML
     private StringProperty ncPasswordMessage = new SimpleStringProperty("");
     @FXML
-    private JFXCheckBox ncUseSelfSignedCertificate = new JFXCheckBox();
+    private CheckBox ncUseSelfSignedCertificate = new CheckBox();
     @FXML
     private StringProperty dropboxTokenLabel = new SimpleStringProperty("");
 
@@ -154,11 +154,11 @@ public class EditConfigurationController extends BaseController implements RklCo
         callback.accept(GuiResponse.GoToMenu(JavaMenu.Main()));
     }
 
-    public JFXTextField getNcServerUrl() {
+    public TextField getNcServerUrl() {
         return ncServerUrl;
     }
 
-    public void setNcServerUrl(JFXTextField ncServerUrl) {
+    public void setNcServerUrl(TextField ncServerUrl) {
         this.ncServerUrl = ncServerUrl;
     }
 
@@ -174,11 +174,11 @@ public class EditConfigurationController extends BaseController implements RklCo
         this.ncServerUrlMessage.set(ncServerUrlMessage);
     }
 
-    public JFXTextField getNcUsername() {
+    public TextField getNcUsername() {
         return ncUsername;
     }
 
-    public void setNcUsername(JFXTextField ncUsername) {
+    public void setNcUsername(TextField ncUsername) {
         this.ncUsername = ncUsername;
     }
 
@@ -194,11 +194,11 @@ public class EditConfigurationController extends BaseController implements RklCo
         this.ncUsernameMessage.set(ncUsernameMessage);
     }
 
-    public JFXTextField getNcPassword() {
+    public TextField getNcPassword() {
         return ncPassword;
     }
 
-    public void setNcPassword(JFXTextField ncPassword) {
+    public void setNcPassword(TextField ncPassword) {
         this.ncPassword = ncPassword;
     }
 
@@ -214,11 +214,11 @@ public class EditConfigurationController extends BaseController implements RklCo
         this.ncPasswordMessage.set(ncPasswordMessage);
     }
 
-    public JFXCheckBox getNcUseSelfSignedCertificate() {
+    public CheckBox getNcUseSelfSignedCertificate() {
         return ncUseSelfSignedCertificate;
     }
 
-    public void setNcUseSelfSignedCertificate(JFXCheckBox ncUseSelfSignedCertificate) {
+    public void setNcUseSelfSignedCertificate(CheckBox ncUseSelfSignedCertificate) {
         this.ncUseSelfSignedCertificate = ncUseSelfSignedCertificate;
     }
 

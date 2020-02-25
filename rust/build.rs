@@ -53,17 +53,16 @@ fn main() {
 
     // Deploy from Maven
     println!("cargo:warning=Downloading Maven dependencies... This may take a while the first time you build.");
-    maven("org.openjfx:javafx-base:11.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-base:11.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-controls:11.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-controls:11.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-fxml:11.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-fxml:11.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-graphics:11.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-graphics:11.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-media:11.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-media:11.0.2:{}", target_os), &jvm);
-    maven("com.jfoenix:jfoenix:9.0.8", &jvm);
+    maven("org.openjfx:javafx-base:13.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-base:13.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-controls:13.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-controls:13.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-fxml:13.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-fxml:13.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-graphics:13.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-graphics:13.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-media:13.0.2", &jvm);
+    maven(&format!("org.openjfx:javafx-media:13.0.2:{}", target_os), &jvm);
     println!("cargo:warning=Maven dependencies downloaded!");
 }
 

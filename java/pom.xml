@@ -28,7 +28,7 @@
         <javafx.maven.version>8.6.0</javafx.maven.version>
         <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jfoenix.version>9.0.8</jfoenix.version>
+        <javafx.version>13.0.2</javafx.version>
     </properties>
 
     <repositories>
@@ -48,17 +48,17 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>11.0.2</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>11.0.2</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>11.0.2</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.astonbitecode</groupId>
@@ -70,11 +70,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jfoenix</groupId>
-            <artifactId>jfoenix</artifactId>
-            <version>${jfoenix.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
