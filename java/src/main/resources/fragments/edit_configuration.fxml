@@ -15,6 +15,7 @@
 
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <BorderPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rustkeylock.controllers.EditConfigurationController">
     <center>
         <VBox alignment="TOP_CENTER" layoutY="69.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -153,7 +154,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="20.0">
                <children>
-                  <JFXCheckBox fx:id="ncUseSelfSignedCertificate" text="Use a self-signed certificate" />
+                  <CheckBox fx:id="ncUseSelfSignedCertificate" text="Use a self-signed certificate" />
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
