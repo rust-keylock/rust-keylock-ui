@@ -1,8 +1,15 @@
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/rust-keylock-ui)
-
-___rust-keylock-ui___ is the [Editor](https://rust-keylock.github.io/rust-keylock-lib/rust_keylock/trait.Editor.html) that manages the [rust-keylock-lib](https://github.com/rust-keylock/rust-keylock-lib), providing a User Interface using JavaFX.
-
+[![crates.io](https://img.shields.io/crates/v/rust-keylock-ui.svg)](https://crates.io/crates/rust-keylock-ui)
+[![rust-keylock-ui](https://snapcraft.io//rust-keylock-ui/badge.svg)](https://snapcraft.io/rust-keylock-ui)
 [![Build Status](https://travis-ci.org/rust-keylock/rust-keylock-ui.svg?branch=master)](https://travis-ci.org/rust-keylock/rust-keylock-ui)
+
+___rust-keylock___ is a password manager and its goals are to be:
+
+* Secure
+* Simple to use
+* Portable
+* Extensible
+
+___rust-keylock-ui___ provides UI access to [rust-keylock-lib](https://github.com/rust-keylock/rust-keylock-lib), using JavaFX.
 
 ## Warning
 
@@ -12,13 +19,10 @@ The project has not yet received any formal / official security reviews. Use it 
 
 Instructions can be found [here](https://rust-keylock.github.io/download/rkl/).
 
-## FAQ
+# More info
 
-On the Project [website](https://rust-keylock.github.io/faq/rkl/).
-
-## Wiki
-
-On the Project [website](https://rust-keylock.github.io/wiki/).
+* [FAQ](https://rust-keylock.github.io/faq/rkl/) 
+* [Wiki](https://rust-keylock.github.io/wiki/)
 
 ## Screenshots
 
