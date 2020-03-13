@@ -254,7 +254,7 @@
    <top>
       <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password Details">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Sync Configuration">
                     <font>
                         <Font size="23.0" />
                     </font>
