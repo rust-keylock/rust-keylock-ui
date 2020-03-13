@@ -16,7 +16,6 @@
 
 use std::sync::mpsc::{self, Receiver};
 use std::convert::TryFrom;
-use std::error::Error;
 
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
@@ -294,8 +293,7 @@ fn show_message(editor: &DesktopImpl, message: &str, options: Vec<UserOption>, s
 }
 
 fn handle_error(error: &errors::RklUiError) -> Receiver<UserSelection> {
-    error!("An error occured: {}", error.description());
-    error!("{:?}", error);
+    error!("An error occured: {:?}", error);
     let (tx, rx) = mpsc::channel();
     let _ = tx.send(UserSelection::GoTo(Menu::Main));
     rx

@@ -1,5 +1,4 @@
 use std::env;
-use std::error::Error;
 use std::fs::{self, File};
 use std::path::{MAIN_SEPARATOR, Path};
 
@@ -69,7 +68,7 @@ fn main() {
 fn maven(s: &str, jvm: &Jvm) {
     let artifact = MavenArtifact::from(s);
     let _ = jvm.deploy_artifact(&artifact).map_err(|error| {
-        println!("cargo:warning=Could not download Maven artifact {}: {}", s, error.description());
+        println!("cargo:warning=Could not download Maven artifact {}: {:?}", s, error);
     });
 }
 
