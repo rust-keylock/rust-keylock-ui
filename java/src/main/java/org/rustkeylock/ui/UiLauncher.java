@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class UiLauncher extends Application {
     private static final Logger logger = LoggerFactory.getLogger(UiLauncher.class);
-    // java --module-path $RUST_KEYLOCK_UI_BASE_PATH/java/target/lib --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml  -jar $RUST_KEYLOCK_UI_BASE_PATH/java/target/desktop-ui-0.11.0.jar
+    // java --module-path $RUST_KEYLOCK_UI_BASE_PATH/java/target/lib --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml  -jar $RUST_KEYLOCK_UI_BASE_PATH/java/target/desktop-ui-0.11.1.jar
     private static AtomicReference<Optional<RklStage>> stageOpt = new AtomicReference<>(Optional.empty());
     private UiStopper stopper = new UiStopper();
 
