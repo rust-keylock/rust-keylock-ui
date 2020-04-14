@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -86,9 +87,13 @@ public class ShowEntryController extends BaseController implements RklController
     @FXML
     private final StringProperty hidePasswordButtonId = new SimpleStringProperty(HIDE_PASSWORD_BUTTON_ID);
     @FXML
+    private final StringProperty generatePassphraseButtonId = new SimpleStringProperty(GENERATE_PASSPHRASE_BUTTON_ID);
+    @FXML
     private Button showPasswordButton;
     @FXML
     private Button hidePasswordButton;
+    @FXML
+    private Button generatePassphraseButton;
 
     private static final String DELETE_BUTTON_ID = "deleteButton";
     private static final String OK_BUTTON_ID = "okButton";
@@ -97,6 +102,7 @@ public class ShowEntryController extends BaseController implements RklController
     private static final String CANCEL_BUTTON_ID = "cancelButton";
     private static final String SHOW_PASSWORD_BUTTON_ID = "showPassword";
     private static final String HIDE_PASSWORD_BUTTON_ID = "hidePassword";
+    private static final String GENERATE_PASSPHRASE_BUTTON_ID = "genPassphrase";
     private static final String MASK_UTF_CHAR = "\u2022";
     private static final String MASK_STRING = Stream.iterate(0, n -> n + 1)
             .limit(9)
@@ -147,6 +153,7 @@ public class ShowEntryController extends BaseController implements RklController
             passwordTextField.setText(anEntry.getPass());
         }
         Utils.removeChildNodeById(showHidePasswordHBox, HIDE_PASSWORD_BUTTON_ID);
+        Utils.removeChildNodeById(showHidePasswordHBox, GENERATE_PASSPHRASE_BUTTON_ID);
 
         descriptionTextArea.setEditable(edit);
         descriptionTextArea.setDisable(!edit);
@@ -165,9 +172,10 @@ public class ShowEntryController extends BaseController implements RklController
             disableMenuButtons();
             Utils.removeChildNodeById(leftButtonsHBox, EDIT_BUTTON_ID);
             setLeftButtonTooltip("Cancel");
+            setRightButtonTooltip("OK");
             Utils.removeChildNodeById(righButtonsHBox, DELETE_BUTTON_ID);
             Utils.removeChildNodeById(righButtonsHBox, CAUTION_BUTTON_ID);
-            setRightButtonTooltip("OK");
+            Utils.addNode(showHidePasswordHBox, generatePassphraseButton);
         } else if (!edit && delete) {
             disableMenuButtons();
             Utils.removeChildNodeById(leftButtonsHBox, EDIT_BUTTON_ID);
@@ -248,7 +256,33 @@ public class ShowEntryController extends BaseController implements RklController
         getCallback().accept(GuiResponse.GoToMenu(JavaMenu.DeleteEntry(entryIndex)));
     }
 
+    @FXML
+    private void generatePassphraseAction(ActionEvent event) {
+        event.consume();
+        var entry = new JavaEntry();
+        entry.name = titleTextField.getText();
+        entry.url = urlTextField.getText();
+        entry.user = usernameTextField.getText();
+        entry.pass = passwordTextField.getText();
+        entry.desc = descriptionTextArea.getText();
+        logger.info("Generating passphrase for " + entry.name);
+
+        getCallback().accept(GuiResponse.GeneratePassphrase(entry, entryIndex));
+    }
+
     private void entryOkAction() {
+        var entryOpt = generateEntry();
+        if (entryOpt.isPresent()) {
+            logger.info("Saving entry " + entryOpt.get().name);
+            if (entryIndex >= 0) {
+                callback.accept(GuiResponse.ReplaceEntry(entryOpt.get(), entryIndex));
+            } else {
+                callback.accept(GuiResponse.AddEntry(entryOpt.get()));
+            }
+        }
+    }
+
+    private Optional<JavaEntry> generateEntry() {
         setTitleMessage("");
         setUsernameMessage("");
         setPasswordMessage("");
@@ -259,8 +293,6 @@ public class ShowEntryController extends BaseController implements RklController
         entry.user = usernameTextField.getText();
         entry.pass = passwordTextField.getText();
         entry.desc = descriptionTextArea.getText();
-
-        logger.info("Saving entry " + entry.name);
 
         boolean errorsExist = false;
         if (entry.name.isEmpty()) {
@@ -284,11 +316,9 @@ public class ShowEntryController extends BaseController implements RklController
             }
         }
         if (!errorsExist) {
-            if (entryIndex >= 0) {
-                callback.accept(GuiResponse.ReplaceEntry(entry, entryIndex));
-            } else {
-                callback.accept(GuiResponse.AddEntry(entry));
-            }
+            return Optional.of(entry);
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -542,5 +572,17 @@ public class ShowEntryController extends BaseController implements RklController
 
     public void setHidePasswordButtonId(String hidePasswordButtonId) {
         this.hidePasswordButtonId.set(hidePasswordButtonId);
+    }
+
+    public String getGeneratePassphraseButtonId() {
+        return generatePassphraseButtonId.get();
+    }
+
+    public StringProperty generatePassphraseButtonIdProperty() {
+        return generatePassphraseButtonId;
+    }
+
+    public void setGeneratePassphraseButtonId(String generatePassphraseButtonId) {
+        this.generatePassphraseButtonId.set(generatePassphraseButtonId);
     }
 }

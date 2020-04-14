@@ -20,12 +20,12 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 use j4rs;
 use j4rs::{Instance, InstanceReceiver, Jvm};
 use log::*;
-use rust_keylock::{Entry, Menu, UserOption, UserSelection, AllConfigurations};
+use rust_keylock::{AllConfigurations, Entry, Menu, UserOption, UserSelection};
+use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde::{Deserialize, Serialize};
 
-use crate::ui_editor::{JavaEntry, JavaUserOption, JavaMenu};
-use rust_keylock::dropbox::DropboxConfiguration;
+use crate::ui_editor::{JavaEntry, JavaMenu, JavaUserOption};
 
 pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>) -> crate::errors::Result<Receiver<UserSelection>> {
     let (tx, rx) = mpsc::channel();
@@ -120,6 +120,20 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 debug!("delete_entry");
                 UserSelection::DeleteEntry(index)
             }
+            GuiResponse::GeneratePassphrase { entry, index } => {
+                debug!("generate_passphrase");
+                let entry = Entry::new(entry.name,
+                                       entry.url,
+                                       entry.user,
+                                       entry.pass,
+                                       entry.desc);
+                let opt = if index < 0 {
+                    None
+                } else {
+                    Some(index as usize)
+                };
+                UserSelection::GeneratePassphrase(opt, entry)
+            }
             GuiResponse::SetConfiguration { strings } => {
                 debug!("set_configuration with {} elements", strings.len());
 
@@ -191,4 +205,5 @@ pub(crate) enum GuiResponse {
     UserOptionSelected { user_option: JavaUserOption },
     ExportImport { path: String, mode: usize, password: String, number: usize },
     Copy { data: String },
+    GeneratePassphrase { entry: JavaEntry, index: isize },
 }

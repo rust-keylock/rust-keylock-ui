@@ -72,6 +72,15 @@ public class GuiResponse {
         return map;
     }
 
+    public static Map<String, Object> GeneratePassphrase(JavaEntry entry, Integer index) {
+        Map<String, Object> inner = new HashMap<>();
+        inner.put("entry", entry);
+        inner.put("index", index);
+        Map<String, Object> map = new HashMap<>();
+        map.put("GeneratePassphrase", inner);
+        return map;
+    }
+
     public static Map<String, Object> SetConfiguration(java.util.List<String> strings) {
         Map<String, Object> inner = new HashMap<>();
         inner.put("strings", strings);
