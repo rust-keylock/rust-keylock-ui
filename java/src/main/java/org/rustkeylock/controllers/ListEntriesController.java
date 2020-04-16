@@ -15,19 +15,18 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
-import org.rustkeylock.ui.Defs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class ListEntriesController extends BaseController implements RklController, Initializable {
@@ -43,8 +41,8 @@ public class ListEntriesController extends BaseController implements RklControll
     private Consumer<Object> callback;
     private final String DEFAULT_FILTER_TEXT = "You can start typing to filter the list";
     @FXML
-    private StringProperty filterText = new SimpleStringProperty();
-    private String filter = "";
+    private TextField filterTextField = new TextField();
+    private String initialFilter;
     private Timer timer = new Timer();
     private long DELAY_MILLIS_FOR_KEYPRESS = 300;
     @FXML
@@ -54,8 +52,7 @@ public class ListEntriesController extends BaseController implements RklControll
     public ListEntriesController(List<String> entries, String initialFilter) {
         this.entriesListView = new ListView<>();
         this.entries = entries;
-        setFilterText(initialFilter);
-        this.filter = initialFilter;
+        this.initialFilter = initialFilter;
     }
 
     @FXML
@@ -76,22 +73,17 @@ public class ListEntriesController extends BaseController implements RklControll
 
     @FXML
     public void filterChanged(KeyEvent event) {
-        if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
-            filter = filter + event.getText();
-            logger.debug("Filter changed to '" + filter + "'");
-        } else if (event.getCode().toString().equals("BACK_SPACE") && filter.length() > 0) {
-            filter = filter.substring(0, filter.length() - 1);
-            logger.debug("Filter changed to '" + filter + "'");
-        } else {
-            logger.debug("Ignoring pressed key of code " + event.getCode());
+        boolean applyFilter = false;
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            applyFilter = true;
+        } else if (event.getCode().equals(KeyCode.ESCAPE)) {
+            filterTextField.setText("");
+            applyFilter = true;
         }
-        timer.cancel();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            public void run() {
-                callback.accept(GuiResponse.GoToMenu(JavaMenu.EntriesList(filter)));
-            }
-        }, DELAY_MILLIS_FOR_KEYPRESS);
+        if (applyFilter) {
+            logger.debug("Filter changed to '" + filterTextField.getText() + "'");
+            callback.accept(GuiResponse.GoToMenu(JavaMenu.EntriesList(filterTextField.getText())));
+        }
     }
 
     @Override
@@ -108,22 +100,7 @@ public class ListEntriesController extends BaseController implements RklControll
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> ol = FXCollections.observableArrayList(entries);
         this.entriesListView.setItems(ol);
-    }
-
-    public String getFilterText() {
-        return filterText.get();
-    }
-
-    public StringProperty filterTextProperty() {
-        return filterText;
-    }
-
-    public void setFilterText(String filterText) {
-        if (filterText == null || filterText.isBlank() || filterText.equals(Defs.EMPTY_ARG)) {
-            this.filterText.set(DEFAULT_FILTER_TEXT);
-        } else {
-            this.filterText.set(filterText);
-        }
+        filterTextField.setText(initialFilter);
     }
 
     public ListView<String> getEntriesListView() {
@@ -132,5 +109,13 @@ public class ListEntriesController extends BaseController implements RklControll
 
     public void setEntriesListView(ListView<String> entriesListView) {
         this.entriesListView = entriesListView;
+    }
+
+    public TextField getFilterTextField() {
+        return filterTextField;
+    }
+
+    public void setFilterTextField(TextField filterTextField) {
+        this.filterTextField = filterTextField;
     }
 }

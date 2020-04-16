@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -12,34 +16,40 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <BorderPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rustkeylock.controllers.ListEntriesController">
     <center>
-        <VBox alignment="CENTER" layoutY="69.0" onKeyPressed="#filterChanged" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="CENTER" layoutY="69.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-            <HBox alignment="CENTER">
+            <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="${controller.filterText}" wrappingWidth="319.55615234375" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_RIGHT">
-               <children>
-                  <Button alignment="CENTER_RIGHT" graphicTextGap="0.0" onAction="#addEntry" text=" " focusTraversable="false">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/newimage.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <font>
-                        <Font size="1.0" />
-                     </font>
-                  </Button>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Filter: " />
+                        <TextField fx:id="filterTextField" onKeyPressed="#filterChanged" prefHeight="26.0" prefWidth="400.0" promptText="Filter the list" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button alignment="CENTER_RIGHT" focusTraversable="false" graphicTextGap="0.0" onAction="#addEntry" text=" ">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                           <graphic>
+                              <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/newimage.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <font>
+                              <Font size="1.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
             <ListView fx:id="entriesListView" onMouseClicked="#entryClicked" prefHeight="513.0" prefWidth="570.0">
@@ -74,7 +84,7 @@
    <left>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button graphicTextGap="0.0" onAction="#goToShowEntries" text=" " fx:id="goToEntriesButton">
+            <Button fx:id="goToEntriesButton" graphicTextGap="0.0" onAction="#goToShowEntries" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -86,7 +96,7 @@
                   <Tooltip text="Passwords" />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#encryptAndSave" text=" " fx:id="encryptAndSaveButton">
+            <Button fx:id="encryptAndSaveButton" graphicTextGap="0.0" onAction="#encryptAndSave" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -98,7 +108,7 @@
                   <Tooltip text="Encrypt and save" />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#goToChangePassword" text=" " fx:id="goToChangePassButton">
+            <Button fx:id="goToChangePassButton" graphicTextGap="0.0" onAction="#goToChangePassword" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -110,7 +120,7 @@
                   <Tooltip text="Change master password" />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#goToExportTo" text=" " fx:id="goToExportToButton">
+            <Button fx:id="goToExportToButton" graphicTextGap="0.0" onAction="#goToExportTo" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -122,7 +132,7 @@
                   <Tooltip text="Export to..." />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#goToImportFrom" text=" " fx:id="goToImportFromButton">
+            <Button fx:id="goToImportFromButton" graphicTextGap="0.0" onAction="#goToImportFrom" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -134,7 +144,7 @@
                   <Tooltip text="Inport from..." />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" " fx:id="goToShowConfigurationButton">
+            <Button fx:id="goToShowConfigurationButton" graphicTextGap="0.0" onAction="#goToShowConfiguration" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -146,7 +156,7 @@
                   <Tooltip text="Show Configuration" />
                </tooltip>
             </Button>
-            <Button graphicTextGap="0.0" onAction="#goToExit" text=" " fx:id="goToExitButton">
+            <Button fx:id="goToExitButton" graphicTextGap="0.0" onAction="#goToExit" text=" ">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                      <image>
