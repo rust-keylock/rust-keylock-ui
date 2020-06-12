@@ -34,6 +34,7 @@ public class Defs {
     public static final String MENU_CURRENT = "Current";
     public static final String MENU_PLEASE_WAIT = "PleaseWait";
     public static final String EMPTY_ARG = "null";
+    public static final String CHECK_PASSWORDS = "CheckPasswords";
     public static final int PrefWidthPixels = 650;
     public static final int PrefHeightPixels = 750;
 }

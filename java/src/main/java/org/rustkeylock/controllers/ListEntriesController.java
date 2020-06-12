@@ -33,18 +33,14 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.function.Consumer;
 
 public class ListEntriesController extends BaseController implements RklController, Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Consumer<Object> callback;
-    private final String DEFAULT_FILTER_TEXT = "You can start typing to filter the list";
     @FXML
     private TextField filterTextField = new TextField();
     private String initialFilter;
-    private Timer timer = new Timer();
-    private long DELAY_MILLIS_FOR_KEYPRESS = 300;
     @FXML
     private ListView<String> entriesListView;
     private List<String> entries;
@@ -56,9 +52,21 @@ public class ListEntriesController extends BaseController implements RklControll
     }
 
     @FXML
+    private void checkPasswordsHealth(ActionEvent event) {
+        event.consume();
+        callback.accept(GuiResponse.CheckPasswords());
+    }
+
+    @FXML
     private void addEntry(ActionEvent event) {
         event.consume();
         callback.accept(GuiResponse.GoToMenu(JavaMenu.NewEntry()));
+    }
+
+    @FXML
+    private void doFilter(ActionEvent event) {
+        event.consume();
+        applyFilter();
     }
 
     @FXML
@@ -73,17 +81,17 @@ public class ListEntriesController extends BaseController implements RklControll
 
     @FXML
     public void filterChanged(KeyEvent event) {
-        boolean applyFilter = false;
         if (event.getCode().equals(KeyCode.ENTER)) {
-            applyFilter = true;
+            applyFilter();
         } else if (event.getCode().equals(KeyCode.ESCAPE)) {
             filterTextField.setText("");
-            applyFilter = true;
+            applyFilter();
         }
-        if (applyFilter) {
-            logger.debug("Filter changed to '" + filterTextField.getText() + "'");
-            callback.accept(GuiResponse.GoToMenu(JavaMenu.EntriesList(filterTextField.getText())));
-        }
+    }
+
+    private void applyFilter() {
+        logger.debug("Filter changed to '" + filterTextField.getText() + "'");
+        callback.accept(GuiResponse.GoToMenu(JavaMenu.EntriesList(filterTextField.getText())));
     }
 
     @Override

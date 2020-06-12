@@ -17,6 +17,7 @@ package org.rustkeylock.japi.stubs;
 
 import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.japi.JavaUserOption;
+import org.rustkeylock.ui.Defs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,5 +115,9 @@ public class GuiResponse {
         Map<String, Object> map = new HashMap<>();
         map.put("Copy", inner);
         return map;
+    }
+
+    public static String CheckPasswords() {
+        return Defs.CHECK_PASSWORDS;
     }
 }

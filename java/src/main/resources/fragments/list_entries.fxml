@@ -2,8 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
@@ -22,25 +23,14 @@
             <children>
             <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                  <HBox alignment="CENTER" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label text="Filter: " />
                         <TextField fx:id="filterTextField" onKeyPressed="#filterChanged" prefHeight="26.0" prefWidth="400.0" promptText="Filter the list" />
-                     </children>
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </HBox>
-                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Button alignment="CENTER_RIGHT" focusTraversable="false" graphicTextGap="0.0" onAction="#addEntry" text=" ">
-                           <HBox.margin>
-                              <Insets right="10.0" />
-                           </HBox.margin>
+                        <Button alignment="CENTER_RIGHT" focusTraversable="false" graphicTextGap="0.0" onAction="#doFilter" text=" ">
                            <graphic>
                               <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/newimage.png" />
+                                    <Image url="@../images/filter.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -49,20 +39,66 @@
                            </font>
                         </Button>
                      </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </HBox>
                </children>
             </HBox>
-            <ListView fx:id="entriesListView" onMouseClicked="#entryClicked" prefHeight="513.0" prefWidth="570.0">
-               <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </VBox.margin>
-               <opaqueInsets>
-                  <Insets bottom="10.0" />
-               </opaqueInsets>
-            </ListView>
+            <VBox spacing="3.0">
+               <children>
+                  <ListView fx:id="entriesListView" onMouseClicked="#entryClicked" prefHeight="526.0" prefWidth="570.0">
+                     <VBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </VBox.margin>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </ListView>
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <MenuButton mnemonicParsing="false">
+                          <items>
+                              <MenuItem mnemonicParsing="false" onAction="#addEntry" text="Add New">
+                                 <graphic>
+                                    <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/newimage.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#checkPasswordsHealth" text="Entries Health">
+                                 <graphic>
+                                    <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/health.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuItem>
+                          </items>
+                           <graphic>
+                              <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/more.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuButton>
+                     </children>
+                     <padding>
+                        <Insets bottom="3.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
             </children>
          <opaqueInsets>
-            <Insets bottom="10.0" />
+            <Insets />
          </opaqueInsets>
         </VBox>
     </center>
@@ -172,9 +208,6 @@
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
-         <padding>
-            <Insets bottom="20.0" />
-         </padding>
       </VBox>
    </left>
 </BorderPane>

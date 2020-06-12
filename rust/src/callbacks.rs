@@ -187,6 +187,10 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 debug!("copy");
                 UserSelection::AddToClipboard(data)
             }
+            GuiResponse::CheckPasswords => {
+                debug!("CheckPasswords");
+                UserSelection::CheckPasswords
+            }
         }
     } else {
         error!("Error while creating Rust representation of a Java Instance: {:?}", res.err());
@@ -206,4 +210,5 @@ pub(crate) enum GuiResponse {
     ExportImport { path: String, mode: usize, password: String, number: usize },
     Copy { data: String },
     GeneratePassphrase { entry: JavaEntry, index: isize },
+    CheckPasswords,
 }

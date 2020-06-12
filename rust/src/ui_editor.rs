@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::sync::mpsc::{self, Receiver};
 use std::convert::TryFrom;
+use std::sync::mpsc::{self, Receiver};
 
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
-use serde::{Deserialize, Serialize};
-
 use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
+use serde::{Deserialize, Serialize};
+
 use crate::errors;
 
 pub struct DesktopImpl {

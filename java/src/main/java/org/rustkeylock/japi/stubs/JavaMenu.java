@@ -70,6 +70,10 @@ public class JavaMenu {
         return Defs.MENU_NEW_ENTRY;
     }
 
+    public static String CheckPasswords() {
+        return Defs.CHECK_PASSWORDS;
+    }
+
     public static Map<String, Object> WaitForDbxTokenCallback(String s) {
         Map<String, Object> inner = new HashMap<>();
         inner.put("s", s);
