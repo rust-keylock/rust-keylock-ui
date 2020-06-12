@@ -48,6 +48,7 @@ parts:
       - libxcb-shape0-dev
       - libxcb-xfixes0
       - libxcb-xfixes0-dev
+      - build-essential
     stage-packages:
       - openjdk-11-jdk
       - openssl
@@ -58,39 +59,11 @@ parts:
     organize:
       ../build/j4rs: opt/j4rs
       ../build/rust/target/release/rust-keylock-ui: bin/
-  gtk3:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    plugin: make
-    make-parameters: ["FLAVOR=gtk3"]
-    build-packages:
-      - libgtk-3-dev
-    stage-packages:
-      - libxkbcommon0  # XKB_CONFIG_ROOT
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
-      - libgtk-3-0
-      - libgdk-pixbuf2.0-0
-      - libglib2.0-bin
-      - libgtk-3-bin
-      - unity-gtk3-module
-      - libappindicator3-1
-      - locales-all
-      - xdg-user-dirs
-      - ibus-gtk3
-      - libibus-1.0-5
-  env:
-    plugin: nil
-    after:
-      - rust-keylock-ui-all
-      - gtk3
 apps:
   rust-keylock-ui:
     command: desktop-launch $SNAP/bin/rust-keylock-ui
+    extensions:
+      - gnome-3-28
     plugs:
       - desktop
       - desktop-legacy
