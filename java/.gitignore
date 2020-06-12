@@ -5,4 +5,4 @@
 /.project
 /src/main/resources/linux-x86-64
 /src/main/resources/win32-x86-64
-/desktop-ui.iml
+/rust-keylock-ui-java.iml
