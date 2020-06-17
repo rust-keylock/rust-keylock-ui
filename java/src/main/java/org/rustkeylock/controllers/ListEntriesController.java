@@ -27,6 +27,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
+import org.rustkeylock.ui.Defs;
+import org.rustkeylock.ui.UiLauncher;
+import org.rustkeylock.ui.callbacks.ShowMenuCb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,7 @@ public class ListEntriesController extends BaseController implements RklControll
     @FXML
     private void checkPasswordsHealth(ActionEvent event) {
         event.consume();
+        new ShowMenuCb(UiLauncher.getStage()).apply(Defs.MENU_PLEASE_WAIT);
         callback.accept(GuiResponse.CheckPasswords());
     }
 
