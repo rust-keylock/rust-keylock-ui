@@ -44,6 +44,7 @@ parts:
       - openssl
       - libssl-dev
       - git
+      - curl
       - libxcb-shape0
       - libxcb-shape0-dev
       - libxcb-xfixes0
