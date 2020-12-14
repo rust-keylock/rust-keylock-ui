@@ -265,6 +265,7 @@ public class ShowEntryController extends BaseController implements RklController
         entry.user = usernameTextField.getText();
         entry.pass = passwordTextField.getText();
         entry.desc = descriptionTextArea.getText();
+        entry.meta = anEntry.getMeta();
         logger.info("Generating passphrase for " + entry.name);
 
         getCallback().accept(GuiResponse.GeneratePassphrase(entry, entryIndex));
@@ -293,6 +294,7 @@ public class ShowEntryController extends BaseController implements RklController
         entry.user = usernameTextField.getText();
         entry.pass = passwordTextField.getText();
         entry.desc = descriptionTextArea.getText();
+        entry.meta = anEntry.getMeta();
 
         boolean errorsExist = false;
         if (entry.name.isEmpty()) {

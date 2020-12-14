@@ -19,7 +19,7 @@ use std::sync::mpsc::{self, Receiver};
 
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
-use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
+use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection, EntryMeta};
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde::{Deserialize, Serialize};
@@ -301,12 +301,26 @@ fn handle_error(error: &errors::RklUiError) -> Receiver<UserSelection> {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub(crate) struct JavaEntryMeta {
+    pub leakedpassword: bool,
+}
+
+impl JavaEntryMeta {
+    fn new(entry: &EntryMeta) -> JavaEntryMeta {
+        JavaEntryMeta {
+            leakedpassword: entry.leaked_password
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct JavaEntry {
     pub name: String,
     pub url: String,
     pub user: String,
     pub pass: String,
     pub desc: String,
+    pub meta: JavaEntryMeta,
 }
 
 impl JavaEntry {
@@ -317,6 +331,7 @@ impl JavaEntry {
             user: entry.user.clone(),
             pass: entry.pass.clone(),
             desc: entry.desc.clone(),
+            meta: JavaEntryMeta::new(&entry.meta),
         }
     }
 }

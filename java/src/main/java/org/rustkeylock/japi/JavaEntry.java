@@ -21,6 +21,7 @@ public class JavaEntry {
     public String user;
     public String pass;
     public String desc;
+    public JavaEntryMeta meta;
 
     public String getName() {
         return name;
@@ -60,5 +61,13 @@ public class JavaEntry {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public JavaEntryMeta getMeta() {
+        return meta;
+    }
+
+    public void setMeta(JavaEntryMeta meta) {
+        this.meta = meta;
     }
 }

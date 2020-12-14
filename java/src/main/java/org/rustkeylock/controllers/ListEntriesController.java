@@ -16,15 +16,16 @@
 package org.rustkeylock.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 import org.rustkeylock.ui.Defs;
@@ -45,10 +46,10 @@ public class ListEntriesController extends BaseController implements RklControll
     private TextField filterTextField = new TextField();
     private String initialFilter;
     @FXML
-    private ListView<String> entriesListView;
-    private List<String> entries;
+    private ListView<JavaEntry> entriesListView;
+    private List<JavaEntry> entries;
 
-    public ListEntriesController(List<String> entries, String initialFilter) {
+    public ListEntriesController(List<JavaEntry> entries, String initialFilter) {
         this.entriesListView = new ListView<>();
         this.entries = entries;
         this.initialFilter = initialFilter;
@@ -110,16 +111,16 @@ public class ListEntriesController extends BaseController implements RklControll
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ObservableList<String> ol = FXCollections.observableArrayList(entries);
-        this.entriesListView.setItems(ol);
+        this.entriesListView.setCellFactory(cf -> new EntryListCell());
+        this.entriesListView.setItems(FXCollections.observableArrayList(entries));
         filterTextField.setText(initialFilter);
     }
 
-    public ListView<String> getEntriesListView() {
+    public ListView<JavaEntry> getEntriesListView() {
         return entriesListView;
     }
 
-    public void setEntriesListView(ListView<String> entriesListView) {
+    public void setEntriesListView(ListView<JavaEntry> entriesListView) {
         this.entriesListView = entriesListView;
     }
 
@@ -129,5 +130,26 @@ public class ListEntriesController extends BaseController implements RklControll
 
     public void setFilterTextField(TextField filterTextField) {
         this.filterTextField = filterTextField;
+    }
+
+    private class EntryListCell extends ListCell<JavaEntry> {
+        @Override
+        protected void updateItem(JavaEntry item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                HBox b = new HBox();
+                b.setAlignment(Pos.CENTER_LEFT);
+                Label label = new Label(item.getName());
+                label.setAlignment(Pos.CENTER_LEFT);
+                if (item.getMeta().isLeakedpassword()) {
+                    setStyle("-fx-background-color: #E69269;");
+                    setTooltip(new Tooltip("This password is leaked!"));
+                }
+                b.getChildren().add(label);
+                setGraphic(b);
+            }
+        }
     }
 }

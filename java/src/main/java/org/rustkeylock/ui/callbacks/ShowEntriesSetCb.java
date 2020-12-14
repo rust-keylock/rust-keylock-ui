@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ShowEntriesSetCb extends NativeCallbackToRustChannelSupport {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,8 +42,8 @@ public class ShowEntriesSetCb extends NativeCallbackToRustChannelSupport {
     }
 
     public void apply(List<JavaEntry> entries, String filter) {
-        logger.debug("Callback for showing " + entries.size() +" entries ");
-        String processedFilter = filter.equals(Defs.EMPTY_ARG) ? "":filter;
+        logger.debug("Callback for showing " + entries.size() + " entries ");
+        String processedFilter = filter.equals(Defs.EMPTY_ARG) ? "" : filter;
         Platform.runLater(() -> {
             try {
                 URL resurl;
@@ -53,7 +52,7 @@ public class ShowEntriesSetCb extends NativeCallbackToRustChannelSupport {
                 resurl = getClass().getResource("/fragments/list_entries.fxml");
                 loader.setControllerFactory(clazz ->
                         new ListEntriesController(
-                                entries.stream().map(entry -> entry.name).collect(Collectors.toList()),
+                                entries,
                                 processedFilter)
                 );
 

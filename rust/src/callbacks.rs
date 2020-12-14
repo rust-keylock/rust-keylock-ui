@@ -20,7 +20,7 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 use j4rs;
 use j4rs::{Instance, InstanceReceiver, Jvm};
 use log::*;
-use rust_keylock::{AllConfigurations, Entry, Menu, UserOption, UserSelection};
+use rust_keylock::{AllConfigurations, Entry, EntryMeta, Menu, UserOption, UserSelection};
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde::{Deserialize, Serialize};
@@ -98,21 +98,25 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             }
             GuiResponse::AddEntry { entry } => {
                 debug!("add_entry");
+                let meta = EntryMeta::new(entry.meta.leakedpassword);
                 let entry = Entry::new(entry.name,
                                        entry.url,
                                        entry.user,
                                        entry.pass,
-                                       entry.desc);
+                                       entry.desc,
+                                       meta);
 
                 UserSelection::NewEntry(entry)
             }
             GuiResponse::ReplaceEntry { entry, index } => {
                 debug!("replace_entry");
+                let meta = EntryMeta::new(entry.meta.leakedpassword);
                 let entry = Entry::new(entry.name,
                                        entry.url,
                                        entry.user,
                                        entry.pass,
-                                       entry.desc);
+                                       entry.desc,
+                                       meta);
 
                 UserSelection::ReplaceEntry(index as usize, entry)
             }
@@ -122,11 +126,13 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             }
             GuiResponse::GeneratePassphrase { entry, index } => {
                 debug!("generate_passphrase");
+                let meta = EntryMeta::new(entry.meta.leakedpassword);
                 let entry = Entry::new(entry.name,
                                        entry.url,
                                        entry.user,
                                        entry.pass,
-                                       entry.desc);
+                                       entry.desc,
+                                       meta);
                 let opt = if index < 0 {
                     None
                 } else {
