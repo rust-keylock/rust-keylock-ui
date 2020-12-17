@@ -37,4 +37,5 @@ public class Defs {
     public static final String CHECK_PASSWORDS = "CheckPasswords";
     public static final int PrefWidthPixels = 650;
     public static final int PrefHeightPixels = 750;
+    public static final String BACKGROUND_ERROR = "-fx-background-color: #E69269;";
 }

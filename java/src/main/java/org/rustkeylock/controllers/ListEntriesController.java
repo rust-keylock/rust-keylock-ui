@@ -144,7 +144,7 @@ public class ListEntriesController extends BaseController implements RklControll
                 Label label = new Label(item.getName());
                 label.setAlignment(Pos.CENTER_LEFT);
                 if (item.getMeta().isLeakedpassword()) {
-                    setStyle("-fx-background-color: #E69269;");
+                    setStyle(Defs.BACKGROUND_ERROR);
                     setTooltip(new Tooltip("This password is leaked!"));
                 }
                 b.getChildren().add(label);

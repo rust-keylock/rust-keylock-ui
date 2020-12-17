@@ -27,6 +27,7 @@ import javafx.scene.layout.HBox;
 import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
+import org.rustkeylock.ui.Defs;
 import org.rustkeylock.ui.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +152,9 @@ public class ShowEntryController extends BaseController implements RklController
             passwordTextField.setText(MASK_STRING);
         } else {
             passwordTextField.setText(anEntry.getPass());
+        }
+        if (anEntry.getMeta().isLeakedpassword()) {
+            passwordTextField.setStyle(Defs.BACKGROUND_ERROR);
         }
         Utils.removeChildNodeById(showHidePasswordHBox, HIDE_PASSWORD_BUTTON_ID);
         Utils.removeChildNodeById(showHidePasswordHBox, GENERATE_PASSPHRASE_BUTTON_ID);
