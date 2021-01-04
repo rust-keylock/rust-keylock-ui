@@ -83,9 +83,9 @@ public class EditConfigurationController extends BaseController implements RklCo
             ncUseSelfSignedCertificate.setSelected(Boolean.parseBoolean(strings.get(3)));
 
             if (strings.get(5).isEmpty()) {
-                setDropboxTokenLabel("Press the button to acquire a new authentication token.");
+                setDropboxTokenLabel("Click the button to acquire a new authentication token: ");
             } else {
-                setDropboxTokenLabel("A token is acquired. Press the button if you want to renew.");
+                setDropboxTokenLabel("A token is acquired. Press the button if you want to renew: ");
             }
         }
     }
@@ -110,8 +110,20 @@ public class EditConfigurationController extends BaseController implements RklCo
             new ShowMenuCb(stage).apply(Defs.MENU_PLEASE_WAIT);
 
         } catch (Exception error) {
-            error.printStackTrace();
+            logger.error("", error);
         }
+    }
+
+    @FXML
+    private void clearConfigurations(ActionEvent event) {
+        event.consume();
+
+        ncServerUrl.setText("");
+        ncUsername.setText("");
+        ncPassword.setText("");
+        ncUseSelfSignedCertificate.setSelected(false);
+        strings.set(5, "");
+        setDropboxTokenLabel("Click the button to acquire a new authentication token: ");
     }
 
     @FXML
