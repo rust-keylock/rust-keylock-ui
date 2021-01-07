@@ -19,7 +19,7 @@ parts:
   rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-    #    source-tag: v0.13.0
+    source-tag: v0.13.0
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-${SNAP_ARCH}"
       # Setup Rust
