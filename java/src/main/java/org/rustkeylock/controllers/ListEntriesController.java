@@ -146,6 +146,9 @@ public class ListEntriesController extends BaseController implements RklControll
                 if (item.getMeta().isLeakedpassword()) {
                     setStyle(Defs.BACKGROUND_ERROR);
                     setTooltip(new Tooltip("This password is leaked!"));
+                } else {
+                    setStyle(Defs.BACKGROUND_NO_ERROR);
+                    setTooltip(null);
                 }
                 b.getChildren().add(label);
                 setGraphic(b);

@@ -38,4 +38,5 @@ public class Defs {
     public static final int PrefWidthPixels = 650;
     public static final int PrefHeightPixels = 750;
     public static final String BACKGROUND_ERROR = "-fx-background-color: #E69269;";
+    public static final String BACKGROUND_NO_ERROR = "-fx-background-color: #FFFFFF;";
 }
