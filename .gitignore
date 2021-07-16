@@ -6,3 +6,4 @@ build-scripts/local*
 /prime/
 /stage/
 *.snap
+*.iml
