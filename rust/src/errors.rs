@@ -17,6 +17,7 @@ use log4rs;
 use std::{fmt, result, io};
 use std::error::Error;
 use log;
+use anyhow;
 
 pub type Result<T> = result::Result<T, RklUiError>;
 
@@ -37,8 +38,20 @@ impl Error for RklUiError {
     }
 }
 
-impl From<log4rs::config::Errors> for RklUiError {
-    fn from(err: log4rs::config::Errors) -> RklUiError {
+impl From<log4rs::config::runtime::ConfigError> for RklUiError {
+    fn from(err: log4rs::config::runtime::ConfigError) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
+    }
+}
+
+impl From<log4rs::config::runtime::ConfigErrors> for RklUiError {
+    fn from(err: log4rs::config::runtime::ConfigErrors) -> RklUiError {
+        RklUiError { description: format!("{:?}", err) }
+    }
+}
+
+impl From<anyhow::Error> for RklUiError {
+    fn from(err: anyhow::Error) -> RklUiError {
         RklUiError { description: format!("{:?}", err) }
     }
 }
