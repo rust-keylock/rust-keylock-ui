@@ -1,6 +1,6 @@
 [![crates.io](https://img.shields.io/crates/v/rust-keylock-ui.svg)](https://crates.io/crates/rust-keylock-ui)
 [![rust-keylock-ui](https://snapcraft.io//rust-keylock-ui/badge.svg)](https://snapcraft.io/rust-keylock-ui)
-[![Build Status](https://travis-ci.com/rust-keylock/rust-keylock-ui.svg?branch=master)](https://travis-ci.com/rust-keylock/rust-keylock-ui)
+[![Build Status](https://app.travis-ci.com/rust-keylock/rust-keylock-ui.svg?branch=master)](https://app.travis-ci.com/rust-keylock/rust-keylock-ui)
 
 ___rust-keylock___ is a password manager and its goals are to be:
 

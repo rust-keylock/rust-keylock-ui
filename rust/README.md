@@ -1,5 +1,5 @@
 [![crates.io](https://img.shields.io/crates/v/rust-keylock-ui.svg)](https://crates.io/crates/rust-keylock-ui)
-[![Build Status](https://travis-ci.com/rust-keylock/rust-keylock-ui.svg?branch=master)](https://travis-ci.com/rust-keylock/rust-keylock-ui)
+[![Build Status](https://app.travis-ci.com/rust-keylock/rust-keylock-ui.svg?branch=master)](https://app.travis-ci.com/rust-keylock/rust-keylock-ui)
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/rust-keylock-ui)
 
