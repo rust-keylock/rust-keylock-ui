@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.rustkeylock</groupId>
     <artifactId>rust-keylock-ui-java</artifactId>
-    <version>0.14.0</version>
+    <version>0.15.0</version>
     <name>rust-keylock-ui</name>
     <description>A password manager and its goals are to be:
 
@@ -20,15 +20,16 @@
     </developers>
 
     <properties>
-        <maven.surefire.version>2.19.1</maven.surefire.version>
-        <junit.version>4.13.1</junit.version>
+        <maven.surefire.version>3.2.1</maven.surefire.version>
+        <junit.version>4.13.2</junit.version>
         <nexus.staging.plugin.version>1.6.7</nexus.staging.plugin.version>
-        <maven.jar.plugin.version>3.1.0</maven.jar.plugin.version>
-        <logback.version>1.2.3</logback.version>
-        <javafx.maven.version>8.6.0</javafx.maven.version>
-        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <logback.version>1.4.11</logback.version>
+        <javafx.maven.version>8.8.3</javafx.maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>13.0.2</javafx.version>
+        <javafx.version>21.0.1</javafx.version>
+        <slf4j.version>2.0.9</slf4j.version>
     </properties>
 
     <repositories>
@@ -63,8 +64,18 @@
         <dependency>
             <groupId>io.github.astonbitecode</groupId>
             <artifactId>j4rs</artifactId>
-            <version>0.13.0</version>
+            <version>0.17.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+        <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -84,9 +95,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${maven.compiler.plugin}</version>
                 <configuration>
-                    <release>11</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>

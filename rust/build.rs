@@ -6,7 +6,7 @@ use j4rs;
 use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
 
 fn main() {
-    let ui_jar = "rust-keylock-ui-java-0.14.0.jar";
+    let ui_jar = "rust-keylock-ui-java-0.15.0.jar";
     let desktop_ui_jar_in_java_target = format!("../java/target/{}", ui_jar);
     println!("cargo:rerun-if-changed={}", desktop_ui_jar_in_java_target);
 
@@ -52,16 +52,19 @@ fn main() {
 
     // Deploy from Maven
     println!("cargo:warning=Downloading Maven dependencies... This may take a while the first time you build.");
-    maven("org.openjfx:javafx-base:13.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-base:13.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-controls:13.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-controls:13.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-fxml:13.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-fxml:13.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-graphics:13.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-graphics:13.0.2:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-media:13.0.2", &jvm);
-    maven(&format!("org.openjfx:javafx-media:13.0.2:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-base:21.0.1", &jvm);
+    maven(&format!("org.openjfx:javafx-base:21.0.1:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-controls:21.0.1", &jvm);
+    maven(&format!("org.openjfx:javafx-controls:21.0.1:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-fxml:21.0.1", &jvm);
+    maven(&format!("org.openjfx:javafx-fxml:21.0.1:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-graphics:21.0.1", &jvm);
+    maven(&format!("org.openjfx:javafx-graphics:21.0.1:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-media:21.0.1", &jvm);
+    maven(&format!("org.openjfx:javafx-media:21.0.1:{}", target_os), &jvm);
+    maven("org.slf4j:slf4j-api:2.0.9", &jvm);
+    maven("ch.qos.logback:logback-core:1.4.11", &jvm);
+    maven("ch.qos.logback:logback-classic:1.4.11", &jvm);
     println!("cargo:warning=Maven dependencies downloaded!");
 }
 

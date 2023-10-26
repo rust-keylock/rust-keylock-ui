@@ -101,7 +101,6 @@ public class EditConfigurationController extends BaseController implements RklCo
 
             if (envVar != null && !envVar.isBlank()) {
                 logger.debug("Running in snap! Using xdg-open to open the browser...");
-                ProcessBuilder processBuilder = new ProcessBuilder();
                 Runtime.getRuntime().exec("xdg-open " + url);
             } else {
                 stage.getHostServices().showDocument(url);

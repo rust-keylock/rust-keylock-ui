@@ -33,7 +33,6 @@ public class UiLauncher extends Application {
     private static final Logger logger = LoggerFactory.getLogger(UiLauncher.class);
     // java --module-path $RUST_KEYLOCK_UI_BASE_PATH/java/target/lib --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml  -jar $RUST_KEYLOCK_UI_BASE_PATH/java/target/rust-keylock-ui-java-0.14.0.jar
     private static AtomicReference<Optional<RklStage>> stageOpt = new AtomicReference<>(Optional.empty());
-    private UiStopper stopper = new UiStopper();
 
     public static void launch() {
         new Thread(() -> Application.launch()).start();

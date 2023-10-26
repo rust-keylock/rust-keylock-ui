@@ -1,8 +1,8 @@
 [package]
 name = "rust-keylock-ui"
-version = "0.14.0"
+version = "0.15.0"
 authors = ["aston <astonbitecode@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "A password manager with goals to be Secure, Simple to use, Portable and Extensible"
 keywords = ["password", "manager", "safe", "encryption", "key"]
 license = "GPL-3.0"
@@ -19,16 +19,16 @@ name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = "0.14"
-j4rs = "0.13"
+rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib"}
+j4rs = "0.17"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-log4rs = "1.0"
-dirs = "3.0"
+log4rs = "1.2"
+dirs = "5.0"
 glob = "0.3"
 anyhow = "1.0"
 
 [build-dependencies]
-fs_extra = "1.1"
-rust_keylock = "0.14"
-j4rs = "0.13"
+fs_extra = "1.3"
+rust_keylock = {git = "https://github.com/rust-keylock/rust-keylock-lib"}
+j4rs = "0.17"
