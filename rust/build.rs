@@ -52,16 +52,18 @@ fn main() {
 
     // Deploy from Maven
     println!("cargo:warning=Downloading Maven dependencies... This may take a while the first time you build.");
-    maven("org.openjfx:javafx-base:21.0.1", &jvm);
-    maven(&format!("org.openjfx:javafx-base:21.0.1:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-controls:21.0.1", &jvm);
-    maven(&format!("org.openjfx:javafx-controls:21.0.1:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-fxml:21.0.1", &jvm);
-    maven(&format!("org.openjfx:javafx-fxml:21.0.1:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-graphics:21.0.1", &jvm);
-    maven(&format!("org.openjfx:javafx-graphics:21.0.1:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-media:21.0.1", &jvm);
-    maven(&format!("org.openjfx:javafx-media:21.0.1:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-base:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-base:22-ea+11:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-controls:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-controls:22-ea+11:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-fxml:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-fxml:22-ea+11:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-graphics:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-graphics:22-ea+11:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-media:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-media:22-ea+11:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-swing:22-ea+11", &jvm);
+    maven(&format!("org.openjfx:javafx-swing:22-ea+11:{}", target_os), &jvm);
     maven("org.slf4j:slf4j-api:2.0.9", &jvm);
     maven("ch.qos.logback:logback-core:1.4.11", &jvm);
     maven("ch.qos.logback:logback-classic:1.4.11", &jvm);

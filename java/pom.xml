@@ -28,7 +28,7 @@
         <logback.version>1.4.11</logback.version>
         <javafx.maven.version>8.8.3</javafx.maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21.0.1</javafx.version>
+        <javafx.version>22-ea+11</javafx.version>
         <slf4j.version>2.0.9</slf4j.version>
     </properties>
 
@@ -59,6 +59,11 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
