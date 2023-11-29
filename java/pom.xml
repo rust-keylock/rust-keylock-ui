@@ -25,7 +25,7 @@
         <nexus.staging.plugin.version>1.6.7</nexus.staging.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
         <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.4.12</logback.version>
         <javafx.maven.version>8.8.3</javafx.maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>22-ea+11</javafx.version>
