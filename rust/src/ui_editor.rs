@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::convert::TryFrom;
-use std::sync::mpsc::{self, Receiver};
-
 use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
-use rust_keylock::{AsyncEditor, Entry, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection, EntryMeta};
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
+use rust_keylock::{AsyncEditor, Entry, EntryMeta, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::sync::mpsc::{self, Receiver};
+use zeroize::Zeroize;
 
 use crate::errors;
 
@@ -38,32 +38,34 @@ pub struct DesktopImpl {
 pub fn new(jvm: Jvm) -> DesktopImpl {
     // Start the Ui
     debug!("Calling org.rustkeylock.ui.UiLauncher.launch");
-    let _ = jvm.invoke_static(
-        "org.rustkeylock.ui.UiLauncher",
-        "launch",
-        &Vec::new())
-        .unwrap();
+    let _ = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "launch", &Vec::new()).unwrap();
 
     debug!("Calling org.rustkeylock.ui.UiLauncher.getStage");
     let fx_stage = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "getStage", &Vec::new()).unwrap();
 
     debug!("Stage retrieved. Proceeding...");
     // Create the Java classes that navigate the UI
-    let show_menu = jvm.create_instance(
-        "org.rustkeylock.ui.callbacks.ShowMenuCb",
-        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
-    let show_entries = jvm.create_instance(
-        "org.rustkeylock.ui.callbacks.ShowEntriesSetCb",
-        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
-    let show_entry = jvm.create_instance(
-        "org.rustkeylock.ui.callbacks.ShowEntryCb",
-        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
-    let edit_configuration = jvm.create_instance(
-        "org.rustkeylock.ui.callbacks.EditConfigurationCb",
-        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
-    let show_message = jvm.create_instance(
-        "org.rustkeylock.ui.callbacks.ShowMessageCb",
-        &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())]).unwrap();
+    let show_menu = jvm
+        .create_instance("org.rustkeylock.ui.callbacks.ShowMenuCb", &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())])
+        .unwrap();
+    let show_entries = jvm
+        .create_instance(
+            "org.rustkeylock.ui.callbacks.ShowEntriesSetCb",
+            &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())],
+        )
+        .unwrap();
+    let show_entry = jvm
+        .create_instance("org.rustkeylock.ui.callbacks.ShowEntryCb", &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())])
+        .unwrap();
+    let edit_configuration = jvm
+        .create_instance(
+            "org.rustkeylock.ui.callbacks.EditConfigurationCb",
+            &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())],
+        )
+        .unwrap();
+    let show_message = jvm
+        .create_instance("org.rustkeylock.ui.callbacks.ShowMessageCb", &[InvocationArg::from(jvm.clone_instance(&fx_stage).unwrap())])
+        .unwrap();
 
     // Return the Editor
     DesktopImpl {
@@ -105,31 +107,25 @@ impl AsyncEditor for DesktopImpl {
         exit(&self, contents_changed).unwrap_or_else(|error| handle_error(&error))
     }
 
-    fn show_message(&self,
-                    message: &str,
-                    options: Vec<UserOption>,
-                    severity: MessageSeverity)
-                    -> Receiver<UserSelection> {
+    fn show_message(&self, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> Receiver<UserSelection> {
         show_message(&self, message, options, severity).unwrap_or_else(|error| handle_error(&error))
     }
 }
 
 fn show_password_enter(editor: &DesktopImpl) -> errors::Result<Receiver<UserSelection>> {
     debug!("Opening the password fragment");
-    let instance_receiver = editor.jvm.invoke_to_channel(
-        &editor.show_menu,
-        "apply",
-        &[InvocationArg::try_from("TryPass").unwrap()]);
+    let instance_receiver = editor
+        .jvm
+        .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("TryPass").unwrap()]);
     debug!("Waiting for password...");
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
 
 fn show_change_password(editor: &DesktopImpl) -> errors::Result<Receiver<UserSelection>> {
     debug!("Opening the change password fragment");
-    let instance_receiver = editor.jvm.invoke_to_channel(
-        &editor.show_menu,
-        "apply",
-        &[InvocationArg::try_from("ChangePass").unwrap()]);
+    let instance_receiver = editor
+        .jvm
+        .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("ChangePass").unwrap()]);
     debug!("Waiting for password change...");
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
@@ -138,12 +134,9 @@ fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserS
     debug!("Opening menu '{:?}'", menu);
 
     let instance_receiver_res = match menu {
-        &Menu::Main => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_menu,
-                "apply",
-                &[InvocationArg::try_from("Main").unwrap()])
-        }
+        &Menu::Main => editor
+            .jvm
+            .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("Main").unwrap()]),
         &Menu::NewEntry(ref entry_opt) => {
             let entry = entry_opt.clone().unwrap_or_else(|| Entry::empty());
             let empty_entry = JavaEntry::new(&entry);
@@ -155,27 +148,23 @@ fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserS
                     InvocationArg::new(&empty_entry, "org.rustkeylock.japi.JavaEntry"),
                     InvocationArg::try_from(-1).unwrap(),
                     InvocationArg::try_from(true).unwrap(),
-                    InvocationArg::try_from(false).unwrap()
-                ])
+                    InvocationArg::try_from(false).unwrap(),
+                ],
+            )
         }
         &Menu::ExportEntries => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_menu,
-                "apply",
-                &[InvocationArg::try_from("ExportEntries").unwrap()])
+            editor
+                .jvm
+                .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("ExportEntries").unwrap()])
         }
         &Menu::ImportEntries => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_menu,
-                "apply",
-                &[InvocationArg::try_from("ImportEntries").unwrap()])
+            editor
+                .jvm
+                .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("ImportEntries").unwrap()])
         }
-        &Menu::Current => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_menu,
-                "apply",
-                &[InvocationArg::try_from("Current").unwrap()])
-        }
+        &Menu::Current => editor
+            .jvm
+            .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("Current").unwrap()]),
         other => panic!("Menu '{:?}' cannot be used with Entries. Please, consider opening a bug to the developers.", other),
     };
 
@@ -183,88 +172,87 @@ fn show_menu(editor: &DesktopImpl, menu: &Menu) -> errors::Result<Receiver<UserS
 }
 
 fn show_entries(editor: &DesktopImpl, entries: Vec<Entry>, filter: String) -> errors::Result<Receiver<UserSelection>> {
-    let java_entries: Vec<JavaEntry> = entries.iter()
-        .map(|entry| JavaEntry::new(entry))
-        .collect();
-    let filter = if filter.is_empty() {
-        "null".to_string()
-    } else {
-        filter
-    };
+    let java_entries: Vec<JavaEntry> = entries.iter().map(|entry| JavaEntry::new(entry)).collect();
+    let filter = if filter.is_empty() { "null".to_string() } else { filter };
     let instance_receiver_res = editor.jvm.invoke_to_channel(
         &editor.show_entries,
         "apply",
         &[
-            InvocationArg::try_from((
-                java_entries.as_slice(),
-                "org.rustkeylock.japi.JavaEntry"))
-                .unwrap(),
-            InvocationArg::try_from(filter).unwrap()]);
+            InvocationArg::try_from((java_entries.as_slice(), "org.rustkeylock.japi.JavaEntry")).unwrap(),
+            InvocationArg::try_from(filter).unwrap(),
+        ],
+    );
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
-fn show_entry(editor: &DesktopImpl, entry: Entry, index: usize, presentation_type: EntryPresentationType) -> errors::Result<Receiver<UserSelection>> {
+fn show_entry(
+    editor: &DesktopImpl,
+    entry: Entry,
+    index: usize,
+    presentation_type: EntryPresentationType,
+) -> errors::Result<Receiver<UserSelection>> {
     let instance_receiver_res = match presentation_type {
-        EntryPresentationType::View => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_entry,
-                "apply",
-                &[
-                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
-                    InvocationArg::try_from(index as i32).unwrap(),
-                    InvocationArg::try_from(false).unwrap(),
-                    InvocationArg::try_from(false).unwrap()
-                ])
-        }
-        EntryPresentationType::Delete => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_entry,
-                "apply",
-                &[
-                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
-                    InvocationArg::try_from(index as i32).unwrap(),
-                    InvocationArg::try_from(false).unwrap(),
-                    InvocationArg::try_from(true).unwrap(),
-                ])
-        }
-        EntryPresentationType::Edit => {
-            editor.jvm.invoke_to_channel(
-                &editor.show_entry,
-                "apply",
-                &[
-                    InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
-                    InvocationArg::try_from(index as i32).unwrap(),
-                    InvocationArg::try_from(true).unwrap(),
-                    InvocationArg::try_from(false).unwrap()
-                ])
-        }
+        EntryPresentationType::View => editor.jvm.invoke_to_channel(
+            &editor.show_entry,
+            "apply",
+            &[
+                InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
+                InvocationArg::try_from(index as i32).unwrap(),
+                InvocationArg::try_from(false).unwrap(),
+                InvocationArg::try_from(false).unwrap(),
+            ],
+        ),
+        EntryPresentationType::Delete => editor.jvm.invoke_to_channel(
+            &editor.show_entry,
+            "apply",
+            &[
+                InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
+                InvocationArg::try_from(index as i32).unwrap(),
+                InvocationArg::try_from(false).unwrap(),
+                InvocationArg::try_from(true).unwrap(),
+            ],
+        ),
+        EntryPresentationType::Edit => editor.jvm.invoke_to_channel(
+            &editor.show_entry,
+            "apply",
+            &[
+                InvocationArg::new(&JavaEntry::new(&entry), "org.rustkeylock.japi.JavaEntry"),
+                InvocationArg::try_from(index as i32).unwrap(),
+                InvocationArg::try_from(true).unwrap(),
+                InvocationArg::try_from(false).unwrap(),
+            ],
+        ),
     };
 
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
-fn show_configuration(editor: &DesktopImpl, nextcloud: NextcloudConfiguration, dropbox: DropboxConfiguration) -> errors::Result<Receiver<UserSelection>> {
+fn show_configuration(
+    editor: &DesktopImpl,
+    nextcloud: NextcloudConfiguration,
+    dropbox: DropboxConfiguration,
+) -> errors::Result<Receiver<UserSelection>> {
     let conf_strings = vec![
         nextcloud.server_url.clone(),
         nextcloud.username.clone(),
         nextcloud.decrypted_password().unwrap().to_string(),
         nextcloud.use_self_signed_certificate.to_string(),
         DropboxConfiguration::dropbox_url(),
-        dropbox.decrypted_token().unwrap().to_string()];
-    let instance_receiver_res = editor.jvm.invoke_to_channel(
-        &editor.edit_configuration,
-        "apply",
-        &[InvocationArg::try_from(conf_strings.as_slice()).unwrap()]);
+        dropbox.decrypted_token().unwrap().to_string(),
+    ];
+    let instance_receiver_res =
+        editor
+            .jvm
+            .invoke_to_channel(&editor.edit_configuration, "apply", &[InvocationArg::try_from(conf_strings.as_slice()).unwrap()]);
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver_res)
 }
 
 fn exit(editor: &DesktopImpl, contents_changed: bool) -> errors::Result<Receiver<UserSelection>> {
     debug!("Exiting rust-keylock ui...");
     if contents_changed {
-        let instance_receiver = editor.jvm.invoke_to_channel(
-            &editor.show_menu,
-            "apply",
-            &[InvocationArg::try_from("Exit").unwrap()]);
+        let instance_receiver = editor
+            .jvm
+            .invoke_to_channel(&editor.show_menu, "apply", &[InvocationArg::try_from("Exit").unwrap()]);
 
         super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
     } else {
@@ -274,21 +262,23 @@ fn exit(editor: &DesktopImpl, contents_changed: bool) -> errors::Result<Receiver
     }
 }
 
-fn show_message(editor: &DesktopImpl, message: &str, options: Vec<UserOption>, severity: MessageSeverity) -> errors::Result<Receiver<UserSelection>> {
+fn show_message(
+    editor: &DesktopImpl,
+    message: &str,
+    options: Vec<UserOption>,
+    severity: MessageSeverity,
+) -> errors::Result<Receiver<UserSelection>> {
     debug!("Showing Message '{}'", message);
-    let java_user_options: Vec<JavaUserOption> = options.iter()
-        .clone()
-        .map(|user_option| JavaUserOption::new(user_option))
-        .collect();
+    let java_user_options: Vec<JavaUserOption> = options.iter().clone().map(|user_option| JavaUserOption::new(user_option)).collect();
     let instance_receiver = editor.jvm.invoke_to_channel(
         &editor.show_message,
         "apply",
         &[
-            InvocationArg::try_from((
-                java_user_options.as_slice(),
-                "org.rustkeylock.japi.JavaUserOption")).unwrap(),
+            InvocationArg::try_from((java_user_options.as_slice(), "org.rustkeylock.japi.JavaUserOption")).unwrap(),
             InvocationArg::try_from(message).unwrap(),
-            InvocationArg::try_from(severity.to_string()).unwrap()]);
+            InvocationArg::try_from(severity.to_string()).unwrap(),
+        ],
+    );
 
     super::callbacks::handle_instance_receiver_result(&editor.jvm, instance_receiver)
 }
@@ -300,7 +290,8 @@ fn handle_error(error: &errors::RklUiError) -> Receiver<UserSelection> {
     rx
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Zeroize)]
+#[zeroize(drop)]
 pub(crate) struct JavaEntryMeta {
     pub leakedpassword: bool,
 }
@@ -308,12 +299,13 @@ pub(crate) struct JavaEntryMeta {
 impl JavaEntryMeta {
     fn new(entry: &EntryMeta) -> JavaEntryMeta {
         JavaEntryMeta {
-            leakedpassword: entry.leaked_password
+            leakedpassword: entry.leaked_password,
         }
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Zeroize)]
+#[zeroize(drop)]
 pub(crate) struct JavaEntry {
     pub name: String,
     pub url: String,
@@ -392,9 +384,7 @@ impl JavaMenu {
             JavaMenu::ShowEntry { idx } => Menu::ShowEntry(idx),
             JavaMenu::EditEntry { idx } => Menu::EditEntry(idx),
             JavaMenu::DeleteEntry { idx } => Menu::DeleteEntry(idx),
-            _ => {
-                Menu::Current
-            }
+            _ => Menu::Current,
         }
     }
 }

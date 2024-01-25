@@ -99,11 +99,11 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             GuiResponse::AddEntry { entry } => {
                 debug!("add_entry");
                 let meta = EntryMeta::new(entry.meta.leakedpassword);
-                let entry = Entry::new(entry.name,
-                                       entry.url,
-                                       entry.user,
-                                       entry.pass,
-                                       entry.desc,
+                let entry = Entry::new(entry.name.to_owned(),
+                                       entry.url.to_owned(),
+                                       entry.user.to_owned(),
+                                       entry.pass.to_owned(),
+                                       entry.desc.to_owned(),
                                        meta);
 
                 UserSelection::NewEntry(entry)
@@ -111,11 +111,11 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             GuiResponse::ReplaceEntry { entry, index } => {
                 debug!("replace_entry");
                 let meta = EntryMeta::new(entry.meta.leakedpassword);
-                let entry = Entry::new(entry.name,
-                                       entry.url,
-                                       entry.user,
-                                       entry.pass,
-                                       entry.desc,
+                let entry = Entry::new(entry.name.to_owned(),
+                                       entry.url.to_owned(),
+                                       entry.user.to_owned(),
+                                       entry.pass.to_owned(),
+                                       entry.desc.to_owned(),
                                        meta);
 
                 UserSelection::ReplaceEntry(index as usize, entry)
@@ -127,11 +127,11 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             GuiResponse::GeneratePassphrase { entry, index } => {
                 debug!("generate_passphrase");
                 let meta = EntryMeta::new(entry.meta.leakedpassword);
-                let entry = Entry::new(entry.name,
-                                       entry.url,
-                                       entry.user,
-                                       entry.pass,
-                                       entry.desc,
+                let entry = Entry::new(entry.name.to_owned(),
+                                       entry.url.to_owned(),
+                                       entry.user.to_owned(),
+                                       entry.pass.to_owned(),
+                                       entry.desc.to_owned(),
                                        meta);
                 let opt = if index < 0 {
                     None

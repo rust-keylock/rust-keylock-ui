@@ -27,6 +27,7 @@ log4rs = "1.2"
 dirs = "5.0"
 glob = "0.3"
 anyhow = "1.0"
+zeroize = {version = "1.7", features = ["zeroize_derive"] }
 
 [build-dependencies]
 fs_extra = "1.3"
