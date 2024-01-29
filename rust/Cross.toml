@@ -1,2 +1,7 @@
 [target.x86_64-pc-windows-gnu]
-image = "astonbitecode/x86_64-pc-windows-gnu-java:latest"
+pre-build = [
+    "apt-get update",
+    "apt-get install -y --no-install-recommends python3 libssl-dev libxcb-shape0 libxcb-shape0-dev libxcb-xfixes0 libxcb-xfixes0-dev"
+]
+[target.x86_64-pc-windows-gnu.env]
+passthrough = ["RKL_BUILD_MODE"]

@@ -63,6 +63,9 @@ public class EnterPasswordController implements RklController {
                 error.printStackTrace();
                 getNumber().setText("");
                 setNumberMessage(message);
+            } finally {
+                getPassword().clear();
+                getNumber().clear();
             }
         }
     }
