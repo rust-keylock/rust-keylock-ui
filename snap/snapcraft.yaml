@@ -65,7 +65,7 @@ apps:
     extensions:
       - gnome
     plugs:
-      - desktop-launch
+      - desktop
       - network
     environment:
       RKL_J4RS_INST_DIR: ${SNAP}/opt/j4rs
