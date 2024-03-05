@@ -1,6 +1,6 @@
 [package]
 name = "rust-keylock-ui"
-version = "0.15.0"
+version = "0.15.1"
 authors = ["aston <astonbitecode@gmail.com>"]
 edition = "2021"
 description = "A password manager with goals to be Secure, Simple to use, Portable and Extensible"

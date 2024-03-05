@@ -1,5 +1,4 @@
 /target/
 /.project
-/Cargo.lock
 /*.iml
 /.settings/
