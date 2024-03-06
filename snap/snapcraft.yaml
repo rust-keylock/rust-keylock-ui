@@ -1,5 +1,5 @@
 name: rust-keylock-ui
-version: '0.15.0'
+version: '0.15.1'
 summary: A password manager written (mostly) in Rust
 description: |
   rust-keylock is a password manager and its goals are to be:
@@ -19,8 +19,8 @@ parts:
   rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-    source-tag: v0.15.0
-    # source-commit: e0f4ad19d21825865c897176b0f8a1909f02bf71
+    # source-tag: v0.15.1
+    source-commit: f1e76c296847af00a7679ba320c4aa33ee06c578 
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-${SNAP_ARCH}"
       # Setup Rust
@@ -46,16 +46,15 @@ parts:
       - libssl-dev
       - git
       - curl
-      - libxcb-shape0
+      - libxcb1-dev
+      - libxcb-render0-dev
       - libxcb-shape0-dev
-      - libxcb-xfixes0
       - libxcb-xfixes0-dev
       - build-essential
       - maven
     stage-packages:
       - openjdk-17-jre
       - openssl
-      - libxcb-shape0
     organize:
       ../build/j4rs: opt/j4rs
       ../build/rust/target/release/rust-keylock-ui: bin/
