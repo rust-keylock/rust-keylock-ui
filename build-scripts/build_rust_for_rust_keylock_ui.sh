@@ -47,7 +47,7 @@ cp $UI_RUST_KEYLOCK_LINUX_x86_64/rust-keylock-ui $UI_RUST_KEYLOCK_LINUX_x86_64_F
 echo "Copying the executable, the deps and the jassets for Windows in $UI_RUST_KEYLOCK_WIN_x86_64_FINAL"
 mkdir -p $UI_RUST_KEYLOCK_WIN_x86_64_FINAL/deps
 cp $UI_RUST_KEYLOCK_WIN_x86_64/rust-keylock-ui.exe $UI_RUST_KEYLOCK_WIN_x86_64_FINAL
-cp $UI_RUST_KEYLOCK_WIN_x86_64/deps/j4rs-*.dll $UI_RUST_KEYLOCK_WIN_x86_64_FINAL/deps
+cp $UI_RUST_KEYLOCK_WIN_x86_64/deps/j4rs*.dll $UI_RUST_KEYLOCK_WIN_x86_64_FINAL/deps
 # The jars are located under the linux target because j4rs cannot install Maven artifacts during cross compilation builds.
 # The cross compilation involves running a special docker image (via the cross crate).
 cp -R $UI_RUST_KEYLOCK_LINUX_x86_64_FINAL/jassets $UI_RUST_KEYLOCK_WIN_x86_64_FINAL

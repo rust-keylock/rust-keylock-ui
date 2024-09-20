@@ -17,7 +17,7 @@
 use std::{thread, time};
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
-use j4rs;
+use j4rs::{self, InvocationArg};
 use j4rs::{Instance, InstanceReceiver, Jvm};
 use log::*;
 use rust_keylock::{AllConfigurations, Entry, EntryMeta, Menu, UserOption, UserSelection};
@@ -29,7 +29,7 @@ use crate::ui_editor::{JavaEntry, JavaMenu, JavaUserOption};
 
 pub fn handle_instance_receiver_result(jvm: &Jvm, instance_receiver_res: j4rs::errors::Result<InstanceReceiver>) -> crate::errors::Result<Receiver<UserSelection>> {
     let (tx, rx) = mpsc::channel();
-    let ui_stopper = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "initOnCloseHandler", &[]).expect("Could not retrieve the UI Stopper");
+    let ui_stopper = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "initOnCloseHandler", InvocationArg::empty()).expect("Could not retrieve the UI Stopper");
     let handler_instance_receiver = jvm.init_callback_channel(&ui_stopper).expect("Could not register the Launcher callback");
 
     let _ = thread::spawn(move || {

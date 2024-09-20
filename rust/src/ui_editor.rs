@@ -38,10 +38,10 @@ pub struct DesktopImpl {
 pub fn new(jvm: Jvm) -> DesktopImpl {
     // Start the Ui
     debug!("Calling org.rustkeylock.ui.UiLauncher.launch");
-    let _ = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "launch", &Vec::new()).unwrap();
+    let _ = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "launch", InvocationArg::empty()).unwrap();
 
     debug!("Calling org.rustkeylock.ui.UiLauncher.getStage");
-    let fx_stage = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "getStage", &Vec::new()).unwrap();
+    let fx_stage = jvm.invoke_static("org.rustkeylock.ui.UiLauncher", "getStage", InvocationArg::empty()).unwrap();
 
     debug!("Stage retrieved. Proceeding...");
     // Create the Java classes that navigate the UI

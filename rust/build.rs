@@ -72,6 +72,7 @@ fn deploy_os_jars(jvm: &Jvm, target_os: &str) {
     maven("org.openjfx:javafx-swing:22-ea+16", &jvm);
     maven(&format!("org.openjfx:javafx-swing:22-ea+16:{}", target_os), &jvm);
     maven("org.slf4j:slf4j-api:2.0.11", &jvm);
+    maven("io.github.astonbitecode:j4rs-javafx:0.20.0", &jvm);
     maven("ch.qos.logback:logback-core:1.4.12", &jvm);
     maven("ch.qos.logback:logback-classic:1.4.12", &jvm);
 }
