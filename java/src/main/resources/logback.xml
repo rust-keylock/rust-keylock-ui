@@ -19,4 +19,5 @@
     <logger name="org.rustkeylock" level="debug" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 </configuration>
