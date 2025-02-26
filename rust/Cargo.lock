@@ -1680,6 +1680,7 @@ dependencies = [
  "rust_keylock",
  "serde",
  "serde_json",
+ "tokio",
  "zeroize",
 ]
 
@@ -1691,6 +1692,7 @@ dependencies = [
  "async-trait",
  "base64",
  "bcrypt",
+ "bytes",
  "cipher",
  "ctr",
  "dirs",

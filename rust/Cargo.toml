@@ -29,6 +29,7 @@ dirs = "5.0"
 glob = "0.3"
 anyhow = "1.0"
 zeroize = { version = "1.8", features = ["zeroize_derive"] }
+tokio = { version = "1", features = ["full"] }
 
 [build-dependencies]
 fs_extra = "1.3"
