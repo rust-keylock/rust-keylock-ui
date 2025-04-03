@@ -120,4 +120,8 @@ public class GuiResponse {
     public static String CheckPasswords() {
         return Defs.CHECK_PASSWORDS;
     }
+
+    public static String GenerateBrowserExtensionToken() {
+        return Defs.GENERATE_BROWSER_EXTENSION_TOKEN;
+    }
 }

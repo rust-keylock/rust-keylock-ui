@@ -18,6 +18,7 @@ use j4rs::{Instance, InvocationArg, Jvm};
 use log::*;
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
+use rust_keylock::GeneralConfiguration;
 use rust_keylock::{AsyncEditor, Entry, EntryMeta, EntryPresentationType, Menu, MessageSeverity, UserOption, UserSelection};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -99,8 +100,8 @@ impl AsyncEditor for DesktopImpl {
         show_entry(&self, entry, index, presentation_type).unwrap_or_else(|error| handle_error(&error))
     }
 
-    fn show_configuration(&self, nextcloud: NextcloudConfiguration, dropbox: DropboxConfiguration) -> Receiver<UserSelection> {
-        show_configuration(&self, nextcloud, dropbox).unwrap_or_else(|error| handle_error(&error))
+    fn show_configuration(&self, nextcloud: NextcloudConfiguration, dropbox: DropboxConfiguration, general: GeneralConfiguration) -> Receiver<UserSelection> {
+        show_configuration(&self, nextcloud, dropbox, general).unwrap_or_else(|error| handle_error(&error))
     }
 
     fn exit(&self, contents_changed: bool) -> Receiver<UserSelection> {
@@ -231,6 +232,7 @@ fn show_configuration(
     editor: &DesktopImpl,
     nextcloud: NextcloudConfiguration,
     dropbox: DropboxConfiguration,
+    general: GeneralConfiguration,
 ) -> errors::Result<Receiver<UserSelection>> {
     let conf_strings = vec![
         nextcloud.server_url.clone(),
@@ -239,6 +241,7 @@ fn show_configuration(
         nextcloud.use_self_signed_certificate.to_string(),
         DropboxConfiguration::dropbox_url(),
         dropbox.decrypted_token().unwrap().to_string(),
+        general.browser_extension_token.unwrap_or_default(),
     ];
     let instance_receiver_res =
         editor

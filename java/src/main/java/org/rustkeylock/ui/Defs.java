@@ -33,6 +33,7 @@ public class Defs {
     public static final String MENU_WAIT_FOR_DBX_TOKEN_CALLBACK = "WaitForDbxTokenCallback";
     public static final String MENU_CURRENT = "Current";
     public static final String MENU_PLEASE_WAIT = "PleaseWait";
+    public static final String GENERATE_BROWSER_EXTENSION_TOKEN = "GenerateBrowserExtensionToken";
     public static final String EMPTY_ARG = "null";
     public static final String CHECK_PASSWORDS = "CheckPasswords";
     public static final int PrefWidthPixels = 650;

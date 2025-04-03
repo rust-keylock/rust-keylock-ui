@@ -20,7 +20,7 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 use j4rs::{self, InvocationArg};
 use j4rs::{Instance, InstanceReceiver, Jvm};
 use log::*;
-use rust_keylock::{AllConfigurations, Entry, EntryMeta, Menu, UserOption, UserSelection};
+use rust_keylock::{AllConfigurations, Entry, EntryMeta, GeneralConfiguration, Menu, UserOption, UserSelection};
 use rust_keylock::dropbox::DropboxConfiguration;
 use rust_keylock::nextcloud::NextcloudConfiguration;
 use serde::{Deserialize, Serialize};
@@ -143,7 +143,7 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
             GuiResponse::SetConfiguration { strings } => {
                 debug!("set_configuration with {} elements", strings.len());
 
-                let ncc = if strings.len() == 5 {
+                let ncc = if strings.len() == 6 {
                     let b = match strings[3].as_ref() {
                         "true" => true,
                         _ => false,
@@ -159,13 +159,18 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                                                 false)
                 };
 
-                let dbxc = if strings.len() == 5 {
+                let dbxc = if strings.len() == 6 {
                     DropboxConfiguration::new(strings[4].clone())
                 } else {
                     Ok(DropboxConfiguration::default())
                 };
 
-                UserSelection::UpdateConfiguration(AllConfigurations::new(ncc.unwrap(), dbxc.unwrap()))
+                let genc = if strings.len() == 6 {
+                    GeneralConfiguration::new(Some(strings[5].clone()))
+                } else {
+                    GeneralConfiguration::default()
+                };
+                UserSelection::UpdateConfiguration(AllConfigurations::new(ncc.unwrap(), dbxc.unwrap(), genc))
             }
             GuiResponse::UserOptionSelected { user_option } => {
                 debug!("user_option_selected");
@@ -197,6 +202,10 @@ fn handle_instance(jvm: &Jvm, instance: Instance) -> UserSelection {
                 debug!("CheckPasswords");
                 UserSelection::CheckPasswords
             }
+            GuiResponse::GenerateBrowserExtensionToken => {
+                debug!("GenerateBrowserExtensionToken");
+                UserSelection::GenerateBrowserExtensionToken
+            }
         }
     } else {
         error!("Error while creating Rust representation of a Java Instance: {:?}", res.err());
@@ -217,4 +226,5 @@ pub(crate) enum GuiResponse {
     Copy { data: String },
     GeneratePassphrase { entry: JavaEntry, index: isize },
     CheckPasswords,
+    GenerateBrowserExtensionToken,
 }

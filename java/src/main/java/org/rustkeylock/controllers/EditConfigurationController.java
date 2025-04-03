@@ -54,6 +54,8 @@ public class EditConfigurationController extends BaseController implements RklCo
     private CheckBox ncUseSelfSignedCertificate = new CheckBox();
     @FXML
     private StringProperty dropboxTokenLabel = new SimpleStringProperty("");
+    @FXML
+    private TextField genBrowserExtensionToken = new TextField();
 
     private final List<String> strings;
     private final RklStage stage;
@@ -76,17 +78,17 @@ public class EditConfigurationController extends BaseController implements RklCo
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         disableMenuButtons();
-        if (strings.size() == 6) {
+        if (strings.size() == 7) {
             ncServerUrl.setText(strings.get(0));
             ncUsername.setText(strings.get(1));
             ncPassword.setText(strings.get(2));
             ncUseSelfSignedCertificate.setSelected(Boolean.parseBoolean(strings.get(3)));
-
             if (strings.get(5).isEmpty()) {
                 setDropboxTokenLabel("Click the button to acquire a new authentication token: ");
             } else {
                 setDropboxTokenLabel("A token is acquired. Press the button if you want to renew: ");
             }
+            genBrowserExtensionToken.setText(strings.get(6));
         }
     }
 
@@ -126,6 +128,13 @@ public class EditConfigurationController extends BaseController implements RklCo
     }
 
     @FXML
+    private void generateBrowserExtensionToken(ActionEvent event) {
+        event.consume();
+
+        callback.accept(GuiResponse.GenerateBrowserExtensionToken());
+    }
+
+    @FXML
     private void apply(ActionEvent event) {
         event.consume();
 
@@ -151,7 +160,8 @@ public class EditConfigurationController extends BaseController implements RklCo
                     ncUsername.getText(),
                     ncPassword.getText(),
                     "" + ncUseSelfSignedCertificate.isSelected(),
-                    strings.get(5)
+                    strings.get(5),
+                    genBrowserExtensionToken.getText()
             );
 
             callback.accept(GuiResponse.SetConfiguration(newStrings));
