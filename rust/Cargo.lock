@@ -1724,8 +1724,10 @@ name = "rust-keylock-ui"
 version = "0.16.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "dirs",
  "fs_extra",
+ "futures",
  "glob",
  "j4rs",
  "log",

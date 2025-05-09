@@ -15,13 +15,11 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
@@ -30,14 +28,17 @@ import org.rustkeylock.ui.callbacks.ShowMenuCb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 
-public class EditConfigurationController extends BaseController implements RklController, Initializable {
+public class EditConfigurationController extends BaseController implements Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     @FXML
     private TextField ncServerUrl = new TextField();
     @FXML
@@ -66,13 +67,13 @@ public class EditConfigurationController extends BaseController implements RklCo
     }
 
     @Override
-    public void setCallback(Consumer<Object> consumer) {
-        this.callback = consumer;
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
     }
 
     @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
     @Override
@@ -98,7 +99,7 @@ public class EditConfigurationController extends BaseController implements RklCo
 
         try {
             String url = strings.get(4);
-            callback.accept(GuiResponse.GoToMenu(JavaMenu.WaitForDbxTokenCallback(url)));
+            this.submitResponse(GuiResponse.GoToMenu(JavaMenu.WaitForDbxTokenCallback(url)));
             String envVar = System.getenv("RUST_KEYLOCK_UI_JAVA_USER_HOME");
 
             if (envVar != null && !envVar.isBlank()) {
@@ -130,8 +131,7 @@ public class EditConfigurationController extends BaseController implements RklCo
     @FXML
     private void generateBrowserExtensionToken(ActionEvent event) {
         event.consume();
-
-        callback.accept(GuiResponse.GenerateBrowserExtensionToken());
+        this.submitResponse(GuiResponse.GenerateBrowserExtensionToken());
     }
 
     @FXML
@@ -161,10 +161,9 @@ public class EditConfigurationController extends BaseController implements RklCo
                     ncPassword.getText(),
                     "" + ncUseSelfSignedCertificate.isSelected(),
                     strings.get(5),
-                    genBrowserExtensionToken.getText()
-            );
+                    genBrowserExtensionToken.getText());
 
-            callback.accept(GuiResponse.SetConfiguration(newStrings));
+            this.submitResponse(GuiResponse.SetConfiguration(newStrings));
         }
     }
 
@@ -172,7 +171,7 @@ public class EditConfigurationController extends BaseController implements RklCo
     private void cancel(ActionEvent event) {
         event.consume();
 
-        callback.accept(GuiResponse.GoToMenu(JavaMenu.Main()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.Main()));
     }
 
     public TextField getNcServerUrl() {

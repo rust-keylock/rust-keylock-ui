@@ -15,20 +15,28 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.ui;
 
-import javafx.event.EventHandler;
-import javafx.stage.WindowEvent;
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
+import java.util.concurrent.CompletableFuture;
+
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 
-public class UiStopper extends NativeCallbackToRustChannelSupport implements EventHandler<WindowEvent> {
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
+
+public class UiStopper implements EventHandler<WindowEvent> {
+    private final CompletableFuture<Object> f = new CompletableFuture<>();
+
     public void stop() {
-        doCallback(GuiResponse.GoToMenu(JavaMenu.Exit()));
+        f.complete(GuiResponse.GoToMenu(JavaMenu.Exit()));
     }
 
     @Override
     public void handle(WindowEvent ev) {
         stop();
         ev.consume();
+    }
+
+    public CompletableFuture<Object> getExitFuture() {
+        return this.f;
     }
 }

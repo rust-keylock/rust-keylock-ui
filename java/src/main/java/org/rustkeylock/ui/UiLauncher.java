@@ -15,23 +15,27 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.ui;
 
+import java.net.URL;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.rustkeylock.fxcomponents.RklStage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.rustkeylock.fxcomponents.RklStage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UiLauncher extends Application {
     private static final Logger logger = LoggerFactory.getLogger(UiLauncher.class);
-    // java --module-path $RUST_KEYLOCK_UI_BASE_PATH/java/target/lib --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.fxml  -jar $RUST_KEYLOCK_UI_BASE_PATH/java/target/rust-keylock-ui-java-0.14.0.jar
+    // java --module-path $RUST_KEYLOCK_UI_BASE_PATH/java/target/lib --add-modules
+    // javafx.base,javafx.controls,javafx.graphics,javafx.fxml -jar
+    // $RUST_KEYLOCK_UI_BASE_PATH/java/target/rust-keylock-ui-java-0.14.0.jar
     private static AtomicReference<Optional<RklStage>> stageOpt = new AtomicReference<>(Optional.empty());
 
     public static void launch() {
@@ -70,8 +74,9 @@ public class UiLauncher extends Application {
         }
     }
 
-    // This is called from the native in order to activate asynchronous callback for the exit event
-    public static UiStopper initOnCloseHandler() {
+    // This is called from the native and returns a Future that completes if and
+    // when the exit event is fired
+    public static UiStopper getNewUiStopper() {
         UiStopper stopper = new UiStopper();
         getStage().getFxStage().setOnCloseRequest(stopper);
         return stopper;

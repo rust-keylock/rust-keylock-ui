@@ -15,11 +15,11 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.ui.callbacks;
 
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.Region;
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.japi.JavaUserOption;
 import org.rustkeylock.japi.stubs.GuiResponse;
@@ -27,11 +27,12 @@ import org.rustkeylock.japi.stubs.JavaMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.Region;
 
-public class ShowMessageCb extends NativeCallbackToRustChannelSupport {
+public class ShowMessageCb {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private RklStage stage;
 
@@ -39,13 +40,13 @@ public class ShowMessageCb extends NativeCallbackToRustChannelSupport {
         this.stage = rklStage;
     }
 
-    public void apply(List<JavaUserOption> options, String message, String severity) {
+    public CompletableFuture<Object> apply(List<JavaUserOption> options, String message, String severity) {
         String logMessage = String.format("Callback for showing message %s of severity %s and options %s",
                 message,
                 severity,
-                options.stream().map(Object::toString).collect(Collectors.joining(", "))
-        );
+                options.stream().map(Object::toString).collect(Collectors.joining(", ")));
         logger.debug(logMessage);
+        CompletableFuture<Object> instanceFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
             Alert.AlertType alertType = Alert.AlertType.NONE;
             if ("Info".equals(severity)) {
@@ -56,7 +57,8 @@ public class ShowMessageCb extends NativeCallbackToRustChannelSupport {
                 alertType = Alert.AlertType.ERROR;
             }
 
-            List<ButtonType> buttonTypesList = options.stream().map(suo -> new ButtonType(suo.label)).collect(Collectors.toList());
+            List<ButtonType> buttonTypesList = options.stream().map(suo -> new ButtonType(suo.label))
+                    .collect(Collectors.toList());
             ButtonType[] buttonTypes = new ButtonType[buttonTypesList.size()];
             for (int i = 0; i < buttonTypesList.size(); i++)
                 buttonTypes[i] = buttonTypesList.get(i);
@@ -74,13 +76,15 @@ public class ShowMessageCb extends NativeCallbackToRustChannelSupport {
                             .findFirst());
 
             if (selectedJavaUserOption.isPresent()) {
-                doCallback(GuiResponse.UserOptionSelected(selectedJavaUserOption.get()));
+                instanceFuture.complete(GuiResponse.UserOptionSelected(selectedJavaUserOption.get()));
             } else {
                 logger.error("Pressed a button that does not exist in the User Options offered (" +
                         selectedButtonTypeOption.toString() +
                         ")?! How did it get here?? Please consider opening a bug to the developers.");
-                doCallback(GuiResponse.GoToMenu(JavaMenu.Main()));
+                instanceFuture.complete(GuiResponse.GoToMenu(JavaMenu.Main()));
             }
         });
+
+        return instanceFuture;
     }
 }

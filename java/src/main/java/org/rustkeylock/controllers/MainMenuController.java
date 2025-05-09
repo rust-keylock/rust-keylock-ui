@@ -15,19 +15,19 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
-public class MainMenuController extends BaseController implements RklController {
-    private Consumer<Object> callback;
+public class MainMenuController extends BaseController {
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
 
     @Override
-    public void setCallback(Consumer<Object> consumer) {
-        this.callback = consumer;
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
     }
 
     @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
 }

@@ -15,6 +15,22 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.rustkeylock.japi.JavaEntry;
+import org.rustkeylock.japi.stubs.GuiResponse;
+import org.rustkeylock.japi.stubs.JavaMenu;
+import org.rustkeylock.ui.Defs;
+import org.rustkeylock.ui.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -24,25 +40,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import org.rustkeylock.japi.JavaEntry;
-import org.rustkeylock.japi.stubs.GuiResponse;
-import org.rustkeylock.japi.stubs.JavaMenu;
-import org.rustkeylock.ui.Defs;
-import org.rustkeylock.ui.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-public class ShowEntryController extends BaseController implements RklController, Initializable {
+public class ShowEntryController extends BaseController implements Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     @FXML
     private TextField titleTextField = new TextField();
     @FXML
@@ -123,13 +124,13 @@ public class ShowEntryController extends BaseController implements RklController
     }
 
     @Override
-    public void setCallback(Consumer<Object> consumer) {
-        this.callback = consumer;
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
     }
 
     @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
     @Override
@@ -215,19 +216,19 @@ public class ShowEntryController extends BaseController implements RklController
     @FXML
     private void copyUsernameAction(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.Copy(anEntry.user));
+        this.submitResponse(GuiResponse.Copy(anEntry.user));
     }
 
     @FXML
     private void copyUrlAction(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.Copy(anEntry.url));
+        this.submitResponse(GuiResponse.Copy(anEntry.url));
     }
 
     @FXML
     private void copyPasswordAction(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.Copy(anEntry.pass));
+        this.submitResponse(GuiResponse.Copy(anEntry.pass));
     }
 
     @FXML
@@ -236,7 +237,7 @@ public class ShowEntryController extends BaseController implements RklController
         if (!edit && !delete) {
             editEntryAction();
         } else {
-            getCallback().accept(GuiResponse.GoToMenu(JavaMenu.EntriesList("")));
+            this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EntriesList("")));
         }
     }
 
@@ -253,11 +254,11 @@ public class ShowEntryController extends BaseController implements RklController
     }
 
     private void editEntryAction() {
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.EditEntry(entryIndex)));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EditEntry(entryIndex)));
     }
 
     private void deleteButtonAction() {
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.DeleteEntry(entryIndex)));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.DeleteEntry(entryIndex)));
     }
 
     @FXML
@@ -272,7 +273,7 @@ public class ShowEntryController extends BaseController implements RklController
         entry.meta = anEntry.getMeta();
         logger.info("Generating passphrase for " + entry.name);
 
-        getCallback().accept(GuiResponse.GeneratePassphrase(entry, entryIndex));
+        this.submitResponse(GuiResponse.GeneratePassphrase(entry, entryIndex));
     }
 
     private void entryOkAction() {
@@ -280,9 +281,9 @@ public class ShowEntryController extends BaseController implements RklController
         if (entryOpt.isPresent()) {
             logger.info("Saving entry " + entryOpt.get().name);
             if (entryIndex >= 0) {
-                callback.accept(GuiResponse.ReplaceEntry(entryOpt.get(), entryIndex));
+                this.submitResponse(GuiResponse.ReplaceEntry(entryOpt.get(), entryIndex));
             } else {
-                callback.accept(GuiResponse.AddEntry(entryOpt.get()));
+                this.submitResponse(GuiResponse.AddEntry(entryOpt.get()));
             }
         }
     }
@@ -329,7 +330,7 @@ public class ShowEntryController extends BaseController implements RklController
     }
 
     private void areYouSureAction() {
-        callback.accept(GuiResponse.DeleteEntry(entryIndex));
+        this.submitResponse(GuiResponse.DeleteEntry(entryIndex));
     }
 
     public String getTitleMessage() {

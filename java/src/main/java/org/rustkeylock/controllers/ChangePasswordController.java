@@ -15,6 +15,16 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
+import org.rustkeylock.fxcomponents.RklStage;
+import org.rustkeylock.japi.stubs.GuiResponse;
+import org.rustkeylock.ui.Defs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,17 +33,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
-import org.rustkeylock.fxcomponents.RklStage;
-import org.rustkeylock.japi.stubs.GuiResponse;
-import org.rustkeylock.ui.Defs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-
-public class ChangePasswordController extends BaseController implements RklController, Initializable {
+public class ChangePasswordController extends BaseController implements Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @FXML
     private PasswordField password1 = new PasswordField();
@@ -53,11 +54,21 @@ public class ChangePasswordController extends BaseController implements RklContr
     private StringProperty numberMessage2 = new SimpleStringProperty("");
     @FXML
     private BooleanProperty cancelButtonVisible = new SimpleBooleanProperty(true);
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     private final RklStage stage;
 
     public ChangePasswordController(RklStage stage) {
         this.stage = stage;
+    }
+
+    @Override
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
+    }
+
+    @Override
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
     @FXML
@@ -83,7 +94,8 @@ public class ChangePasswordController extends BaseController implements RklContr
             } else {
                 try {
                     logger.info("Password and number changed");
-                    callback.accept(GuiResponse.ChangePassword(password1.getText().trim(), Integer.parseInt(number1.getText().trim())));
+                    this.submitResponse(GuiResponse.ChangePassword(password1.getText().trim(),
+                            Integer.parseInt(number1.getText().trim())));
                     stage.markLoggedIn();
                 } catch (Exception error) {
                     String message = "Incorrect number";
@@ -98,18 +110,7 @@ public class ChangePasswordController extends BaseController implements RklContr
     @FXML
     private void cancel(ActionEvent event) {
         event.consume();
-
-        callback.accept(GuiResponse.GoToMenu(Defs.MENU_MAIN));
-    }
-
-    @Override
-    public void setCallback(Consumer<Object> consumer) {
-        callback = consumer;
-    }
-
-    @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+        this.submitResponse(GuiResponse.GoToMenu(Defs.MENU_MAIN));
     }
 
     @Override

@@ -15,12 +15,24 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public interface RklController {
     /**
-     * Sets a native callback to the Rust world that can be used to send data to Rust on actions
-     * @param consumer
+     * When the User selects something that needs to be passed to native rust-keylock lib handling, 
+     * the CompletableFuture will be completed and provide the user selection as a J4rs Instance
+     * 
+     * @return A CompletableFuture
      */
-    void setCallback(Consumer<Object> consumer);
+    CompletableFuture<Object> getResponseFuture();
+
+    /**
+     * Creates an Instance from the passed Object and submits it as response to the providced CompletableFuture
+     * @param response The Object to create the j4rs Instance
+     */
+    default void submitResponse(Object response) {
+        getResponseFuture().complete(response);
+    }
+
+    void createNewResponseFuture();
 }

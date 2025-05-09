@@ -15,16 +15,11 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
 import org.rustkeylock.japi.JavaEntry;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
@@ -34,14 +29,24 @@ import org.rustkeylock.ui.callbacks.ShowMenuCb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 
-public class ListEntriesController extends BaseController implements RklController, Initializable {
+public class ListEntriesController extends BaseController implements Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     @FXML
     private TextField filterTextField = new TextField();
     private String initialFilter;
@@ -55,17 +60,27 @@ public class ListEntriesController extends BaseController implements RklControll
         this.initialFilter = initialFilter;
     }
 
+    @Override
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
+    }
+
+    @Override
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
+    }
+
     @FXML
     private void checkPasswordsHealth(ActionEvent event) {
         event.consume();
         new ShowMenuCb(UiLauncher.getStage()).apply(Defs.MENU_PLEASE_WAIT);
-        callback.accept(GuiResponse.CheckPasswords());
+        this.submitResponse(GuiResponse.CheckPasswords());
     }
 
     @FXML
     private void addEntry(ActionEvent event) {
         event.consume();
-        callback.accept(GuiResponse.GoToMenu(JavaMenu.NewEntry()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.NewEntry()));
     }
 
     @FXML
@@ -80,7 +95,7 @@ public class ListEntriesController extends BaseController implements RklControll
         int pos = this.entriesListView.getSelectionModel().getSelectedIndex();
         if (pos >= 0 && pos < entries.size()) {
             logger.debug("Clicked entry with index " + pos + " in the list of entries");
-            callback.accept(GuiResponse.GoToMenu(JavaMenu.ShowEntry(pos)));
+            this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ShowEntry(pos)));
         }
     }
 
@@ -96,17 +111,7 @@ public class ListEntriesController extends BaseController implements RklControll
 
     private void applyFilter() {
         logger.debug("Filter changed to '" + filterTextField.getText() + "'");
-        callback.accept(GuiResponse.GoToMenu(JavaMenu.EntriesList(filterTextField.getText())));
-    }
-
-    @Override
-    public void setCallback(Consumer<Object> consumer) {
-        this.callback = consumer;
-    }
-
-    @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EntriesList(filterTextField.getText())));
     }
 
     @Override

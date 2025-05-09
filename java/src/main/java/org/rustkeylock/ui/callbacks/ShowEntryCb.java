@@ -15,11 +15,10 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.ui.callbacks;
 
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+
 import org.rustkeylock.controllers.RklController;
 import org.rustkeylock.controllers.ShowEntryController;
 import org.rustkeylock.fxcomponents.RklStage;
@@ -28,10 +27,12 @@ import org.rustkeylock.ui.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
-public class ShowEntryCb extends NativeCallbackToRustChannelSupport {
+public class ShowEntryCb {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private RklStage stage;
 
@@ -39,30 +40,31 @@ public class ShowEntryCb extends NativeCallbackToRustChannelSupport {
         this.stage = rklStage;
     }
 
-    public void apply(JavaEntry anEntry, Integer entryIndex, Boolean edit, Boolean delete) {
+    public CompletableFuture<Object> apply(JavaEntry anEntry, Integer entryIndex, Boolean edit, Boolean delete) {
         logger.debug("Callback for showing Entry with index " + entryIndex);
+        CompletableFuture<RklController> controllerFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {
                 URL resurl;
                 FXMLLoader loader = new FXMLLoader();
 
                 resurl = getClass().getResource("/fragments/show_enrty.fxml");
-                loader.setControllerFactory(clazz ->
-                        new ShowEntryController(anEntry, entryIndex, edit, delete)
-                );
+                loader.setControllerFactory(clazz -> new ShowEntryController(anEntry, entryIndex, edit, delete));
 
                 loader.setLocation(resurl);
                 Parent root = loader.load();
 
                 RklController controller = loader.getController();
-                controller.setCallback(this::doCallback);
 
                 Scene scene = new Scene(root);
                 Utils.applyRklCss(scene);
                 stage.updateView(scene, controller);
+                controllerFuture.complete(controller);
             } catch (IOException error) {
                 error.printStackTrace();
             }
         });
+
+        return controllerFuture.thenCompose(controller -> controller.getResponseFuture());
     }
 }

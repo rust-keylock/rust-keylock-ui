@@ -33,7 +33,7 @@ mod logger;
 mod ui_editor;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> errors::Result<()> {
     logger::init().expect("Could not initialize logging ");
     let jh = env::var("RUST_KEYLOCK_UI_JAVA_USER_HOME")
         .map(|s| format!("-Duser.home={}", s))
@@ -69,7 +69,8 @@ async fn main() {
 
     let jvm = jvm_res.unwrap();
     debug!("Initializing the editor");
-    let editor = ui_editor::new(jvm);
+    let editor = ui_editor::new(&jvm)?;
     info!("Executing native rust_keylock!");
     rust_keylock::execute_async(Box::new(editor)).await;
+    Ok(())
 }

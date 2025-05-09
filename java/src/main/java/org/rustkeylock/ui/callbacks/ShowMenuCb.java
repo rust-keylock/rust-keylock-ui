@@ -15,22 +15,29 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.ui.callbacks;
 
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import org.astonbitecode.j4rs.api.invocation.NativeCallbackToRustChannelSupport;
-import org.rustkeylock.controllers.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+
+import org.astonbitecode.j4rs.api.Instance;
+import org.rustkeylock.controllers.ChangePasswordController;
+import org.rustkeylock.controllers.EnterPasswordController;
+import org.rustkeylock.controllers.ExitController;
+import org.rustkeylock.controllers.ImportExportController;
+import org.rustkeylock.controllers.MainMenuController;
+import org.rustkeylock.controllers.RklController;
 import org.rustkeylock.fxcomponents.RklStage;
 import org.rustkeylock.ui.Defs;
 import org.rustkeylock.ui.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
-public class ShowMenuCb extends NativeCallbackToRustChannelSupport {
+public class ShowMenuCb {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private RklStage stage;
 
@@ -38,8 +45,9 @@ public class ShowMenuCb extends NativeCallbackToRustChannelSupport {
         this.stage = rklStage;
     }
 
-    public void apply(String menu) {
+    public CompletableFuture<Object> apply(String menu) {
         logger.debug("Callback for showing menu " + menu);
+        CompletableFuture<RklController> controllerFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {
                 URL resurl;
@@ -81,7 +89,8 @@ public class ShowMenuCb extends NativeCallbackToRustChannelSupport {
                 }
 
                 // If the controller is null here, it means that we should not change view.
-                // In this case, we should retrieve the currently active controller in order to set a new callback for it.
+                // In this case, we should retrieve the currently active controller in order to
+                // set a new callback for it.
                 RklController controller = null;
                 if (resurl != null) {
                     loader.setLocation(resurl);
@@ -92,13 +101,16 @@ public class ShowMenuCb extends NativeCallbackToRustChannelSupport {
                     Utils.applyRklCss(scene);
                     stage.updateView(scene, controller);
                 } else {
-                    controller = stage.getCurrentlyActiveController().orElseThrow(() -> new RuntimeException("Saved state not found!"));
+                    controller = stage.getCurrentlyActiveController()
+                            .orElseThrow(() -> new RuntimeException("Saved state not found!"));
+                    controller.createNewResponseFuture();;
                 }
-                controller.setCallback(this::doCallback);
-
+                controllerFuture.complete(controller);
             } catch (IOException error) {
                 error.printStackTrace();
             }
         });
+
+        return controllerFuture.thenCompose(controller -> controller.getResponseFuture());
     }
 }

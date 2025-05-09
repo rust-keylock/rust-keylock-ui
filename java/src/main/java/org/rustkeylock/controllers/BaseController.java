@@ -15,15 +15,14 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 
-import java.util.function.Consumer;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 
-public abstract class BaseController {
+public abstract class BaseController implements RklController {
     @FXML
     private Button goToEntriesButton;
     @FXML
@@ -39,48 +38,46 @@ public abstract class BaseController {
     @FXML
     private Button goToExitButton;
 
-    abstract Consumer<Object> getCallback();
-
     @FXML
     private void goToShowEntries(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.EntriesList("")));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EntriesList("")));
     }
 
     @FXML
     private void encryptAndSave(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.Save(false)));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.Save(false)));
     }
 
     @FXML
     private void goToChangePassword(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.ChangePass()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ChangePass()));
     }
 
     @FXML
     private void goToExportTo(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.ExportEntries()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ExportEntries()));
     }
 
     @FXML
     private void goToImportFrom(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.ImportEntries()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ImportEntries()));
     }
 
     @FXML
     private void goToShowConfiguration(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.ShowConfiguration()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ShowConfiguration()));
     }
 
     @FXML
     private void goToExit(ActionEvent event) {
         event.consume();
-        getCallback().accept(GuiResponse.GoToMenu(JavaMenu.Exit()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.Exit()));
     }
 
     protected void disableMenuButtons() {

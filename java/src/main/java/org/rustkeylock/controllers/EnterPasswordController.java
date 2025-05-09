@@ -15,15 +15,16 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.rustkeylock.fxcomponents.RklStage;
+import org.rustkeylock.japi.stubs.GuiResponse;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
-import org.rustkeylock.fxcomponents.RklStage;
-import org.rustkeylock.japi.stubs.GuiResponse;
-
-import java.util.function.Consumer;
 
 public class EnterPasswordController implements RklController {
     @FXML
@@ -34,11 +35,21 @@ public class EnterPasswordController implements RklController {
     private PasswordField number = new PasswordField();
     @FXML
     private StringProperty numberMessage = new SimpleStringProperty("");
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     private final RklStage stage;
 
     public EnterPasswordController(RklStage stage) {
         this.stage = stage;
+    }
+
+    @Override
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
+    }
+
+    @Override
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
     @FXML
@@ -54,13 +65,12 @@ public class EnterPasswordController implements RklController {
         } else {
             try {
                 Integer num = Integer.parseInt(getNumber().getText().trim());
-                callback.accept(GuiResponse.ChangePassword(getPassword().getText().trim(), num));
+                this.submitResponse(GuiResponse.ChangePassword(getPassword().getText().trim(), num));
                 if (stage != null) {
                     stage.markLoggedIn();
                 }
-            } catch (Exception error) {
+            } catch (Exception ignored) {
                 String message = "Incorrect number";
-                error.printStackTrace();
                 getNumber().setText("");
                 setNumberMessage(message);
             } finally {
@@ -68,11 +78,6 @@ public class EnterPasswordController implements RklController {
                 getNumber().clear();
             }
         }
-    }
-
-    @Override
-    public void setCallback(Consumer<Object> consumer) {
-        callback = consumer;
     }
 
     public String getPasswordMessage() {

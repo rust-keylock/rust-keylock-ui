@@ -15,6 +15,17 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
+import java.io.File;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
+import org.rustkeylock.japi.stubs.GuiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,18 +38,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.rustkeylock.japi.stubs.GuiResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-
-public class ImportExportController extends BaseController implements RklController, Initializable {
+public class ImportExportController extends BaseController implements Initializable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @FXML
     private StringProperty title = new SimpleStringProperty("");
@@ -54,7 +55,7 @@ public class ImportExportController extends BaseController implements RklControl
     private PasswordField number = new PasswordField();
     @FXML
     private StringProperty numberMessage = new SimpleStringProperty("");
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     private final Stage stage;
     private BooleanProperty export = new SimpleBooleanProperty(false);
     private String homePath = System.getProperty("user.home");
@@ -64,6 +65,16 @@ public class ImportExportController extends BaseController implements RklControl
     public ImportExportController(boolean export, Stage stage) {
         setExport(export);
         this.stage = stage;
+    }
+
+    @Override
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
+    }
+
+    @Override
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 
     @Override
@@ -95,7 +106,7 @@ public class ImportExportController extends BaseController implements RklControl
             } else if (new File(pathString).isDirectory()) {
                 setPathMessage("Cannot export to a directory");
             } else {
-                callback.accept(GuiResponse.ExportImport(pathString, 1, "Dummy", 11));
+                this.submitResponse(GuiResponse.ExportImport(pathString, 1, "Dummy", 11));
             }
         } else {
             if (pathString.isEmpty()) {
@@ -110,7 +121,7 @@ public class ImportExportController extends BaseController implements RklControl
             } else {
                 try {
                     Integer numberInt = Integer.parseInt(number.getText());
-                    callback.accept(GuiResponse.ExportImport(pathString, 0, password.getText(), numberInt));
+                    this.submitResponse(GuiResponse.ExportImport(pathString, 0, password.getText(), numberInt));
                 } catch (Exception error) {
                     String message = "Incorrect number";
                     error.printStackTrace();
@@ -147,16 +158,6 @@ public class ImportExportController extends BaseController implements RklControl
 
         logger.info("Chosen file: " + path);
         path.setText(pathString);
-    }
-
-    @Override
-    public void setCallback(Consumer<Object> consumer) {
-        callback = consumer;
-    }
-
-    @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
     }
 
     public TextField getPath() {

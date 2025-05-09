@@ -15,25 +15,26 @@
 // along with rust-keylock.  If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
+import java.util.concurrent.CompletableFuture;
+
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 
-public class ExitController extends BaseController implements RklController {
+public class ExitController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Consumer<Object> callback;
+    private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
 
     @FXML
     private void yesAction(ActionEvent event) {
         event.consume();
 
         logger.debug("The User selected to force Exit with unsaved data");
-        callback.accept(GuiResponse.GoToMenu(JavaMenu.ForceExit()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ForceExit()));
     }
 
     @FXML
@@ -41,16 +42,16 @@ public class ExitController extends BaseController implements RklController {
         event.consume();
 
         logger.debug("The User selected not to exit because of unsaved data");
-        callback.accept(GuiResponse.GoToMenu(JavaMenu.Main()));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.Main()));
     }
 
     @Override
-    Consumer<Object> getCallback() {
-        return this.callback;
+    public CompletableFuture<Object> getResponseFuture() {
+        return responseFuture;
     }
 
     @Override
-    public void setCallback(Consumer<Object> consumer) {
-        callback = consumer;
+    public void createNewResponseFuture() {
+        responseFuture = new CompletableFuture<>();
     }
 }
