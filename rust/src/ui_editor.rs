@@ -156,12 +156,6 @@ impl AsyncEditor for DesktopImpl {
     }
 }
 
-// TODO: Remove if not needed
-// fn generate_inv_arg(arg: impl TryInto<InvocationArg>) -> errors::Result<InvocationArg> {
-//     // let _ = Jvm::attach_thread()?;
-//     arg.try_into().map_err(|_| errors::RklUiError::new("Cannot generate invocation arg"))
-// }
-
 async fn show_password_enter(editor: &DesktopImpl) -> errors::Result<UserSelection> {
     debug!("Opening the password fragment");
     let instance_res_future =

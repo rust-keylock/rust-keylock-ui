@@ -28,13 +28,6 @@ pub struct RklUiError {
     description: String
 }
 
-// TODO: Remove if not needed
-// impl RklUiError {
-//     pub fn new(message: &str) -> RklUiError {
-//         RklUiError { description: format!("{:?}", message) }
-//     }
-// }
-
 impl fmt::Display for RklUiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.description)
