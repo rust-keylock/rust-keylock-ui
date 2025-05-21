@@ -154,6 +154,10 @@ impl AsyncEditor for DesktopImpl {
             .await
             .unwrap_or_else(|error| handle_error(&error))
     }
+
+    fn start_rest_server(&self) -> bool {
+        true
+    }
 }
 
 async fn show_password_enter(editor: &DesktopImpl) -> errors::Result<UserSelection> {
