@@ -1710,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "rust-keylock-ui"
-version = "0.16.0"
+version = "0.16.1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1730,9 +1730,9 @@ dependencies = [
 
 [[package]]
 name = "rust_keylock"
-version = "0.16.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64628c32bd768ef590716391232a191e00aa328cbe4129823475a4c339da0ac1"
+checksum = "718a674a27dc1a0629ce2c732989784e77e843fdd1ae7de6d9100f84ccab8f54"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -1796,9 +1796,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.33"
+version = "0.23.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "751e04a496ca00bb97a5e043158d23d66b5aabf2e1d5aa2a0aaebb1aafe6f82c"
+checksum = "6a9586e9ee2b4f8fab52a0048ca7334d7024eef48e2cb9407e3497bb7cab7fa7"
 dependencies = [
  "once_cell",
  "rustls-pki-types",
