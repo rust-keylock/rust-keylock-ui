@@ -1041,9 +1041,9 @@ checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
 name = "j4rs"
-version = "0.22.0"
+version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dacf87fdd07b36f3124894a5bf20c8d418aaa28d4974d717672507f6d05cd31c"
+checksum = "aa97e838564becfc82f93bb9bff11b2bcb1ed6288d4c56f47949b6cab48be2ed"
 dependencies = [
  "cesu8",
  "dunce",
@@ -1710,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "rust-keylock-ui"
-version = "0.16.1"
+version = "0.17.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1730,9 +1730,7 @@ dependencies = [
 
 [[package]]
 name = "rust_keylock"
-version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "718a674a27dc1a0629ce2c732989784e77e843fdd1ae7de6d9100f84ccab8f54"
+version = "0.17.0"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -1750,7 +1748,6 @@ dependencies = [
  "hyper 1.7.0",
  "hyper-tls 0.6.0",
  "hyper-util",
- "lazy_static",
  "log",
  "native-tls",
  "openssl-probe",
