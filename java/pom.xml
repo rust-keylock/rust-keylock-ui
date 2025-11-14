@@ -20,16 +20,17 @@
     </developers>
 
     <properties>
-        <maven.surefire.version>3.2.5</maven.surefire.version>
+        <maven.surefire.version>3.5.4</maven.surefire.version>
         <junit.version>4.13.2</junit.version>
-        <nexus.staging.plugin.version>1.6.7</nexus.staging.plugin.version>
-        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.compiler.plugin>3.12.1</maven.compiler.plugin>
-        <logback.version>1.4.12</logback.version>
+        <nexus.staging.plugin.version>1.7.0</nexus.staging.plugin.version>
+        <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+        <maven.compiler.plugin>3.14.1</maven.compiler.plugin>
+        <logback.version>1.5.21</logback.version>
         <javafx.maven.version>8.8.3</javafx.maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>22-ea+16</javafx.version>
-        <slf4j.version>2.0.11</slf4j.version>
+        <javafx.version>21.0.9</javafx.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <java.version>21</java.version>
     </properties>
 
     <repositories>
@@ -102,7 +103,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin}</version>
                 <configuration>
-                    <release>17</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>

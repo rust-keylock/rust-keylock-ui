@@ -59,22 +59,22 @@ fn main() {
 }
 
 fn deploy_os_jars(jvm: &Jvm, target_os: &str) {
-    maven("org.openjfx:javafx-base:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-base:22-ea+16:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-controls:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-controls:22-ea+16:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-fxml:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-fxml:22-ea+16:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-graphics:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-graphics:22-ea+16:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-media:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-media:22-ea+16:{}", target_os), &jvm);
-    maven("org.openjfx:javafx-swing:22-ea+16", &jvm);
-    maven(&format!("org.openjfx:javafx-swing:22-ea+16:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-base:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-base:21.0.9:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-controls:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-controls:21.0.9:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-fxml:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-fxml:21.0.9:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-graphics:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-graphics:21.0.9:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-media:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-media:21.0.9:{}", target_os), &jvm);
+    maven("org.openjfx:javafx-swing:21.0.9", &jvm);
+    maven(&format!("org.openjfx:javafx-swing:21.0.9:{}", target_os), &jvm);
     maven("org.slf4j:slf4j-api:2.0.11", &jvm);
-    maven("io.github.astonbitecode:j4rs-javafx:0.20.0", &jvm);
-    maven("ch.qos.logback:logback-core:1.4.12", &jvm);
-    maven("ch.qos.logback:logback-classic:1.4.12", &jvm);
+    maven("io.github.astonbitecode:j4rs-javafx:0.23.0", &jvm);
+    maven("ch.qos.logback:logback-core:1.5.19", &jvm);
+    maven("ch.qos.logback:logback-classic:1.5.19", &jvm);
 }
 
 fn deploy_desktop_ui_jar(jvm: &Jvm, jar: &str) {
