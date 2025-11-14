@@ -161,7 +161,6 @@ public class ShowEntryController extends BaseController implements Initializable
         Utils.removeChildNodeById(showHidePasswordHBox, GENERATE_PASSPHRASE_BUTTON_ID);
 
         descriptionTextArea.setEditable(edit);
-        descriptionTextArea.setDisable(!edit);
         descriptionTextArea.setText(anEntry.getDesc());
 
         if (!edit && !delete) {
