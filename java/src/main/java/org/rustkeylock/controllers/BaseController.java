@@ -41,7 +41,7 @@ public abstract class BaseController implements RklController {
     @FXML
     private void goToShowEntries(ActionEvent event) {
         event.consume();
-        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EntriesList("")));
+        this.submitResponse(GuiResponse.GoToMenu(JavaMenu.EntriesList(null)));
     }
 
     @FXML
