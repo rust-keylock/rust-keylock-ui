@@ -24,7 +24,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.ImageView;
 
 public class EnterPasswordController implements RklController {
     @FXML
@@ -35,6 +37,10 @@ public class EnterPasswordController implements RklController {
     private PasswordField number = new PasswordField();
     @FXML
     private StringProperty numberMessage = new SimpleStringProperty("");
+    @FXML
+    private ImageView pleaseWait = new ImageView();
+    @FXML
+    private Button decryptButton = new Button();
     private CompletableFuture<Object> responseFuture = new CompletableFuture<>();
     private final RklStage stage;
 
@@ -65,6 +71,8 @@ public class EnterPasswordController implements RklController {
         } else {
             try {
                 Integer num = Integer.parseInt(getNumber().getText().trim());
+                this.pleaseWait.setVisible(true);
+                this.decryptButton.setDisable(true);
                 this.submitResponse(GuiResponse.ChangePassword(getPassword().getText().trim(), num));
                 if (stage != null) {
                     stage.markLoggedIn();
@@ -118,5 +126,21 @@ public class EnterPasswordController implements RklController {
 
     public void setNumber(PasswordField number) {
         this.number = number;
+    }
+
+    public ImageView getPleaseWait() {
+        return pleaseWait;
+    }
+
+    public void setPleaseWait(ImageView pleaseWait) {
+        this.pleaseWait = pleaseWait;
+    }
+
+    public Button getDecryptButton() {
+        return decryptButton;
+    }
+
+    public void setDecryptButton(Button decryptButton) {
+        this.decryptButton = decryptButton;
     }
 }
