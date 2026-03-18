@@ -121,7 +121,7 @@ public class GuiResponse {
         return Defs.CHECK_PASSWORDS;
     }
 
-    public static String GenerateBrowserExtensionToken() {
-        return Defs.GENERATE_BROWSER_EXTENSION_TOKEN;
+    public static String GenerateBrowserExtensionPassphrase() {
+        return Defs.GENERATE_BROWSER_EXTENSION_PASSPHRASE;
     }
 }

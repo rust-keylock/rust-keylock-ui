@@ -46,7 +46,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="20.0">
                <children>
-                  <Label prefHeight="16.0" prefWidth="348.0" text="Browser Extension Token">
+                  <Label prefHeight="16.0" prefWidth="348.0" text="Browser Extension Passphrase">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -60,12 +60,12 @@
                <children>
                   <AnchorPane prefHeight="18.0" prefWidth="447.0">
                      <children>
-                        <TextField fx:id="genBrowserExtensionToken" prefHeight="26.0" prefWidth="447.0" />
+                        <TextField fx:id="genBrowserExtensionPassphrase" prefHeight="26.0" prefWidth="447.0" />
                      </children>
                   </AnchorPane>
-                  <Button graphicTextGap="0.0" onAction="#generateBrowserExtensionToken" text=" ">
+                  <Button graphicTextGap="0.0" onAction="#generateBrowserExtensionPassphrase" text=" ">
                      <tooltip>
-                        <Tooltip text="Generate new token" />
+                        <Tooltip text="Generate new Passphrase" />
                      </tooltip>
                      <graphic>
                         <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
@@ -85,7 +85,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="20.0">
                <children>
-                  <Label prefHeight="16.0" prefWidth="439.0" style="-fx-text-fill: red;" text="${controller.genBrowserExtensionToken}">
+                  <Label prefHeight="16.0" prefWidth="439.0" style="-fx-text-fill: red;" text="${controller.genBrowserExtensionPassphrase}">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

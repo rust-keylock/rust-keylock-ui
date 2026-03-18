@@ -56,7 +56,7 @@ public class EditConfigurationController extends BaseController implements Initi
     @FXML
     private StringProperty dropboxTokenLabel = new SimpleStringProperty("");
     @FXML
-    private TextField genBrowserExtensionToken = new TextField();
+    private TextField genBrowserExtensionPassphrase = new TextField();
 
     private final List<String> strings;
     private final RklStage stage;
@@ -89,7 +89,7 @@ public class EditConfigurationController extends BaseController implements Initi
             } else {
                 setDropboxTokenLabel("A token is acquired. Press the button if you want to renew: ");
             }
-            genBrowserExtensionToken.setText(strings.get(6));
+            genBrowserExtensionPassphrase.setText(strings.get(6));
         }
     }
 
@@ -129,9 +129,9 @@ public class EditConfigurationController extends BaseController implements Initi
     }
 
     @FXML
-    private void generateBrowserExtensionToken(ActionEvent event) {
+    private void generateBrowserExtensionPassphrase(ActionEvent event) {
         event.consume();
-        this.submitResponse(GuiResponse.GenerateBrowserExtensionToken());
+        this.submitResponse(GuiResponse.GenerateBrowserExtensionPassphrase());
     }
 
     @FXML
@@ -161,7 +161,7 @@ public class EditConfigurationController extends BaseController implements Initi
                     ncPassword.getText(),
                     "" + ncUseSelfSignedCertificate.isSelected(),
                     strings.get(5),
-                    genBrowserExtensionToken.getText());
+                    genBrowserExtensionPassphrase.getText());
 
             this.submitResponse(GuiResponse.SetConfiguration(newStrings));
         }

@@ -160,9 +160,9 @@ fn handle_instance(instance: Instance) -> crate::errors::Result<UserSelection> {
             debug!("CheckPasswords");
             UserSelection::CheckPasswords
         }
-        GuiResponse::GenerateBrowserExtensionToken => {
-            debug!("GenerateBrowserExtensionToken");
-            UserSelection::GenerateBrowserExtensionToken
+        GuiResponse::GenerateBrowserExtensionPassphrase => {
+            debug!("GenerateBrowserExtensionPassphrase");
+            UserSelection::GenerateBrowserExtensionPassphrase
         }
     };
 
@@ -208,5 +208,5 @@ pub(crate) enum GuiResponse {
         index: isize,
     },
     CheckPasswords,
-    GenerateBrowserExtensionToken,
+    GenerateBrowserExtensionPassphrase,
 }
