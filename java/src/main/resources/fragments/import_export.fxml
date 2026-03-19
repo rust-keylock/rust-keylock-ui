@@ -220,6 +220,18 @@
                   <Tooltip text="Show Configuration" />
                </tooltip>
             </Button>
+            <Button fx:id="minimizeToTrayButton" graphicTextGap="0.0" onAction="#minimizeToTray" text=" ">
+               <graphic>
+                  <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/minimize.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Minimize to tray" />
+               </tooltip>
+            </Button>
             <Button graphicTextGap="0.0" onAction="#goToExit" text=" " fx:id="goToExitButton">
                <graphic>
                   <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">

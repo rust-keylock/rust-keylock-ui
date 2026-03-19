@@ -17,7 +17,6 @@ package org.rustkeylock.ui;
 
 import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.rustkeylock.fxcomponents.RklStage;
