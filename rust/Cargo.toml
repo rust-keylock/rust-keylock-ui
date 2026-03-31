@@ -19,8 +19,8 @@ name = "rust-keylock-ui"
 path = "src/main.rs"
 
 [dependencies]
-rust_keylock = {path = "../../rust-keylock-lib"}
-j4rs = {path = "../../../j4rs/rust"}
+rust_keylock = "0.18"
+j4rs = "0.25"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
@@ -35,5 +35,5 @@ futures = "0.3"
 
 [build-dependencies]
 fs_extra = "1.3"
-rust_keylock = {path = "../../rust-keylock-lib"}
-j4rs = {path = "../../../j4rs/rust"}
+rust_keylock = "0.18"
+j4rs = "0.25"
