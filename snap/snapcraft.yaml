@@ -1,6 +1,7 @@
 name: rust-keylock-ui
-version: '0.18.0'
+version: '0.18.1'
 summary: A password manager written (mostly) in Rust
+title: rust-keylock password manager
 description: |
   rust-keylock is a password manager and its goals are to be:
      - Secure
@@ -9,6 +10,17 @@ description: |
      - Extensible
   The core logic is written in Rust, but the presentation/User interaction parts are in different languages.
   rust-keylock-ui manages the rust-keylock core, providing a User Interface using JavaFX.
+contact:
+  - https://rust-keylock.github.io/
+license: GPL-3.0
+issues:
+  - https://github.com/rust-keylock/rust-keylock-ui/issues
+  - https://github.com/rust-keylock/rust-keylock-lib/issues
+source-code:
+  - https://github.com/rust-keylock/rust-keylock-ui
+  - https://github.com/rust-keylock/rust-keylock-lib
+website:
+  - https://rust-keylock.github.io/
 
 grade: stable
 confinement: strict
@@ -19,7 +31,7 @@ parts:
   rust-keylock-ui-all:
     plugin: maven
     source: https://github.com/rust-keylock/rust-keylock-ui.git
-    source-tag: v0.18.0
+    source-tag: v0.18.1
     #source-commit: f1e76c296847af00a7679ba320c4aa33ee06c578 
     override-build: |
       export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${SNAP_ARCH}"
@@ -40,6 +52,12 @@ parts:
       mkdir -p $RKL_J4RS_INST_DIR
       cd $BASEDIR
       $CARGO_HOME/bin/cargo build --manifest-path=rust/Cargo.toml --release
+    override-prime: |
+      snapcraftctl prime
+      APP_IND_LIB_DIR=$(find "$SNAPCRAFT_PRIME/usr/lib/" -maxdepth 1 -type d -name "*-linux-gnu" -print -quit)
+      if [ -n "$APP_IND_LIB_DIR" ]; then
+        ln -sf libappindicator3.so.1.0.0 "$APP_IND_LIB_DIR/libappindicator3.so"
+      fi
     build-packages:
       - openjdk-21-jdk
       - openssl
@@ -55,6 +73,8 @@ parts:
     stage-packages:
       - openjdk-21-jre
       - openssl
+      - libappindicator3-1
+      - libdbusmenu-gtk3-4
     organize:
       ../build/j4rs: opt/j4rs
       ../build/rust/target/release/rust-keylock-ui: bin/
@@ -66,6 +86,7 @@ apps:
     plugs:
       - desktop
       - network
+      - unity7
     environment:
       RKL_J4RS_INST_DIR: ${SNAP}/opt/j4rs
       JAVA_HOME: ${SNAP}/usr/lib/jvm/java-21-openjdk-${SNAP_ARCH}
