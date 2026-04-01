@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.rustkeylock</groupId>
     <artifactId>rust-keylock-ui-java</artifactId>
-    <version>0.18.0</version>
+    <version>0.18.1</version>
     <name>rust-keylock-ui</name>
     <description>A password manager and its goals are to be:
 
@@ -31,6 +31,7 @@
         <javafx.version>21.0.9</javafx.version>
         <slf4j.version>2.0.17</slf4j.version>
         <java.version>21</java.version>
+        <dorkbox.version>4.4</dorkbox.version>
     </properties>
 
     <repositories>
@@ -88,6 +89,11 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.dorkbox</groupId>
+            <artifactId>SystemTray</artifactId>
+            <version>${dorkbox.version}</version>
+          </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>

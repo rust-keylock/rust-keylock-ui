@@ -75,6 +75,9 @@ fn deploy_os_jars(jvm: &Jvm, target_os: &str) {
     maven("io.github.astonbitecode:j4rs-javafx:0.23.0", &jvm);
     maven("ch.qos.logback:logback-core:1.5.19", &jvm);
     maven("ch.qos.logback:logback-classic:1.5.19", &jvm);
+    maven_with_deps("com.dorkbox:SystemTray:4.4", &jvm);
+    maven("net.java.dev.jna:jna:5.13.0", &jvm);
+    maven("net.java.dev.jna:jna-platform:5.13.0", &jvm);
 }
 
 fn deploy_desktop_ui_jar(jvm: &Jvm, jar: &str) {
@@ -90,6 +93,13 @@ fn maven(s: &str, jvm: &Jvm) {
     let artifact = MavenArtifact::from(s);
     let _ = jvm.deploy_artifact(&artifact).map_err(|error| {
         println!("cargo:warning=Could not download Maven artifact {}: {:?}", s, error);
+    });
+}
+
+fn maven_with_deps(s: &str, jvm: &Jvm) {
+    let artifact = MavenArtifact::from(s);
+    let _ = jvm.deploy_artifact_and_deps(&artifact).map_err(|error| {
+        println!("cargo:warning=Could not download Maven artifact and deps {}: {:?}", s, error);
     });
 }
 

@@ -15,12 +15,13 @@
 // along with rust-keylock. If not, see <http://www.gnu.org/licenses/>.
 package org.rustkeylock.controllers;
 
-import javax.swing.ImageIcon;
 import org.rustkeylock.japi.stubs.GuiResponse;
 import org.rustkeylock.japi.stubs.JavaMenu;
 import org.rustkeylock.ui.UiLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import dorkbox.systemTray.MenuItem;
+import dorkbox.systemTray.SystemTray;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -129,40 +130,25 @@ public abstract class BaseController implements RklController {
     private void addAppToTray() {
         logger.debug("Minimizing to tray");
         try {
-            java.awt.Toolkit.getDefaultToolkit();
-
-            if (!java.awt.SystemTray.isSupported()) {
+            SystemTray tray = SystemTray.get();
+            if (tray == null) {
                 logger.error("System tray is not supported");
                 this.submitResponse(GuiResponse.GoToMenu(JavaMenu.ShowConfiguration()));
             }
 
-            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
-            java.awt.Image image = new ImageIcon(this.getClass().getResource("/images/rkl-16.png")).getImage();
-            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
+            tray.setImage(getClass().getResource("/images/rkl-16.png"));
+            tray.setStatus("rust-keylock");
 
-            trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+            tray.getMenu().add(new MenuItem("Show rust-keylock UI", e -> {
+                Platform.runLater(this::showStage);
+            }));
 
-            java.awt.MenuItem openItem = new java.awt.MenuItem("Open rust-keylock-ui");
-            openItem.addActionListener(event -> Platform.runLater(this::showStage));
-
-            java.awt.Font defaultFont = java.awt.Font.decode(null);
-            java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-            openItem.setFont(boldFont);
-
-            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
-            exitItem.addActionListener(event -> {
+            tray.getMenu().add(new MenuItem("Quit", e -> {
                 goToExit(null);
-                tray.remove(trayIcon);
-            });
+            }));
 
-            final java.awt.PopupMenu popup = new java.awt.PopupMenu();
-            popup.add(openItem);
-            popup.addSeparator();
-            popup.add(exitItem);
-            trayIcon.setPopupMenu(popup);
-            tray.add(trayIcon);
             Platform.runLater(this::hideStage);
-        } catch (java.awt.AWTException error) {
+        } catch (Exception error) {
             logger.error("Unable to init system tray", error);
         }
     }
