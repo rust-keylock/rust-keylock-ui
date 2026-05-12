@@ -6,7 +6,7 @@ use j4rs;
 use j4rs::{Jvm, JvmBuilder, LocalJarArtifact, MavenArtifact};
 
 fn main() {
-    let ui_jar = "rust-keylock-ui-java-0.18.0.jar";
+    let ui_jar = "rust-keylock-ui-java-0.18.2.jar";
     let desktop_ui_jar_in_java_target = format!("../java/target/{}", ui_jar);
     println!("cargo:rerun-if-changed={}", desktop_ui_jar_in_java_target);
 
@@ -54,6 +54,16 @@ fn main() {
             deploy_os_jars(&jvm, &target_os);
         }
     };
+
+    let path = Path::new(".");
+    for entry in fs::read_dir(path).expect("Could not read path .") {
+        let entry = entry.expect("DirEntry cannot be created");
+        let path = entry.path();
+        let file_name = path.file_name().expect(&format!("Invalid file name: {:?}", path));
+        if file_name == "https:" {
+            fs::remove_dir_all(&path).expect(&format!("Could not remove {:?}", path));
+        }
+    }
 
     println!("cargo:warning=Artifacts provisioned successfully.");
 }
